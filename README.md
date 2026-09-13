@@ -519,11 +519,6 @@ The current codebase already includes a small set of implemented foundation comp
 
 Detailed documentation:
 
-- [Language Module](./docs/modules/language/README.md)
-- [Theme Module](./docs/modules/theme/README.md)
-- [Visual Identity](./docs/modules/theme/VISUAL-IDENTITY.md)
-- [ADR-0001 — Language Architecture](./docs/adr/ADR-0001-language-architecture.md)
-- [Automated Tests](./tests/README.md)
 - [Documentation Index](./docs/README.md)
 
 These implemented components are foundation/internal architecture. They do not mean that the long-term REST server, data access or business-service roadmap is already complete.
