@@ -324,6 +324,7 @@ Principais consumidores:
 ```text
 dockhub-delphi-coding
 dockhub-language-translator
+dockhub-theme
 dockhub-tests
 dockhub-documentation
 ```
@@ -337,3 +338,4 @@ INSPECT FIRST
 ASSUME NOTHING
 REPORT UNKNOWN
 ```
+

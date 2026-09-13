@@ -9,7 +9,10 @@ Este diretório reúne a documentação dos componentes que já existem no códi
 | Documento | Finalidade |
 | --- | --- |
 | [Módulo de Idiomas](./modules/language/README.pt-BR.md) | Arquitetura, contratos, comportamento em runtime, fallback, cache, exceções, integração com a View, manutenção e evolução do `Core.Language`. |
+| [Módulo de Theme](./modules/theme/README.pt-BR.md) | Arquitetura, contrato, tokens semânticos, troca em runtime, gradiente, integração com a Main View, testes, manutenção e evolução prevista de `View.Theme`. |
+| [Identidade Visual](./modules/theme/VISUAL-IDENTITY.pt-BR.md) | Valores completos Delphi e CSS/Web das paletas Blue, Teal, Light e Dark, mantidos como referência visual reutilizável. |
 | [ADR-0001 — Arquitetura de Idiomas](./adr/ADR-0001-language-architecture.pt-BR.md) | Registra por que a arquitetura atual foi escolhida e quais decisões foram propositalmente adiadas. |
+| [ADR-0002 — Arquitetura de Theme](./adr/ADR-0002-theme-architecture.pt-BR.md) | Registra a arquitetura atual do Theme, suas fronteiras de responsabilidade e as decisões de propagação/estado compartilhado adiadas para avaliação futura. |
 | [Testes Automatizados](../tests/README.pt-BR.md) | Estrutura do projeto DUnitX, execução, inventário atual dos testes, resultados e lacunas de cobertura conhecidas. |
 
 ## Regras da documentação

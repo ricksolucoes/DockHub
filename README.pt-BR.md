@@ -517,13 +517,15 @@ O código atual já possui alguns componentes de fundação implementados, além
 - **contrato de idioma orientado a interface**, com troca em runtime, fallback para `pt-BR` e uma unit de tradução por idioma;
 - **chaves de tradução organizadas por módulo** e validação central dos catálogos;
 - **integração da Main View** através de `ApplyLanguage`;
+- **subsistema de Theme da View** com `Blue`, `Teal`, `Light` e `Dark`, tokens semânticos de cor e integração do background da Main View;
 - **projeto de testes automatizados DUnitX** incluído no project group;
-- **17 testes atuais do Language**, cuja última execução fornecida registrou 17 aprovados, 0 falhas, 0 erros e 0 leaks;
-- **subsistema de Theme da View** separado em Types, Contracts e Implementation.
+- **34 testes DUnitX atuais**: 17 para `Core.Language` e 17 para `View.Theme`; o último XML fornecido registra 34 testes com sucesso, 0 falhas e 0 erros.
 
 Documentação detalhada:
 
 - [Módulo de Idiomas](./docs/modules/language/README.pt-BR.md)
+- [Módulo de Theme](./docs/modules/theme/README.pt-BR.md)
+- [Identidade Visual](./docs/modules/theme/VISUAL-IDENTITY.pt-BR.md)
 - [ADR-0001 — Arquitetura de Idiomas](./docs/adr/ADR-0001-language-architecture.pt-BR.md)
 - [Testes Automatizados](./tests/README.pt-BR.md)
 - [Índice da Documentação](./docs/README.pt-BR.md)
@@ -605,7 +607,7 @@ Serviços de aplicação e regras de negócio serão introduzidos progressivamen
 
 ### Qualidade
 
-* [x] Testes unitários — atualmente existe cobertura DUnitX para `Core.Language` (17 testes na última execução fornecida).
+* [x] Testes unitários — atualmente existe cobertura DUnitX para `Core.Language` e `View.Theme` (34 testes na última execução fornecida).
 * [ ] Testes de integração.
 * [ ] Testes da API.
 * [ ] Documentação da API.
@@ -655,7 +657,7 @@ Detalhes específicos das integrações não devem contaminar desnecessariamente
 
 ## 🧪 Estratégia de Testes
 
-O DockHub já possui um projeto de testes unitários DUnitX para o módulo `Core.Language` implementado. Os demais níveis de testes deverão ser introduzidos progressivamente conforme os componentes de produção correspondentes forem implementados.
+O DockHub já possui um projeto de testes unitários DUnitX cobrindo os módulos implementados `Core.Language` e `View.Theme`. Os demais níveis de testes deverão ser introduzidos progressivamente conforme os componentes de produção correspondentes forem implementados.
 
 Detalhes atuais: [Testes Automatizados](./tests/README.pt-BR.md).
 
@@ -712,6 +714,8 @@ Documentação atual:
 
 * [Índice da Documentação](./docs/README.pt-BR.md)
 * [Módulo de Idiomas](./docs/modules/language/README.pt-BR.md)
+* [Módulo de Theme](./docs/modules/theme/README.pt-BR.md)
+* [Identidade Visual](./docs/modules/theme/VISUAL-IDENTITY.pt-BR.md)
 * [ADR-0001 — Arquitetura de Idiomas](./docs/adr/ADR-0001-language-architecture.pt-BR.md)
 * [Testes Automatizados](./tests/README.pt-BR.md)
 

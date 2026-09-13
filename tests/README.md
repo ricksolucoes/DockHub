@@ -8,9 +8,11 @@ DockHub currently contains a dedicated DUnitX console test project:
 tests/
 ├── DockHub.Tests.dpr
 ├── DockHub.Tests.dproj
-└── Core/
-    ├── DockHub.Tests.Core.Language.Types.pas
-    └── DockHub.Tests.Core.Language.pas
+├── Core/
+│   ├── DockHub.Tests.Core.Language.Types.pas
+│   └── DockHub.Tests.Core.Language.pas
+└── View/
+    └── DockHub.Tests.View.Theme.pas
 ```
 
 The project is also included in `Dock.Hub.groupproj` together with the main FMX application.
@@ -41,7 +43,7 @@ This keeps the console open after execution when the normal runner is used outsi
 
 ## Search paths
 
-The test project currently references:
+The test project currently references the existing Language paths plus the Theme paths required by `TDockHubThemeTests`:
 
 ```text
 $(DUnitX)
@@ -50,11 +52,14 @@ $(DUnitX)
 ..\src\core\Language\Impl
 ..\src\core\Language\Keys
 ..\src\core\Language\Translations
+..\src\view\Theme
+..\src\view\Theme\Contracts
+..\src\view\Theme\Impl
 ```
 
 ## Fixture: `TDockHubLanguageTypeTests`
 
-The fixture currently contains 10 tests:
+The fixture contains 10 tests:
 
 | Test | Behavior validated |
 | --- | --- |
@@ -73,7 +78,7 @@ The fixture currently contains 10 tests:
 
 Each test receives a fresh `IDockHubLanguage` instance in `Setup` and releases it in `TearDown`.
 
-The fixture currently contains 7 tests:
+The fixture contains 7 tests:
 
 | Test | Behavior validated |
 | --- | --- |
@@ -94,28 +99,69 @@ _UNKNOWN_TRANSLATION_KEY:
 
 This constant follows the project convention that constants begin with `_`.
 
+## Fixture: `TDockHubThemeTests`
+
+Each test receives a fresh real `TDockHubTheme` instance through an `IDockHubTheme` reference in `Setup` and releases the interface in `TearDown`.
+
+Expected values for Blue, Teal, Light and Dark are centralized in test-only `TDockHubExpectedTheme` data. The fixture contains 17 tests:
+
+| Test | Behavior validated |
+| --- | --- |
+| `New_DefaultTheme_IsBlue` | New Theme instances start in `Blue`. |
+| `New_DefaultTheme_HasExpectedBluePalette` | The default instance exposes the complete expected Blue palette. |
+| `Theme_ChangesFromBlueToTeal` | Switching to Teal changes the background and exposes the complete expected Teal palette. |
+| `Theme_ChangesFromBlueToLight` | Switching to Light changes the background and exposes the complete expected Light palette. |
+| `Theme_ChangesFromBlueToDark` | Switching to Dark changes the background and exposes the complete expected Dark palette. |
+| `Theme_ChangesBackToBlue` | A changed Theme can return to the complete Blue palette. |
+| `Theme_SequentialChanges_UpdateEntirePalette` | Sequential Blue → Teal → Dark → Light → Blue changes validate the full palette after every transition. |
+| `BackgroundGradient_ConfiguresGradientBrush` | Gradient kind, linear style, two points, colors and offsets are configured from the active Theme. |
+| `BackgroundGradient_ChangesWithTheme` | Reapplying a brush after a Theme change uses the new gradient colors. |
+| `BackgroundGradient_DefaultAngle_Equals65Degrees` | The overload without an angle produces the same positions as explicit `65` degrees. |
+| `BackgroundGradient_ZeroDegrees` | The 0° gradient positions match the expected horizontal endpoints. |
+| `BackgroundGradient_NinetyDegrees` | The 90° gradient positions match the expected vertical endpoints. |
+| `BackgroundGradient_Nil_DoesNotRaiseException` | Passing `nil` does not raise an exception. |
+| `BadgeBackground_True_ReturnsSuccess` | `True` returns `BadgeSuccessBg`. |
+| `BadgeBackground_False_ReturnsDanger` | `False` returns `BadgeDangerBg`. |
+| `BadgeText_True_ReturnsSuccess` | `True` returns `BadgeSuccessText`. |
+| `BadgeText_False_ReturnsDanger` | `False` returns `BadgeDangerText`. |
+
 ## Latest execution result
 
-The latest real DUnitX execution supplied for the project produced:
+The latest supplied DUnitX XML result is dated 2026-09-13 and reports:
 
 ```text
-Tests Found   : 17
-Tests Ignored : 0
-Tests Passed  : 17
-Tests Leaked  : 0
-Tests Failed  : 0
-Tests Errored : 0
+Total tests : 34
+Passed      : 34
+Ignored     : 0
+Failures    : 0
+Errors      : 0
 ```
 
-This is the current runtime validation reference for the documented Language behavior.
+The XML also reports `not-run=0`, `skipped=0`, `invalid=0` and `inconclusive=0`.
+
+The XML format supplied for this run does not contain a leak-count field. This documentation therefore does not infer a leak count from the artifact.
+
+The 34 tests are distributed as:
+
+```text
+TDockHubLanguageTypeTests : 10
+TDockHubLanguageTests     :  7
+TDockHubThemeTests        : 17
+                              --
+Total                     : 34
+```
 
 ## What this execution proves
 
-The run directly proves the 17 behaviors represented by the two fixtures above. It also demonstrates that the Language units required by those tests were compilable in the environment where the test executable was built and executed.
+The run directly proves the 34 behaviors represented by the three fixtures above and shows every listed test case with a successful result in the supplied XML.
 
-It does **not** by itself prove that every platform/configuration of the main FMX application builds successfully.
+It demonstrates that the production units required by those tests were compilable in the environment where `DockHub.Tests.exe` was built and executed.
+
+It does **not** by itself prove that every platform/configuration of the main FMX application builds successfully, and it does **not** prove `TPageMain` Theme rendering because there is currently no Main View integration fixture.
 
 ## Current coverage gaps
+
+### Language
 
 The implementation contains additional branches that are not yet directly exercised by the current suite:
 
@@ -125,6 +171,10 @@ The implementation contains additional branches that are not yet directly exerci
 - empty key/value validation raising `EDockHubTranslationInvalid`;
 - a nil translation callback raising `EDockHubTranslationInvalid`;
 - `EDockHubLanguageNotSupported` through a real unsupported enum branch.
+
+### Theme / View integration
+
+The Theme contract and implementation are covered by the 17 Theme tests described above. `TPageMain` itself is deliberately not covered by a Theme integration test at this stage, so construction and visual application of `BackgroundGradient(Fill)` are not asserted by this suite.
 
 These are documented coverage gaps, not known implementation failures.
 
@@ -139,15 +189,7 @@ These are documented coverage gaps, not known implementation failures.
 5. Run it.
 6. With `--exitbehavior:Pause`, review the summary before pressing Enter.
 
-Expected current summary:
-
-```text
-Tests Found   : 17
-Tests Passed  : 17
-Tests Leaked  : 0
-Tests Failed  : 0
-Tests Errored : 0
-```
+The current regression baseline is 34 successful tests with zero failures/errors. Use the actual runner/XML output as the authority for each new execution rather than assuming the previous result.
 
 ### TestInsight
 
@@ -161,11 +203,13 @@ No CI workflow is currently documented as implemented.
 
 ## Adding tests
 
-When Language behavior changes:
+When production behavior changes:
 
 - test the public contract whenever possible;
 - avoid exposing private implementation details only to assert internal call counts;
-- add regression coverage for a real fallback case when one exists;
-- keep test-only constants in the test unit;
 - keep fixture names aligned with the production type being exercised;
-- do not change production behavior merely to make a test pass.
+- keep expected Theme palettes centralized in test-only structures;
+- add a regression test for an intentional Theme behavior change;
+- add Language fallback regression coverage when a legitimate missing-secondary-key case exists;
+- do not add a `TPageMain` integration test until that scope is intentionally introduced;
+- never change production behavior merely to make a test pass.

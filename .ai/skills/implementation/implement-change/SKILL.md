@@ -75,6 +75,15 @@ evaluate-documentation-impact
 
 `review-code-consistency` já utiliza `review-method-toxicity`.
 
+Principais consumidores:
+
+```text
+dockhub-delphi-coding
+dockhub-language-translator
+dockhub-theme
+future implementation agents
+```
+
 ---
 
 ## 6. Procedure
@@ -372,6 +381,7 @@ Exemplos:
 ```text
 dockhub-delphi-coding
 dockhub-language-translator
+dockhub-theme
 future domain agent
 ```
 

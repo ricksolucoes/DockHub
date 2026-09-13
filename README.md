@@ -513,13 +513,15 @@ The current codebase already includes a small set of implemented foundation comp
 - **interface-based language contract** with runtime switching, fallback to `pt-BR`, and per-language translation units;
 - **module-scoped translation keys** and centralized translation validation;
 - **Main View language integration** through `ApplyLanguage`;
+- **View Theme subsystem** with `Blue`, `Teal`, `Light` and `Dark`, semantic color tokens and Main View background integration;
 - **DUnitX automated test project** included in the project group;
-- **17 current Language tests**, with the latest supplied execution reporting 17 passed, 0 failed, 0 errors and 0 leaks;
-- **View Theme subsystem** separated into Types, Contracts and Implementation.
+- **34 current DUnitX tests**: 17 for `Core.Language` and 17 for `View.Theme`; the latest supplied XML reports 34 successful tests, 0 failures and 0 errors.
 
 Detailed documentation:
 
 - [Language Module](./docs/modules/language/README.md)
+- [Theme Module](./docs/modules/theme/README.md)
+- [Visual Identity](./docs/modules/theme/VISUAL-IDENTITY.md)
 - [ADR-0001 — Language Architecture](./docs/adr/ADR-0001-language-architecture.md)
 - [Automated Tests](./tests/README.md)
 - [Documentation Index](./docs/README.md)
@@ -601,7 +603,7 @@ Business services and business rules will be progressively introduced as the pro
 
 ### Quality
 
-* [x] Unit tests — DUnitX coverage currently exists for `Core.Language` (17 tests in the latest supplied run).
+* [x] Unit tests — DUnitX coverage currently exists for `Core.Language` and `View.Theme` (34 tests in the latest supplied run).
 * [ ] Integration tests.
 * [ ] API tests.
 * [ ] API documentation.
@@ -651,7 +653,7 @@ Integration-specific implementation details should not unnecessarily leak into a
 
 ## 🧪 Testing Strategy
 
-DockHub already contains a DUnitX unit-test project for the implemented `Core.Language` module. Additional testing levels should be introduced progressively as the corresponding production components are implemented.
+DockHub already contains a DUnitX unit-test project covering the implemented `Core.Language` and `View.Theme` modules. Additional testing levels should be introduced progressively as the corresponding production components are implemented.
 
 Current details: [Automated Tests](./tests/README.md).
 
@@ -708,6 +710,8 @@ Current documentation:
 
 * [Documentation Index](./docs/README.md)
 * [Language Module](./docs/modules/language/README.md)
+* [Theme Module](./docs/modules/theme/README.md)
+* [Visual Identity](./docs/modules/theme/VISUAL-IDENTITY.md)
 * [ADR-0001 — Language Architecture](./docs/adr/ADR-0001-language-architecture.md)
 * [Automated Tests](./tests/README.md)
 

@@ -45,6 +45,7 @@ Isso evita que cada nova tarefa reconstrua o processo do zero.
 ├── agents/
 │   ├── dockhub-delphi-coding.md
 │   ├── dockhub-language-translator.md
+│   ├── dockhub-theme.md
 │   ├── dockhub-tests.md
 │   └── dockhub-documentation.md
 │
@@ -183,6 +184,7 @@ Atualmente existem:
 ```text
 dockhub-delphi-coding
 dockhub-language-translator
+dockhub-theme
 dockhub-tests
 dockhub-documentation
 ```
@@ -207,6 +209,19 @@ Inclui:
 
 Define regras específicas do domínio Language.
 
+### `dockhub-theme`
+
+Define regras específicas do domínio Theme, incluindo:
+
+- contratos e tipos do subsistema;
+- tokens visuais semânticos;
+- coerência das paletas;
+- integração com Views preservando `ApplyTheme` como responsabilidade da própria View;
+- coerência entre implementação, testes e identidade visual;
+- avaliação de impacto quando estado compartilhado, propagação ou persistência passarem a ser necessários.
+
+O Agent distingue invariantes arquiteturais do estado atual: quantidade de tokens, Themes disponíveis e paths precisam ser confirmados no código antes de cada alteração.
+
 ### `dockhub-tests`
 
 Define criação, revisão, execução e evidência de testes.
@@ -214,6 +229,22 @@ Define criação, revisão, execução e evidência de testes.
 ### `dockhub-documentation`
 
 Define criação, revisão e auditoria documental.
+
+Fluxos de domínio atuais:
+
+```text
+dockhub-delphi-coding + dockhub-language-translator
+        ↓
+dockhub-tests
+        ↓
+dockhub-documentation
+
+dockhub-delphi-coding + dockhub-theme
+        ↓
+dockhub-tests
+        ↓
+dockhub-documentation
+```
 
 ---
 

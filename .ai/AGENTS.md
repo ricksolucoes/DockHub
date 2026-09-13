@@ -33,6 +33,7 @@ A estrutura atual é:
 ├── agents/
 │   ├── dockhub-delphi-coding.md
 │   ├── dockhub-language-translator.md
+│   ├── dockhub-theme.md
 │   ├── dockhub-tests.md
 │   └── dockhub-documentation.md
 ├── skills/
@@ -218,7 +219,45 @@ Não substitui o agente de testes nem o agente de documentação.
 
 ---
 
-### 4.2 `dockhub-tests`
+
+### 4.2 `dockhub-theme`
+
+Arquivo:
+
+```text
+.ai/agents/dockhub-theme.md
+```
+
+Metadata:
+
+```yaml
+---
+name: dockhub-theme
+description: Specialized AI agent for implementing, reviewing, and evolving the DockHub Theme subsystem while preserving its current Delphi architecture, semantic visual tokens, palettes, tests, visual identity, and documentation discipline.
+scope: DockHub Theme / Visual Theme subsystem
+language: pt-BR
+category: domain
+status: ACTIVE
+---
+```
+
+Responsabilidade principal:
+
+- implementação e manutenção do subsistema de Theme;
+- contratos e tipos específicos de Theme;
+- tokens visuais semânticos;
+- coerência das paletas;
+- integração com Views preservando `ApplyTheme` como responsabilidade da View;
+- coerência entre implementação, testes e identidade visual;
+- avaliação de impacto arquitetural em mudanças de estado compartilhado, propagação e persistência.
+
+O Agent deve distinguir invariantes arquiteturais do estado atual do código. Themes, quantidade de tokens e paths atuais devem ser confirmados no repositório antes de cada alteração.
+
+Não substitui `dockhub-delphi-coding`, `dockhub-tests` nem `dockhub-documentation`.
+
+---
+
+### 4.3 `dockhub-tests`
 
 Arquivo:
 
@@ -255,7 +294,7 @@ Responsabilidade principal:
 
 ---
 
-### 4.3 `dockhub-documentation`
+### 4.4 `dockhub-documentation`
 
 Arquivo:
 
@@ -292,7 +331,7 @@ Responsabilidade principal:
 ---
 
 
-### 4.4 `dockhub-delphi-coding`
+### 4.5 `dockhub-delphi-coding`
 
 Arquivo:
 
@@ -515,6 +554,20 @@ dockhub-tests
 dockhub-documentation
 ```
 
+No caso atual de Theme:
+
+```text
+dockhub-delphi-coding
+        +
+dockhub-theme
+        ↓
+implementação
+        ↓
+dockhub-tests
+        ↓
+dockhub-documentation
+```
+
 O `dockhub-delphi-coding` define os padrões transversais de implementação.
 
 O agente de domínio complementa esses padrões com regras específicas do subsistema.
@@ -710,7 +763,6 @@ dockhub-<domain>.md
 Exemplos possíveis:
 
 ```text
-dockhub-theme.md
 dockhub-rest.md
 dockhub-database.md
 dockhub-architecture-review.md
@@ -855,8 +907,9 @@ Agentes oficialmente registrados:
 ```text
 1. dockhub-delphi-coding
 2. dockhub-language-translator
-3. dockhub-tests
-4. dockhub-documentation
+3. dockhub-theme
+4. dockhub-tests
+5. dockhub-documentation
 ```
 
 Qualquer novo agente deve ser adicionado a esta lista e às seções de registro correspondentes antes de ser considerado parte oficial da estrutura de agentes do DockHub.

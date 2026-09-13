@@ -72,6 +72,7 @@ Uma Skill nunca pode usar seu procedimento para contornar uma regra de nível su
 ├── agents/
 │   ├── dockhub-delphi-coding.md
 │   ├── dockhub-language-translator.md
+│   ├── dockhub-theme.md
 │   ├── dockhub-tests.md
 │   └── dockhub-documentation.md
 │
@@ -372,6 +373,7 @@ Principais consumidores:
 ```text
 dockhub-delphi-coding
 dockhub-language-translator
+dockhub-theme
 dockhub-tests
 dockhub-documentation
 ```
@@ -407,6 +409,7 @@ Principais consumidores:
 ```text
 dockhub-delphi-coding
 dockhub-language-translator
+dockhub-theme
 future implementation agents
 ```
 
@@ -452,6 +455,7 @@ Principais consumidores:
 
 ```text
 dockhub-delphi-coding
+dockhub-theme
 future domain agents
 ```
 
@@ -482,6 +486,7 @@ Principais consumidores:
 ```text
 dockhub-delphi-coding
 dockhub-language-translator
+dockhub-theme
 dockhub-documentation
 dockhub-tests, quando houver mudança de testabilidade em produção
 ```
@@ -514,6 +519,7 @@ Principais consumidores:
 ```text
 dockhub-delphi-coding
 dockhub-language-translator
+dockhub-theme
 dockhub-tests
 ```
 
@@ -544,6 +550,7 @@ Principais consumidores:
 ```text
 dockhub-delphi-coding
 dockhub-language-translator
+dockhub-theme
 review-code-consistency
 ```
 
@@ -574,6 +581,7 @@ Principais consumidores:
 ```text
 dockhub-delphi-coding
 dockhub-language-translator
+dockhub-theme
 dockhub-tests
 implement-change
 ```
@@ -605,6 +613,7 @@ Principais consumidores:
 ```text
 dockhub-delphi-coding
 dockhub-language-translator
+dockhub-theme
 dockhub-documentation
 implement-change
 ```

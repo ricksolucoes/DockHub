@@ -14,7 +14,8 @@ uses
   {$ENDIF }
   DUnitX.TestFramework,
   DockHub.Tests.Core.Language.Types in 'Core\DockHub.Tests.Core.Language.Types.pas',
-  DockHub.Tests.Core.Language in 'Core\DockHub.Tests.Core.Language.pas';
+  DockHub.Tests.Core.Language in 'Core\DockHub.Tests.Core.Language.pas',
+  DockHub.Tests.View.Theme in 'View\DockHub.Tests.View.Theme.pas';
 
 { keep comment here to protect the following conditional from being removed by the IDE when adding a unit }
 {$IFNDEF TESTINSIGHT}
