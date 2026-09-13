@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<test-results name="C:\Projects\Language\Delphi\DockHub\tests\APP\Debug\DockHub.Tests.exe" total="17" errors="0" failures="0" ignored="0" inconclusive="0" not-run="0" skipped="0" invalid="0" date="2026-09-12" time="0.008">
+  <culture-info current-culture="en" current-uiculture="en" />
+  <test-suite type="Assembly" name="DockHub.Tests.exe" executed="true" result="Success" success="True" time="0.008" asserts="0">
+    <results>
+        <test-suite type="Namespace" name="DockHub" executed="true" result="Success" success="True" time="0.008" asserts="0" >
+          <results>
+              <test-suite type="Namespace" name="Language" executed="true" result="Success" success="True" time="0.008" asserts="0" >
+                <results>
+                    <test-suite type="Fixture" name="TDockHubLanguageTests" executed="True" result="Success" success="True" time="0.004" >
+                      <results>
+                        <test-case name="New_DefaultLanguage_IsPtBR" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="Language_ChangesTo_EnUS" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="Language_ReturnsTo_PtBR" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="Translate_PtBR_ReturnsPortugueseCaption" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="Translate_EnUS_ReturnsEnglishCaption" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="Translate_PtBR_UnknownKey_RaisesNotFound" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="Translate_EnUS_UnknownKey_RaisesNotFound" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                      </results>
+                    </test-suite>
+                    <test-suite type="Fixture" name="TDockHubLanguageTypeTests" executed="True" result="Success" success="True" time="0.003" >
+                      <results>
+                        <test-case name="PtBR_ToString" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="EnUS_ToString" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="PtBR_ToCultureCode" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="EnUS_ToCultureCode" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="FromString_PtBR_CultureCode" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="FromString_PtBR_EnumName" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="FromString_EnUS_CultureCode" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="FromString_EnUS_EnumName" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="FromString_IsCaseInsensitive" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                        <test-case name="FromString_Invalid_RaisesException" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                      </results>
+                    </test-suite>
+                </results>
+              </test-suite>
+          </results>
+        </test-suite>
+    </results>
+  </test-suite>
+</test-results>

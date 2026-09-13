@@ -504,6 +504,30 @@ Additional libraries, frameworks, database drivers, authentication mechanisms, a
 
 ---
 
+
+## ✅ Implemented Foundation Components
+
+The current codebase already includes a small set of implemented foundation components in addition to the long-term REST architecture described in this README:
+
+- **Runtime language module (`Core.Language`)** with `pt-BR` as the official/default language and `en-US` as a secondary language;
+- **interface-based language contract** with runtime switching, fallback to `pt-BR`, and per-language translation units;
+- **module-scoped translation keys** and centralized translation validation;
+- **Main View language integration** through `ApplyLanguage`;
+- **DUnitX automated test project** included in the project group;
+- **17 current Language tests**, with the latest supplied execution reporting 17 passed, 0 failed, 0 errors and 0 leaks;
+- **View Theme subsystem** separated into Types, Contracts and Implementation.
+
+Detailed documentation:
+
+- [Language Module](./docs/modules/language/README.md)
+- [ADR-0001 — Language Architecture](./docs/adr/ADR-0001-language-architecture.md)
+- [Automated Tests](./tests/README.md)
+- [Documentation Index](./docs/README.md)
+
+These implemented components are foundation/internal architecture. They do not mean that the long-term REST server, data access or business-service roadmap is already complete.
+
+---
+
 ## 🚧 Project Status
 
 DockHub is currently under active development.
@@ -577,7 +601,7 @@ Business services and business rules will be progressively introduced as the pro
 
 ### Quality
 
-* [ ] Unit tests.
+* [x] Unit tests — DUnitX coverage currently exists for `Core.Language` (17 tests in the latest supplied run).
 * [ ] Integration tests.
 * [ ] API tests.
 * [ ] API documentation.
@@ -627,7 +651,9 @@ Integration-specific implementation details should not unnecessarily leak into a
 
 ## 🧪 Testing Strategy
 
-The project should progressively introduce different testing levels.
+DockHub already contains a DUnitX unit-test project for the implemented `Core.Language` module. Additional testing levels should be introduced progressively as the corresponding production components are implemented.
+
+Current details: [Automated Tests](./tests/README.md).
 
 ### Unit Tests
 
@@ -678,13 +704,20 @@ As DockHub evolves, additional documentation should cover:
 
 Architecture Decision Records (**ADRs**) may be used for important technical decisions.
 
+Current documentation:
+
+* [Documentation Index](./docs/README.md)
+* [Language Module](./docs/modules/language/README.md)
+* [ADR-0001 — Language Architecture](./docs/adr/ADR-0001-language-architecture.md)
+* [Automated Tests](./tests/README.md)
+
 ---
 
 ## 🚀 Getting Started
 
 DockHub is currently in its initial development phase.
 
-Build, configuration, database setup, deployment, and execution instructions will be added when the corresponding implementation is available.
+Build, database setup, deployment, and REST execution instructions will be expanded as those components are implemented. The current DUnitX test project is documented in [tests/README.md](./tests/README.md).
 
 Current target environment:
 

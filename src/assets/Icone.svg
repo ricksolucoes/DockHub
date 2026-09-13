@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 317 303"
+     width="317"
+     height="303"
+     role="img"
+     aria-labelledby="title desc"
+     shape-rendering="geometricPrecision">
+  <title id="title">DockHub icon</title>
+  <desc id="desc">Verified monochrome DockHub icon reconstructed with explicit vector coordinates.</desc>
+
+  <!--
+    VERIFIED SOURCE
+    Original generated image: 1448 x 1086 px
+    Original icon bounding box:
+      x = 107 .. 423
+      y = 375 .. 677
+      width  = 317
+      height = 303
+
+    SVG NORMALIZATION
+    Original coordinate -> SVG coordinate:
+      svg_x = original_x - 107
+      svg_y = original_y - 375
+
+    All geometry below uses explicit path coordinates.
+    No font, text, external asset, transform or embedded bitmap.
+    Monochrome is controlled by currentColor.
+  -->
+
+  <g fill="currentColor">
+
+    <!-- Upper separated D segment -->
+    <path d="M 61 2 L 61 15 L 62 17 L 93 49 L 100 52 L 190 52 L 211 58 L 224 65 L 232 71 L 244 83 L 255 100 L 260 113 L 261 121 L 262 122 L 262 136 L 264 141 L 266 142 L 314 142 L 316 140 L 316 113 L 315 112 L 314 102 L 307 80 L 300 66 L 285 45 L 271 31 L 258 21 L 244 13 L 220 4 L 207 2 L 206 1 L 198 1 L 197 0 L 63 0 Z"/>
+
+    <!-- Central hub / branching connector -->
+    <path d="M 29 36 L 22 38 L 15 42 L 6 51 L 1 61 L 0 79 L 2 86 L 7 95 L 17 104 L 30 109 L 42 109 L 49 107 L 56 103 L 58 104 L 95 142 L 102 145 L 133 145 L 134 146 L 133 149 L 134 162 L 133 163 L 99 163 L 95 165 L 56 204 L 43 198 L 30 198 L 17 203 L 7 212 L 2 221 L 0 228 L 0 242 L 4 253 L 14 264 L 23 269 L 30 271 L 43 271 L 54 267 L 64 259 L 69 252 L 72 244 L 73 229 L 117 185 L 120 184 L 143 184 L 147 185 L 156 192 L 169 197 L 182 198 L 183 197 L 192 196 L 207 188 L 214 181 L 218 175 L 223 163 L 224 145 L 222 137 L 214 123 L 206 115 L 198 110 L 190 107 L 172 106 L 164 108 L 150 116 L 143 124 L 120 124 L 116 122 L 73 78 L 73 68 L 71 60 L 67 52 L 60 44 L 56 41 L 44 36 Z"/>
+
+    <!-- Lower separated D segment -->
+    <path d="M 316 163 L 313 161 L 266 161 L 263 164 L 262 167 L 262 181 L 261 182 L 260 190 L 255 203 L 251 210 L 243 221 L 233 231 L 222 239 L 210 245 L 198 249 L 185 250 L 184 251 L 97 251 L 95 252 L 62 285 L 61 287 L 61 300 L 63 302 L 196 302 L 197 301 L 207 301 L 224 297 L 238 292 L 252 285 L 275 268 L 289 253 L 300 237 L 308 220 L 314 201 L 315 191 L 316 190 Z"/>
+
+  </g>
+</svg>

@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{AB0080D6-97C4-470C-9DAF-525A8BC00AD0}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="DockHub.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="tests\DockHub.Tests.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="DockHub">
+        <MSBuild Projects="DockHub.dproj"/>
+    </Target>
+    <Target Name="DockHub:Clean">
+        <MSBuild Projects="DockHub.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DockHub:Make">
+        <MSBuild Projects="DockHub.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="DockHub_Tests">
+        <MSBuild Projects="tests\DockHub.Tests.dproj"/>
+    </Target>
+    <Target Name="DockHub_Tests:Clean">
+        <MSBuild Projects="tests\DockHub.Tests.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DockHub_Tests:Make">
+        <MSBuild Projects="tests\DockHub.Tests.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="DockHub;DockHub_Tests"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="DockHub:Clean;DockHub_Tests:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="DockHub:Make;DockHub_Tests:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

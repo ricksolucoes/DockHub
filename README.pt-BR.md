@@ -508,6 +508,30 @@ Bibliotecas, frameworks, drivers, mecanismos de autenticação e demais componen
 
 ---
 
+
+## ✅ Componentes de Fundação já Implementados
+
+O código atual já possui alguns componentes de fundação implementados, além da arquitetura REST de longo prazo descrita neste README:
+
+- **módulo de idiomas em runtime (`Core.Language`)** com `pt-BR` como idioma oficial/default e `en-US` como idioma secundário;
+- **contrato de idioma orientado a interface**, com troca em runtime, fallback para `pt-BR` e uma unit de tradução por idioma;
+- **chaves de tradução organizadas por módulo** e validação central dos catálogos;
+- **integração da Main View** através de `ApplyLanguage`;
+- **projeto de testes automatizados DUnitX** incluído no project group;
+- **17 testes atuais do Language**, cuja última execução fornecida registrou 17 aprovados, 0 falhas, 0 erros e 0 leaks;
+- **subsistema de Theme da View** separado em Types, Contracts e Implementation.
+
+Documentação detalhada:
+
+- [Módulo de Idiomas](./docs/modules/language/README.pt-BR.md)
+- [ADR-0001 — Arquitetura de Idiomas](./docs/adr/ADR-0001-language-architecture.pt-BR.md)
+- [Testes Automatizados](./tests/README.pt-BR.md)
+- [Índice da Documentação](./docs/README.pt-BR.md)
+
+Esses componentes representam fundação/arquitetura interna já implementada. Eles não significam que o servidor REST, acesso a dados ou serviços de negócio do roadmap de longo prazo já estejam concluídos.
+
+---
+
 ## 🚧 Status do Projeto
 
 O DockHub está atualmente em desenvolvimento ativo.
@@ -581,7 +605,7 @@ Serviços de aplicação e regras de negócio serão introduzidos progressivamen
 
 ### Qualidade
 
-* [ ] Testes unitários.
+* [x] Testes unitários — atualmente existe cobertura DUnitX para `Core.Language` (17 testes na última execução fornecida).
 * [ ] Testes de integração.
 * [ ] Testes da API.
 * [ ] Documentação da API.
@@ -631,7 +655,9 @@ Detalhes específicos das integrações não devem contaminar desnecessariamente
 
 ## 🧪 Estratégia de Testes
 
-O projeto deverá introduzir progressivamente diferentes níveis de testes.
+O DockHub já possui um projeto de testes unitários DUnitX para o módulo `Core.Language` implementado. Os demais níveis de testes deverão ser introduzidos progressivamente conforme os componentes de produção correspondentes forem implementados.
+
+Detalhes atuais: [Testes Automatizados](./tests/README.pt-BR.md).
 
 ### Testes Unitários
 
@@ -682,13 +708,20 @@ Conforme o DockHub evoluir, a documentação deverá cobrir:
 
 Decisões técnicas relevantes poderão ser documentadas através de **Architecture Decision Records (ADRs)**.
 
+Documentação atual:
+
+* [Índice da Documentação](./docs/README.pt-BR.md)
+* [Módulo de Idiomas](./docs/modules/language/README.pt-BR.md)
+* [ADR-0001 — Arquitetura de Idiomas](./docs/adr/ADR-0001-language-architecture.pt-BR.md)
+* [Testes Automatizados](./tests/README.pt-BR.md)
+
 ---
 
 ## 🚀 Primeiros Passos
 
 O DockHub ainda está em sua fase inicial de desenvolvimento.
 
-As instruções de compilação, configuração, banco de dados, execução e implantação serão adicionadas quando as respectivas implementações estiverem disponíveis.
+As instruções de compilação, banco de dados, execução REST e implantação serão ampliadas conforme esses componentes forem implementados. O projeto atual de testes DUnitX está documentado em [tests/README.pt-BR.md](./tests/README.pt-BR.md).
 
 Ambiente alvo atual:
 
