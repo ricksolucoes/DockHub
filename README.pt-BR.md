@@ -523,11 +523,6 @@ O código atual já possui alguns componentes de fundação implementados, além
 
 Documentação detalhada:
 
-- [Módulo de Idiomas](./docs/modules/language/README.pt-BR.md)
-- [Módulo de Theme](./docs/modules/theme/README.pt-BR.md)
-- [Identidade Visual](./docs/modules/theme/VISUAL-IDENTITY.pt-BR.md)
-- [ADR-0001 — Arquitetura de Idiomas](./docs/adr/ADR-0001-language-architecture.pt-BR.md)
-- [Testes Automatizados](./tests/README.pt-BR.md)
 - [Índice da Documentação](./docs/README.pt-BR.md)
 
 Esses componentes representam fundação/arquitetura interna já implementada. Eles não significam que o servidor REST, acesso a dados ou serviços de negócio do roadmap de longo prazo já estejam concluídos.
