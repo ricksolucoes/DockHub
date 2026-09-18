@@ -306,6 +306,78 @@ responsabilidade
 
 Não crie namespaces artificiais apenas para aumentar profundidade.
 
+### 7.1 Estrutura de `View.Page` e composição runtime
+
+Quando uma Page possuir composição visual própria criada em runtime, organize o domínio da página por proximidade física e responsabilidade:
+
+```text
+src/view/Page/<Page>/
+├── DockHub.View.Page.<Page>.pas
+├── DockHub.View.Page.<Page>.fmx          # quando aplicável
+└── Composition/
+    └── DockHub.View.Page.<Page>.Composition.pas
+```
+
+O namespace continua expressando produto, layer, domínio e responsabilidade:
+
+```text
+DockHub.View.Page.Main
+DockHub.View.Page.Main.Composition
+```
+
+A pasta física `<Page>` agrupa artefatos exclusivos daquela Page. Ela não exige acrescentar um role artificial como `.Form` ao namespace da unit principal.
+
+Responsabilidades esperadas:
+
+```text
+Page
+→ ciclo de vida da Form/View
+→ estado e colaboradores da página
+→ ApplyLanguage / ApplyTheme ou equivalentes
+→ handlers e semântica das interações
+→ coordenação com navegação quando esse mecanismo existir
+
+Composition
+→ construção runtime da árvore visual específica da Page
+→ criação e configuração de controles
+→ parent/ownership visual necessário à composição
+→ posicionamento e hierarquia dos componentes
+→ associação de callbacks/handlers fornecidos pela Page
+```
+
+`Composition` não deve assumir automaticamente:
+
+- regra de negócio;
+- acesso a banco ou REST;
+- propriedade global de Theme ou Language;
+- decisão de navegação entre Pages;
+- criação direta de outras Pages como efeito de um clique;
+- abstrações compartilhadas antes de existir reutilização real.
+
+Quando um componente criado pela Composition precisar participar de `ApplyLanguage`, `ApplyTheme` ou atualização de estado, a Page continua responsável pela coordenação da apresentação. O contrato concreto para manter ou expor referências visuais deve ser definido a partir da necessidade real da Page; não invente antecipadamente interfaces, records de handles ou managers genéricos.
+
+A associação de eventos pode ocorrer durante a composição, mas o significado da ação deve permanecer fora da responsabilidade estrutural de `Composition`. Exemplo conceitual:
+
+```text
+Composition
+→ cria botão
+→ associa callback recebido
+
+Page/collaborator
+→ decide o que o clique significa
+```
+
+Se uma Page crescer, subdivida sua Composition somente quando existirem responsabilidades visuais reais e coesas. Não crie antecipadamente `Header`, `Sidebar`, `Content`, `Footer`, `Components` ou outras units apenas por expectativa de crescimento.
+
+Se um elemento visual passar a ser reutilizado por múltiplas Pages, avalie uma responsabilidade compartilhada da camada View em decisão própria. Não mova automaticamente artefatos page-specific para uma pasta global apenas por semelhança visual.
+
+A decisão arquitetural correspondente está documentada em:
+
+```text
+docs/adr/ADR-0003-view-page-architecture.md
+docs/modules/view/README.md
+```
+
 ---
 
 ## 8. Convenções de prefixos Delphi

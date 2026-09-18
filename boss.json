@@ -1,0 +1,15 @@
+{
+	"name": "DockHub",
+	"description": "DockHub is an independent REST service platform by RickSoluções that centralizes data access, application services, integrations, and business rules behind a secure, versioned API. It helps decouple client applications from direct database access and local logic. Unofficial and not affiliated with or endorsed by third-party vendors.",
+	"version": "0.1.0",
+	"homepage": "ricksolucoes.dev",
+	"mainsrc": "./src",
+	"browsingpath": "",
+	"projects": [],
+	"dependencies": {
+		"github.com/ricksolucoes/RickDialogPro": "^0.1.2",
+		"github.com/ricksolucoes/RickUIBuilder": "^0.1.0",
+		"github.com/ricksolucoes/RickWinService": "^0.1.0",
+		"github.com/ricksolucoes/horse": "^3.3.9"
+	}
+}

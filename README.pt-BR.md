@@ -518,6 +518,7 @@ O código atual já possui alguns componentes de fundação implementados, além
 - **chaves de tradução organizadas por módulo** e validação central dos catálogos;
 - **integração da Main View** através de `ApplyLanguage`;
 - **subsistema de Theme da View** com `Blue`, `Teal`, `Light` e `Dark`, tokens semânticos de cor e integração do background da Main View;
+- **organização estrutural de Pages da View**, iniciada pela `Main`, com boundary físico em `src/view/Page/<Page>/` e responsabilidade page-specific em `Composition/` para a futura montagem visual runtime; a estrutura inicial existe, mas a integração funcional da `Main.Composition` com `TPageMain` ainda não é tratada como implementada;
 - **projeto de testes automatizados DUnitX** incluído no project group;
 - **34 testes DUnitX atuais**: 17 para `Core.Language` e 17 para `View.Theme`; o último XML fornecido registra 34 testes com sucesso, 0 falhas e 0 erros.
 
@@ -710,6 +711,7 @@ Documentação atual:
 * [Índice da Documentação](./docs/README.pt-BR.md)
 * [Módulo de Idiomas](./docs/modules/language/README.pt-BR.md)
 * [Módulo de Theme](./docs/modules/theme/README.pt-BR.md)
+* [Arquitetura de Pages da View](./docs/modules/view/README.pt-BR.md)
 * [Identidade Visual](./docs/modules/theme/VISUAL-IDENTITY.pt-BR.md)
 * [ADR-0001 — Arquitetura de Idiomas](./docs/adr/ADR-0001-language-architecture.pt-BR.md)
 * [Testes Automatizados](./tests/README.pt-BR.md)

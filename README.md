@@ -514,6 +514,7 @@ The current codebase already includes a small set of implemented foundation comp
 - **module-scoped translation keys** and centralized translation validation;
 - **Main View language integration** through `ApplyLanguage`;
 - **View Theme subsystem** with `Blue`, `Teal`, `Light` and `Dark`, semantic color tokens and Main View background integration;
+- **structural organization for View Pages**, starting with `Main`, using a physical boundary under `src/view/Page/<Page>/` and a page-specific `Composition/` responsibility for future runtime visual construction; the initial structure exists, while functional integration between `Main.Composition` and `TPageMain` is not yet treated as implemented;
 - **DUnitX automated test project** included in the project group;
 - **34 current DUnitX tests**: 17 for `Core.Language` and 17 for `View.Theme`; the latest supplied XML reports 34 successful tests, 0 failures and 0 errors.
 
@@ -706,6 +707,7 @@ Current documentation:
 * [Documentation Index](./docs/README.md)
 * [Language Module](./docs/modules/language/README.md)
 * [Theme Module](./docs/modules/theme/README.md)
+* [View Page Architecture](./docs/modules/view/README.md)
 * [Visual Identity](./docs/modules/theme/VISUAL-IDENTITY.md)
 * [ADR-0001 — Language Architecture](./docs/adr/ADR-0001-language-architecture.md)
 * [Automated Tests](./tests/README.md)
