@@ -202,19 +202,39 @@ If a visual responsibility becomes shared by multiple Pages, extraction to a sha
 
 This ADR intentionally does not predefine the name, path or contract for that future area.
 
-### 11. RickUIBuilder is a mechanism, not a behavior boundary
+### 11. RickUIBuilder is the runtime-construction dependency, not the behavior boundary
 
-When runtime construction uses RickUIBuilder, its use belongs to Composition for creating and configuring Page controls.
+RickUIBuilder was analyzed as the UI-construction dependency relevant to this Page/Composition architecture. The DockHub-specific integration reference is maintained in [RickUIBuilder — DockHub Integration Reference](../dependencies/rickuibuilder/README.md).
+
+Its current source is directly related to the original reference-screen construction helpers: the Factory source states that `CreateText`, `CreateDivider`, `CreateBadge` and `CreateButton` were extracted from that screen and decoupled from a concrete Form. DockHub should therefore reuse the public library behavior instead of recreating those helpers locally without a real requirement.
+
+This ADR distinguishes two meanings of Composition:
+
+```text
+DockHub.View.Page.<Page>.Composition
+→ architectural Page responsibility
+
+Rick.UIBuilder.Composition / TRickUIBuilder.On(AParent)
+→ one RickUIBuilder usage style
+```
+
+The DockHub Composition may select Factory, Fluent Builders, `TRickUIBuilder.On(...)`, or a justified combination. The selection depends on the Page's concrete needs, including whether a created control must remain available for `ApplyLanguage`, `ApplyTheme`, event/state changes or other runtime updates.
+
+This matters because the analyzed `TRickUIBuilder.On(...)` API does not return created Text, Divider or Button controls, while individual fluent builders return their generated control and Badge exposes a public handle. Therefore no project rule should force `TRickUIBuilder.On(...)` merely because the DockHub unit is named `Composition`.
 
 RickUIBuilder does not become responsible for:
 
 - business rules;
-- navigation;
+- navigation decisions;
 - application state;
-- click semantics;
-- Theme or Language ownership.
+- the semantic meaning of clicks;
+- ownership of Theme or Language.
 
-The concrete integration will be documented when it exists in final code.
+RickUIBuilder receives concrete values/callbacks and creates/configures FMX controls. DockHub remains responsible for resolving Theme semantic tokens and Language strings before or while applying presentation to those controls.
+
+The analyzed Button hover implementation also stores normal/hover colors at build time. Runtime Theme changes must account for that behavior when `HoverFillColor` is used; updating only the current button fill does not rewrite the stored hover-state colors.
+
+The integration reference must be revalidated when the RickUIBuilder dependency revision changes materially.
 
 ## Initial state of this decision
 
@@ -294,6 +314,7 @@ No compilation or test execution is claimed by this ADR. Runtime code creation/m
 ## Related documentation
 
 - [DockHub View Pages](../modules/view/README.md)
+- [RickUIBuilder — DockHub Integration Reference](../dependencies/rickuibuilder/README.md)
 - [Theme Module](../modules/theme/README.md)
 - [Language Module](../modules/language/README.md)
 - [DockHub Documentation](../README.md)

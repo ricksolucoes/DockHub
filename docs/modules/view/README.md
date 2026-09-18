@@ -236,11 +236,52 @@ The name and path of that future responsibility are intentionally not defined by
 
 ## 12. RickUIBuilder relationship
 
-When Page runtime construction uses RickUIBuilder, calls that create and compose controls specific to the Page belong to the Composition responsibility.
+RickUIBuilder is the analyzed UI-construction dependency for the runtime controls that this architecture may compose. Its DockHub-specific behavior and constraints are documented in [RickUIBuilder — DockHub Integration Reference](../../dependencies/rickuibuilder/README.md).
 
-This does not transfer application-action semantics to RickUIBuilder or Composition. RickUIBuilder remains the visual construction mechanism; the Page or its appropriate collaborator remains responsible for what events mean.
+The relationship must be understood at two different levels:
 
-The effective integration must be documented from the final code when it is implemented.
+```text
+DockHub.View.Page.<Page>.Composition
+→ architectural responsibility of one DockHub Page
+
+Rick.UIBuilder.Composition / TRickUIBuilder.On(AParent)
+→ one optional usage style inside the RickUIBuilder library
+```
+
+They are not the same concept. A DockHub Composition does not imply that every control must be built through `TRickUIBuilder.On(...)`.
+
+The analyzed RickUIBuilder exposes three complementary usage styles:
+
+```text
+Factory
+→ direct creation from configuration records
+
+Fluent Builders
+→ richer per-control configuration followed by Build
+
+TRickUIBuilder.On(AParent)
+→ immediate composition of a short sequence on one Parent
+```
+
+The Page Composition should choose between them from the control's actual runtime requirements. In particular, later `ApplyLanguage`, `ApplyTheme` or state updates may require keeping a control reference. `TRickUIBuilder.On(...)` does not return the created Text, Divider or Button; its Badge operation is the exception because it exposes an `IRickUIBuilderBadgeHandle`. Individual fluent builders return the generated control or handle and can therefore be more appropriate when later updates are required.
+
+RickUIBuilder remains unaware of DockHub Theme and Language:
+
+```text
+IDockHubTheme / IDockHubLanguage
+        ↓
+DockHub Page / Composition
+        ↓
+resolved colors and final strings
+        ↓
+RickUIBuilder
+        ↓
+FMX controls
+```
+
+RickUIBuilder defaults are library defaults and must not replace semantic Theme tokens when DockHub already defines the visual role. Likewise, user-facing strings must follow the Language rules instead of being embedded into Composition.
+
+Event wiring may be performed by the builder, but application semantics remain outside the library. Before runtime-UI work that depends on RickUIBuilder, consult the dedicated dependency reference and revalidate upstream behavior if the dependency revision has changed.
 
 ## 13. Convention for new Pages
 
@@ -277,6 +318,7 @@ When creating or evolving a Page, verify:
 ## 15. Related documentation
 
 - [ADR-0003 — View Page and Runtime Composition Architecture](../../adr/ADR-0003-view-page-architecture.md)
+- [RickUIBuilder — DockHub Integration Reference](../../dependencies/rickuibuilder/README.md)
 - [Theme Module](../theme/README.md)
 - [Language Module](../language/README.md)
 - [DockHub Documentation](../../README.md)

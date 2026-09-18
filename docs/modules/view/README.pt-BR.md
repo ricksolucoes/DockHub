@@ -236,11 +236,52 @@ O nome e o path dessa futura responsabilidade não são definidos antecipadament
 
 ## 12. Relação com RickUIBuilder
 
-Quando a montagem runtime da Page utilizar RickUIBuilder, as chamadas destinadas a criar e compor os controles específicos da Page pertencem à responsabilidade de Composition.
+RickUIBuilder é a dependência analisada para construção dos controles runtime que esta arquitetura poderá compor. O funcionamento e as restrições relevantes para o DockHub estão documentados em [RickUIBuilder — Referência de Integração do DockHub](../../dependencies/rickuibuilder/README.pt-BR.md).
 
-Isso não transfere para RickUIBuilder nem para Composition a semântica das ações da aplicação. RickUIBuilder permanece o mecanismo de construção visual; a Page ou seu colaborador apropriado continua responsável pelo significado dos eventos.
+A relação precisa ser entendida em dois níveis diferentes:
 
-A integração efetiva deve ser documentada a partir do código final quando for implementada.
+```text
+DockHub.View.Page.<Page>.Composition
+→ responsabilidade arquitetural de uma Page do DockHub
+
+Rick.UIBuilder.Composition / TRickUIBuilder.On(AParent)
+→ uma forma opcional de uso dentro da biblioteca RickUIBuilder
+```
+
+Os conceitos não são equivalentes. Uma Composition do DockHub não significa que todos os controles devam ser construídos através de `TRickUIBuilder.On(...)`.
+
+O RickUIBuilder analisado expõe três formas complementares de uso:
+
+```text
+Factory
+→ criação direta a partir de records de configuração
+
+Fluent Builders
+→ configuração mais rica por controle seguida de Build
+
+TRickUIBuilder.On(AParent)
+→ composição imediata de sequência curta em um mesmo Parent
+```
+
+A Composition da Page deve escolher entre essas formas pelas necessidades runtime reais de cada controle. Em especial, `ApplyLanguage`, `ApplyTheme` ou atualização posterior de estado podem exigir a manutenção de uma referência ao controle. `TRickUIBuilder.On(...)` não devolve os controles criados por Text, Divider ou Button; Badge é a exceção porque disponibiliza `IRickUIBuilderBadgeHandle`. Os fluent builders individuais devolvem controle ou handle e podem ser mais adequados quando a atualização posterior for necessária.
+
+RickUIBuilder permanece sem conhecer Theme e Language do DockHub:
+
+```text
+IDockHubTheme / IDockHubLanguage
+        ↓
+Page / Composition do DockHub
+        ↓
+cores resolvidas e strings finais
+        ↓
+RickUIBuilder
+        ↓
+controles FMX
+```
+
+Os defaults do RickUIBuilder pertencem à biblioteca e não substituem tokens semânticos de Theme quando o DockHub já define o papel visual. Da mesma forma, textos destinados ao usuário devem seguir as regras de Language em vez de ficarem embutidos na Composition.
+
+O builder pode realizar o wiring de eventos, mas a semântica da ação permanece fora da biblioteca. Antes de qualquer trabalho de UI runtime que dependa de RickUIBuilder, consulte a referência específica da dependência e revalide o upstream se a revisão utilizada tiver mudado.
 
 ## 13. Convenção para novas Pages
 
@@ -277,6 +318,7 @@ Ao criar ou evoluir uma Page, verificar:
 ## 15. Documentação relacionada
 
 - [ADR-0003 — Arquitetura de Pages e Composição Runtime da View](../../adr/ADR-0003-view-page-architecture.pt-BR.md)
+- [RickUIBuilder — Referência de Integração do DockHub](../../dependencies/rickuibuilder/README.pt-BR.md)
 - [Módulo de Theme](../theme/README.pt-BR.md)
 - [Módulo de Idiomas](../language/README.pt-BR.md)
 - [Documentação do DockHub](../../README.pt-BR.md)

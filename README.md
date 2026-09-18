@@ -708,6 +708,7 @@ Current documentation:
 * [Language Module](./docs/modules/language/README.md)
 * [Theme Module](./docs/modules/theme/README.md)
 * [View Page Architecture](./docs/modules/view/README.md)
+* [RickUIBuilder — DockHub Integration Reference](./docs/dependencies/rickuibuilder/README.md)
 * [Visual Identity](./docs/modules/theme/VISUAL-IDENTITY.md)
 * [ADR-0001 — Language Architecture](./docs/adr/ADR-0001-language-architecture.md)
 * [Automated Tests](./tests/README.md)

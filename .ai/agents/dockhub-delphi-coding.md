@@ -378,6 +378,48 @@ docs/adr/ADR-0003-view-page-architecture.md
 docs/modules/view/README.md
 ```
 
+### 7.2 RickUIBuilder como dependência de composição visual
+
+Antes de explicar, revisar ou implementar construção de UI runtime que utilize RickUIBuilder, consulte obrigatoriamente:
+
+```text
+docs/dependencies/rickuibuilder/README.md
+```
+
+Essa referência registra o snapshot upstream efetivamente analisado, o funcionamento da facade, Factory, Fluent Builders, `TRickUIBuilder.On(...)`, ownership/lifetime, eventos, handles, limitações relevantes e integração com Theme/Language do DockHub.
+
+Não confunda:
+
+```text
+DockHub.View.Page.<Page>.Composition
+→ responsabilidade arquitetural page-specific do DockHub
+
+Rick.UIBuilder.Composition / TRickUIBuilder.On(AParent)
+→ uma das formas de uso da biblioteca RickUIBuilder
+```
+
+Uma `DockHub.View.Page.<Page>.Composition` pode usar Factory, Fluent Builders, `TRickUIBuilder.On(...)` ou uma combinação tecnicamente justificada. A escolha deve partir da necessidade concreta de cada controle, especialmente:
+
+- configuração adicional necessária;
+- necessidade de `OnClick` / `OnHover`;
+- necessidade de manter referência após a criação;
+- participação posterior em `ApplyLanguage`;
+- participação posterior em `ApplyTheme`;
+- atualização de estado runtime.
+
+Ao consumir RickUIBuilder:
+
+1. confirme a versão/revisão da dependência utilizada pelo projeto;
+2. não recrie localmente lógica que a API pública já fornece sem justificativa técnica;
+3. não trate os valores `Default` do RickUIBuilder como identidade visual do DockHub;
+4. Theme deve fornecer os valores semânticos usados pela View;
+5. Language deve resolver os textos destinados ao usuário antes de aplicá-los aos controles;
+6. preserve as regras de Owner/Parent documentadas pela biblioteca;
+7. considere que `Button.HoverState` mantém as cores recebidas no momento do `Build` quando houver troca de Theme em runtime;
+8. não invente handles ou métodos que não existam na API pública do snapshot confirmado.
+
+Se uma decisão depender de comportamento não coberto pela referência do DockHub, reinspecione o código upstream antes de concluir.
+
 ---
 
 ## 8. Convenções de prefixos Delphi

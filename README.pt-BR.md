@@ -712,6 +712,7 @@ Documentação atual:
 * [Módulo de Idiomas](./docs/modules/language/README.pt-BR.md)
 * [Módulo de Theme](./docs/modules/theme/README.pt-BR.md)
 * [Arquitetura de Pages da View](./docs/modules/view/README.pt-BR.md)
+* [RickUIBuilder — Referência de Integração do DockHub](./docs/dependencies/rickuibuilder/README.pt-BR.md)
 * [Identidade Visual](./docs/modules/theme/VISUAL-IDENTITY.pt-BR.md)
 * [ADR-0001 — Arquitetura de Idiomas](./docs/adr/ADR-0001-language-architecture.pt-BR.md)
 * [Testes Automatizados](./tests/README.pt-BR.md)
