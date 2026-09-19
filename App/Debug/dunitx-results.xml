@@ -1,0 +1,208 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<test-results name="C:\Projects\Language\Delphi\DockHub\APP\Debug\DockHub.Tests.exe" total="58" errors="0" failures="0" ignored="0" inconclusive="0" not-run="0" skipped="0" invalid="0" date="2026-09-19" time="06:58:09">
+  <culture-info current-culture="en" current-uiculture="en" />
+  <test-suite type="Assembly" name="DockHub.Tests.exe" executed="true" result="Success" success="True" time="06:58:09" asserts="0">
+    <results>
+        <test-suite type="Namespace" name="DockHub" executed="true" result="Success" success="True" time="1.040" asserts="0" >
+          <results>
+              <test-suite type="Namespace" name="Tests" executed="true" result="Success" success="True" time="1.040" asserts="0" >
+                <results>
+                    <test-suite type="Namespace" name="Language" executed="true" result="Success" success="True" time="0.019" asserts="0" >
+                      <results>
+                          <test-suite type="Fixture" name="TDockHubLanguageTests" executed="True" result="Success" success="True" time="0.011" >
+                            <results>
+                              <test-case name="New_DefaultLanguage_IsPtBR" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                              <test-case name="Language_ChangesTo_EnUS" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                              <test-case name="Language_ReturnsTo_PtBR" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                              <test-case name="Translate_PtBR_ReturnsMainViewTexts" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                              <test-case name="Translate_EnUS_ReturnsMainViewTexts" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                              <test-case name="Translate_PtBR_UnknownKey_RaisesNotFound" executed="True" result="Success" success="True" time="0.002" asserts="0" />
+                              <test-case name="Translate_EnUS_UnknownKey_RaisesNotFound" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                            </results>
+                          </test-suite>
+                          <test-suite type="Fixture" name="TDockHubLanguageTypeTests" executed="True" result="Success" success="True" time="0.008" >
+                            <results>
+                              <test-case name="PtBR_ToString" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                              <test-case name="EnUS_ToString" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                              <test-case name="PtBR_ToCultureCode" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                              <test-case name="EnUS_ToCultureCode" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                              <test-case name="FromString_PtBR_CultureCode" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                              <test-case name="FromString_PtBR_EnumName" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                              <test-case name="FromString_EnUS_CultureCode" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                              <test-case name="FromString_EnUS_EnumName" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                              <test-case name="FromString_IsCaseInsensitive" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                              <test-case name="FromString_Invalid_RaisesException" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                            </results>
+                          </test-suite>
+                      </results>
+                    </test-suite>
+                    <test-suite type="Namespace" name="View" executed="true" result="Success" success="True" time="1.021" asserts="0" >
+                      <results>
+                          <test-suite type="Namespace" name="Page" executed="true" result="Success" success="True" time="1.005" asserts="0" >
+                            <results>
+                                <test-suite type="Fixture" name="TDockHubPageCompositionBaseTests" executed="True" result="Success" success="True" time="0.735" >
+                                  <categories>
+                                    <category name="Contract" />
+                                  </categories>
+                                  <results>
+                                    <test-case name="Form_Nil_Raises" executed="True" result="Success" success="True" time="0.000" asserts="0" >
+                                      <categories>
+                                        <category name="Contract" />
+                                      </categories>
+                                    </test-case>
+                                    <test-case name="OnMinimize_Nil_Raises" executed="True" result="Success" success="True" time="0.000" asserts="0" >
+                                      <categories>
+                                        <category name="Contract" />
+                                      </categories>
+                                    </test-case>
+                                    <test-case name="OnClose_Nil_Raises" executed="True" result="Success" success="True" time="0.000" asserts="0" >
+                                      <categories>
+                                        <category name="Contract" />
+                                      </categories>
+                                    </test-case>
+                                    <test-case name="Build_WithoutForm_Raises" executed="True" result="Success" success="True" time="0.000" asserts="0" >
+                                      <categories>
+                                        <category name="Contract" />
+                                      </categories>
+                                    </test-case>
+                                    <test-case name="Build_WithoutMinimize_Raises" executed="True" result="Success" success="True" time="0.000" asserts="0" >
+                                      <categories>
+                                        <category name="Contract" />
+                                      </categories>
+                                    </test-case>
+                                    <test-case name="Build_WithoutClose_Raises" executed="True" result="Success" success="True" time="0.000" asserts="0" >
+                                      <categories>
+                                        <category name="Contract" />
+                                      </categories>
+                                    </test-case>
+                                    <test-case name="ApplyTheme_BeforeBuild_Raises" executed="True" result="Success" success="True" time="0.002" asserts="0" >
+                                      <categories>
+                                        <category name="Contract" />
+                                      </categories>
+                                    </test-case>
+                                    <test-case name="ApplyLanguage_BeforeBuild_Raises" executed="True" result="Success" success="True" time="0.000" asserts="0" >
+                                      <categories>
+                                        <category name="Contract" />
+                                      </categories>
+                                    </test-case>
+                                    <test-case name="ApplyTheme_NilAfterBuild_Raises" executed="True" result="Success" success="True" time="0.245" asserts="0" >
+                                      <categories>
+                                        <category name="Contract" />
+                                      </categories>
+                                    </test-case>
+                                    <test-case name="ApplyLanguage_NilAfterBuild_Raises" executed="True" result="Success" success="True" time="0.007" asserts="0" >
+                                      <categories>
+                                        <category name="Contract" />
+                                      </categories>
+                                    </test-case>
+                                    <test-case name="Configuration_AfterBuild_Raises" executed="True" result="Success" success="True" time="0.001" asserts="0" >
+                                      <categories>
+                                        <category name="Contract" />
+                                      </categories>
+                                    </test-case>
+                                    <test-case name="Build_SecondCall_DoesNotRebuild" executed="True" result="Success" success="True" time="0.002" asserts="0" >
+                                      <categories>
+                                        <category name="Contract" />
+                                      </categories>
+                                    </test-case>
+                                    <test-case name="Build_Failure_BlocksRetry" executed="True" result="Success" success="True" time="0.000" asserts="0" >
+                                      <categories>
+                                        <category name="Contract" />
+                                      </categories>
+                                    </test-case>
+                                    <test-case name="WindowButtons_InvokeConfiguredCallbacks" executed="True" result="Success" success="True" time="0.000" asserts="0" >
+                                      <categories>
+                                        <category name="Contract" />
+                                      </categories>
+                                    </test-case>
+                                    <test-case name="WindowHover_UsesCurrentThemeAfterRuntimeChange" executed="True" result="Success" success="True" time="0.005" asserts="0" >
+                                      <categories>
+                                        <category name="Contract" />
+                                      </categories>
+                                    </test-case>
+                                  </results>
+                                </test-suite>
+                                <test-suite type="Fixture" name="TDockHubPageMainCompositionTests" executed="True" result="Success" success="True" time="0.270" >
+                                  <categories>
+                                    <category name="Integration" />
+                                  </categories>
+                                  <results>
+                                    <test-case name="Build_CreatesCenteredMainCard" executed="True" result="Success" success="True" time="0.000" asserts="0" >
+                                      <categories>
+                                        <category name="Integration" />
+                                      </categories>
+                                    </test-case>
+                                    <test-case name="Build_SecondCall_DoesNotDuplicateVisualTree" executed="True" result="Success" success="True" time="0.000" asserts="0" >
+                                      <categories>
+                                        <category name="Integration" />
+                                      </categories>
+                                    </test-case>
+                                    <test-case name="ApplyLanguage_PtBR_UpdatesMainTexts" executed="True" result="Success" success="True" time="0.009" asserts="0" >
+                                      <categories>
+                                        <category name="Integration" />
+                                      </categories>
+                                    </test-case>
+                                    <test-case name="ApplyLanguage_EnUS_ReusesExistingControls" executed="True" result="Success" success="True" time="0.012" asserts="0" >
+                                      <categories>
+                                        <category name="Integration" />
+                                      </categories>
+                                    </test-case>
+                                    <test-case name="ApplyTheme_RuntimeChange_UpdatesMainCard" executed="True" result="Success" success="True" time="0.000" asserts="0" >
+                                      <categories>
+                                        <category name="Integration" />
+                                      </categories>
+                                    </test-case>
+                                    <test-case name="WindowHover_UsesCurrentThemeAfterRuntimeChange" executed="True" result="Success" success="True" time="0.000" asserts="0" >
+                                      <categories>
+                                        <category name="Integration" />
+                                      </categories>
+                                    </test-case>
+                                    <test-case name="Build_UnimplementedActions_AreDisabled" executed="True" result="Success" success="True" time="0.008" asserts="0" >
+                                      <categories>
+                                        <category name="Integration" />
+                                      </categories>
+                                    </test-case>
+                                    <test-case name="WindowButtons_InvokeConfiguredCallbacks" executed="True" result="Success" success="True" time="0.003" asserts="0" >
+                                      <categories>
+                                        <category name="Integration" />
+                                      </categories>
+                                    </test-case>
+                                    <test-case name="FreeHost_WithBuiltComposition_DoesNotRaise" executed="True" result="Success" success="True" time="0.006" asserts="0" >
+                                      <categories>
+                                        <category name="Integration" />
+                                      </categories>
+                                    </test-case>
+                                  </results>
+                                </test-suite>
+                            </results>
+                          </test-suite>
+                          <test-suite type="Fixture" name="TDockHubThemeTests" executed="True" result="Success" success="True" time="0.016" >
+                            <results>
+                              <test-case name="New_DefaultTheme_IsBlue" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                              <test-case name="New_DefaultTheme_HasExpectedBluePalette" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                              <test-case name="Theme_ChangesFromBlueToTeal" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                              <test-case name="Theme_ChangesFromBlueToLight" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                              <test-case name="Theme_ChangesFromBlueToDark" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                              <test-case name="Theme_ChangesBackToBlue" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                              <test-case name="Theme_SequentialChanges_UpdateEntirePalette" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                              <test-case name="BackgroundGradient_ConfiguresGradientBrush" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                              <test-case name="BackgroundGradient_ChangesWithTheme" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                              <test-case name="BackgroundGradient_DefaultAngle_Equals65Degrees" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                              <test-case name="BackgroundGradient_ZeroDegrees" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                              <test-case name="BackgroundGradient_NinetyDegrees" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                              <test-case name="BackgroundGradient_Nil_DoesNotRaiseException" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                              <test-case name="BadgeBackground_True_ReturnsSuccess" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                              <test-case name="BadgeBackground_False_ReturnsDanger" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                              <test-case name="BadgeText_True_ReturnsSuccess" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                              <test-case name="BadgeText_False_ReturnsDanger" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                            </results>
+                          </test-suite>
+                      </results>
+                    </test-suite>
+                </results>
+              </test-suite>
+          </results>
+        </test-suite>
+    </results>
+  </test-suite>
+</test-results>

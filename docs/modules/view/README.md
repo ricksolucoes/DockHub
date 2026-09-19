@@ -2,323 +2,361 @@
 
 [Português (Brasil)](./README.pt-BR.md)
 
-This document describes the structural organization adopted for DockHub Pages and the responsibility boundary for visual composition created at runtime.
+This document describes the current `DockHub.View.Page` structure and the runtime-composition contract implemented by the project.
 
-The corresponding architecture decision is recorded in [ADR-0003 — View Page and Runtime Composition Architecture](../../adr/ADR-0003-view-page-architecture.md).
+The current architectural decision is recorded in [ADR-0004 — View Page Composition Architecture](../../adr/ADR-0004-view-page-composition-architecture.md). [ADR-0003](../../adr/ADR-0003-view-page-architecture.md) is preserved as the superseded decision that preceded this structure.
 
 ## 1. Purpose
 
-The `View` layer must be able to grow to multiple Pages without turning `src/view/Page/` into a flat directory that mixes Forms, compositions and helpers from unrelated screens.
+`View.Page` separates shared Page contracts/types from reusable composition behavior and page-specific presentation. The structure exists to keep future Pages consistent without moving business rules, Theme state or Language state into the visual builder.
 
-The adopted organization groups artifacts exclusive to each Page under its own physical boundary and reserves a specific responsibility for runtime visual composition.
+The current goals are:
 
-The goals are to:
+- keep public Page contracts explicit;
+- keep shared Page types outside implementation classes;
+- provide one reusable abstract composition lifecycle;
+- keep each Page's runtime visual construction in its own implementation unit;
+- keep `TPageMain` focused on Form lifecycle, state and action semantics;
+- preserve Theme and Language dependency direction;
+- allow page-specific contracts, such as `IPageCompositionMain`, when the Page has known actions that will need their own API.
 
-- keep artifacts from the same Page highly cohesive;
-- make runtime visual construction an explicit responsibility;
-- prevent a `TForm` from progressively accumulating the entire screen composition;
-- preserve `ApplyLanguage` and `ApplyTheme` as presentation responsibilities coordinated by the View;
-- keep event wiring separate from action semantics;
-- allow growth without prematurely introducing generic abstractions or nonexistent shared components.
-
-## 2. Adopted structure
-
-Physical pattern for a Page:
+## 2. Current structure
 
 ```text
-src/view/Page/<Page>/
-├── DockHub.View.Page.<Page>.pas
-├── DockHub.View.Page.<Page>.fmx          # when applicable
-└── Composition/
-    └── DockHub.View.Page.<Page>.Composition.pas
-```
-
-First adopted structural domain:
-
-```text
-src/view/Page/Main/
+src/view/Page/
+├── Contracts/
+│   └── DockHub.View.Page.Contracts.pas
+├── Impl/
+│   ├── DockHub.View.Page.Composition.Impl.Base.pas
+│   └── Main/
+│       └── DockHub.View.Page.Impl.Main.Composition.pas
+├── Types/
+│   └── DockHub.View.Page.Types.pas
 ├── DockHub.View.Page.Main.pas
-├── DockHub.View.Page.Main.fmx
-└── Composition/
-    └── DockHub.View.Page.Main.Composition.pas
+└── DockHub.View.Page.Main.fmx
 ```
 
-The `Main` directory is the physical boundary of the Page. The main unit name remains:
-
-```pascal
-unit DockHub.View.Page.Main;
-```
-
-The `Composition` subdirectory expresses an additional responsibility and therefore also appears in the namespace:
-
-```pascal
-unit DockHub.View.Page.Main.Composition;
-```
-
-## 3. Current Main state
-
-The `Page/Main/Composition` structure and the first Composition unit were created as the organizational foundation for Main.
-
-At this stage, **the presence of the structure does not mean that Composition is already functionally integrated with `TPageMain`**. The runtime relationship between them must be implemented only when control construction is actually introduced.
-
-Therefore, do not assume the following exist until the source code confirms them:
-
-- a public or private Composition build method;
-- a Composition-specific interface;
-- a control-handle record;
-- a navigation mechanism;
-- actual runtime component creation by the new unit;
-- callbacks already connected between `TPageMain` and Composition.
-
-## 4. Page responsibility
-
-The main Page unit represents the Form/View and coordinates behavior that belongs to that screen.
-
-Expected responsibilities include, when applicable:
-
-- Form lifecycle;
-- local Page state;
-- references to collaborators such as Language and Theme;
-- `ApplyLanguage`;
-- `ApplyTheme`;
-- user-action handlers;
-- coordination of screen-state changes;
-- integration with a future navigation mechanism when one exists.
-
-The Page should not become a single method responsible for creating and configuring the entire visual tree when that composition grows into a responsibility of its own.
-
-## 5. Composition responsibility
-
-`DockHub.View.Page.<Page>.Composition` is the page-specific responsibility intended to compose the visual tree created at runtime.
-
-When implementation requires it, Composition may contain:
-
-- FMX control creation;
-- use of the visual construction mechanisms adopted by the project;
-- component `Parent` hierarchy definition;
-- structural configuration of position, size, alignment, anchors and equivalent properties;
-- composition of visual groups exclusive to the Page;
-- association of callbacks or event handlers supplied by the consumer;
-- return or exposure of visual references when the Page genuinely needs to update them after construction.
-
-The concrete shape of this API must be defined by the code that implements the integration. This document does not prematurely prescribe an interface, factory, handle record or manager object.
-
-## 6. Events and actions
-
-Composition may connect a control to a supplied callback, such as an `OnClick`, because that wiring is part of constructing the component.
-
-The semantics of the action do not belong to Composition.
-
-Expected boundary:
+The roles are:
 
 ```text
-Composition
-    ↓
-creates the control
-    ↓
-associates the supplied callback
-    ↓
-Page / responsible collaborator
-    ↓
-performs the application action
+Types
+→ shared enums/types belonging to View.Page
+
+Contracts
+→ public interfaces of the View.Page domain
+
+Composition.Impl.Base
+→ reusable abstract composition lifecycle and common visual behavior
+
+Impl.<Page>.Composition
+→ Page-specific runtime visual construction and presentation mapping
+
+DockHub.View.Page.<Page>
+→ Form/View lifecycle, state, collaborators and action semantics
 ```
 
-Avoid inside Composition:
+`DockHub.View.Page.Types` currently enables `{$SCOPEDENUMS ON}` and owns `TPageCompositionState`.
 
-- business rules;
-- direct database access;
-- REST calls that represent an application action;
-- deciding which Page to open;
-- directly instantiating another Page merely because a button was clicked.
+## 3. Contracts
 
-## 7. Language
+### `IPageComposition`
+
+The common contract exposes the current configuration/build/presentation operations:
+
+```pascal
+function Form(const AForm: TForm): IPageComposition;
+function OnMinimize(const ANotifyEvent: TNotifyEvent): IPageComposition;
+function OnClose(const ANotifyEvent: TNotifyEvent): IPageComposition;
+function ApplyLanguage(const ALanguage: IDockHubLanguage): IPageComposition;
+function ApplyTheme(const ATheme: IDockHubTheme): IPageComposition;
+function Build: IPageComposition;
+```
+
+Configuration is fluent but is valid only during the composition's `Configuring` state.
+
+### `IPageCompositionMain`
+
+`IPageCompositionMain` intentionally extends `IPageComposition` even though it currently adds no methods.
+
+It is the page-specific contract retained for Main because Main already contains known actions whose real behavior will be added later, including install/uninstall/start/stop and configuration/log actions. Those operations must be added only when their application behavior is actually defined; the interface must not be populated with speculative methods merely to anticipate them.
+
+## 4. `TPageCompositionBase`
+
+`TPageCompositionBase` is an abstract `TInterfacedObject` implementing the common `IPageComposition` contract.
+
+It owns behavior that is shared by Page compositions:
+
+- composition lifecycle validation;
+- host Form configuration reference;
+- minimize/close callbacks;
+- common window-control construction;
+- common window-control Theme mapping;
+- current Theme reference used by hover behavior;
+- `FindButtonCaption`, which isolates the current RickUIBuilder Button-caption limitation;
+- `ApplyButtonTheme`;
+- Template Method hooks for Page-specific build, Theme and Language behavior.
+
+Derived compositions implement:
+
+```pascal
+procedure DoBuild; virtual; abstract;
+procedure DoApplyTheme; virtual; abstract;
+procedure DoApplyLanguage(const ALanguage: IDockHubLanguage); virtual; abstract;
+```
+
+## 5. Composition lifecycle
+
+The lifecycle is represented by the scoped enum:
+
+```pascal
+TPageCompositionState = (
+  Configuring,
+  Building,
+  Built,
+  Failed
+);
+```
+
+State transitions are:
+
+```text
+Configuring
+    │
+    └── Build
+          ↓
+       Building
+       ↙      ↘
+    Built    Failed
+```
+
+Rules implemented by the base class:
+
+- a new composition starts in `Configuring`;
+- `Form`, `OnMinimize` and `OnClose` are accepted only while configuring;
+- `Build` requires a host Form and both window callbacks;
+- `Build` changes the state to `Building` before Page-specific construction starts;
+- successful construction finishes in `Built`;
+- any exception during construction finishes in `Failed` and is re-raised;
+- a second `Build` after `Built` is idempotent and does not rebuild the tree;
+- `Build` from `Building` or `Failed` is rejected;
+- `ApplyLanguage` and `ApplyTheme` require `Built`;
+- nil Language/Theme contracts are rejected;
+- configuration cannot be changed after Build starts.
+
+A failed instance is not retried. A new composition instance must be created if construction must be attempted again.
+
+## 6. Lifetime and reference counting
+
+The current architecture deliberately uses interface/reference-counted lifetime:
+
+```text
+TPageMain
+  └── FComposition: IPageCompositionMain
+          ↓
+     TPageMainComposition
+```
+
+The Page must keep the composition interface referenced while controls created by the composition can invoke event handlers on that composition.
+
+This is especially important for common window buttons, whose hover handlers target methods of `TPageCompositionBase`.
+
+Do not explicitly clear the Page's composition interface while its FMX controls are still alive and able to dispatch those callbacks.
+
+The FMX controls themselves remain owned through the FMX owner/parent hierarchy; the interface does not own those controls.
+
+## 7. `TPageMain` responsibility
+
+`TPageMain` currently owns:
+
+- its `IDockHubLanguage` state;
+- its `IDockHubTheme` state;
+- its `IPageCompositionMain` reference;
+- Form configuration;
+- composition configuration/build orchestration;
+- language/theme state changes;
+- minimize and close action semantics.
+
+`TPageMain` does not create the Main visual tree directly.
+
+The current construction flow is:
+
+```text
+Create Language
+Create Theme
+ConfigureForm
+ConfigureComposition
+Build
+ApplyLanguage
+ApplyTheme
+```
+
+## 8. Main composition responsibility
+
+`TPageMainComposition` derives from `TPageCompositionBase` and implements `IPageCompositionMain`.
+
+It creates and retains the controls required for Main presentation, including:
+
+- card/surface;
+- title/subtitle;
+- runtime status labels, badges and values;
+- action buttons;
+- translated captions;
+- Theme mapping for its own controls.
+
+The common minimize/close controls remain implemented by the base class.
+
+Administrative actions that do not yet have implemented application use cases remain disabled. The Composition does not invent service/business behavior for them.
+
+## 9. Language integration
 
 `Core.Language` remains independent of FMX.
 
-The View remains responsible for applying translated text to its controls through `ApplyLanguage` or an equivalent pattern.
-
-If controls created by Composition need translation or later updates after a language change, the integration must preserve this direction:
+The current direction is:
 
 ```text
-Language
-    ↓
-View
-    ↓
-ApplyLanguage
-    ↓
-controls owned by the View
+TPageMain
+  ↓ owns IDockHubLanguage
+IPageCompositionMain.ApplyLanguage
+  ↓
+TPageMainComposition.DoApplyLanguage
+  ↓
+Form caption + runtime controls
 ```
 
-The concrete mechanism for the Page to access controls created at runtime must be defined only when implementation requires it.
+`TPageMain` coordinates the active language. `TPageMainComposition` owns the presentation mapping because it owns the visual references.
 
-## 8. Theme
+Runtime language changes update existing controls; they do not rebuild the visual tree.
 
-`View.Theme` provides semantic tokens and reusable visual behavior but does not know concrete Forms or the internal structure of a Page.
+## 10. Theme integration
 
-The View remains responsible for mapping Theme tokens to its own components through `ApplyTheme` or an equivalent pattern.
+`View.Theme` remains independent of concrete Forms and Page internals.
 
-Preserved boundary:
+The current direction is:
 
 ```text
-Theme
-    ↓
-View
-    ↓
-ApplyTheme
-    ↓
-controls owned by the View
+TPageMain
+  ↓ owns IDockHubTheme
+IPageCompositionMain.ApplyTheme
+  ↓
+TPageMainComposition.DoApplyTheme
+  ↓
+Form background + runtime controls
 ```
 
-Introducing Composition does not transfer responsibility for locating or manipulating Page controls to Theme.
+The base composition also applies the Theme to common window controls and keeps `FCurrentTheme` so hover handlers use the most recently applied Theme.
 
-## 9. Navigation between Pages
+Runtime Theme changes do not rebuild the visual tree.
 
-The concrete responsibility for navigation between Pages **is not defined by the source code covered by this decision yet**.
+## 11. Events and action semantics
 
-Composition must not assume that responsibility for convenience.
+Visual construction may wire a callback supplied by the Page, but application semantics remain outside the visual construction code.
 
-When the application has multiple Pages and a real navigation need appears, the mechanism must be evaluated separately considering:
-
-- Form/View ownership and lifetime;
-- shared state;
-- dependencies between Pages;
-- dependency direction;
-- whether contracts are actually required;
-- shared Theme and Language state;
-- the possibility of multiple Views being open at the same time.
-
-Until that decision exists, do not silently introduce a `Navigator`, `Router`, `PageManager`, singleton, Service Locator or another global mechanism.
-
-## 10. Page growth
-
-A single Composition does not have to remain monolithic if the Page acquires large and independent visual areas.
-
-Subdivision is allowed when a real responsibility exists, for example after implementation demonstrates that a visual region has its own maintenance lifecycle.
-
-Do not pre-create units such as:
+Current example:
 
 ```text
-Header
-Sidebar
-Content
-Footer
-Components
-Actions
+TPageCompositionBase
+→ creates minimize/close buttons
+→ wires supplied callbacks
+
+TPageMain
+→ defines what minimize/close mean for the application
 ```
 
-merely because they might be needed later.
+Future Main actions should follow the same boundary. `IPageCompositionMain` is the intended page-specific contract for those behaviors when their real use cases are implemented.
 
-The rule is:
+Composition must not absorb:
 
-```text
-real responsibility
-    ↓
-cohesive separation
-
-future possibility
-    ↓
-do not create yet
-```
-
-## 11. Shared components
-
-An artifact under:
-
-```text
-Page/<Page>/
-```
-
-is page-specific by default.
-
-If the same visual responsibility becomes genuinely reused by multiple Pages, extraction to a shared View responsibility should be evaluated.
-
-The name and path of that future responsibility are intentionally not defined by this document.
+- business rules;
+- database access;
+- REST/application use cases;
+- direct navigation decisions;
+- direct construction of unrelated Pages as a click side effect.
 
 ## 12. RickUIBuilder relationship
 
-RickUIBuilder is the analyzed UI-construction dependency for the runtime controls that this architecture may compose. Its DockHub-specific behavior and constraints are documented in [RickUIBuilder — DockHub Integration Reference](../../dependencies/rickuibuilder/README.md).
+RickUIBuilder is a UI-construction mechanism used inside the DockHub composition architecture. It is not the architecture boundary itself.
 
-The relationship must be understood at two different levels:
+Do not confuse:
 
 ```text
-DockHub.View.Page.<Page>.Composition
-→ architectural responsibility of one DockHub Page
+DockHub.View.Page.Impl.<Page>.Composition
+→ DockHub Page-specific presentation implementation
 
 Rick.UIBuilder.Composition / TRickUIBuilder.On(AParent)
-→ one optional usage style inside the RickUIBuilder library
+→ one RickUIBuilder API style
 ```
 
-They are not the same concept. A DockHub Composition does not imply that every control must be built through `TRickUIBuilder.On(...)`.
+Main currently uses RickUIBuilder fluent builders for controls that require retained references after construction. The structural card is created directly with FMX because the analyzed RickUIBuilder snapshot has no generic card/container builder.
 
-The analyzed RickUIBuilder exposes three complementary usage styles:
+`FindButtonCaption` is centralized in `TPageCompositionBase` because the analyzed RickUIBuilder Button API returns the `TRectangle` container but does not expose a public caption handle.
 
-```text
-Factory
-→ direct creation from configuration records
+See [RickUIBuilder — DockHub Integration Reference](../../dependencies/rickuibuilder/README.md).
 
-Fluent Builders
-→ richer per-control configuration followed by Build
+## 13. New Page convention
 
-TRickUIBuilder.On(AParent)
-→ immediate composition of a short sequence on one Parent
-```
+Before creating a new Page structure, inspect the current project first. Do not infer folders, nested types or namespaces from an isolated source fragment.
 
-The Page Composition should choose between them from the control's actual runtime requirements. In particular, later `ApplyLanguage`, `ApplyTheme` or state updates may require keeping a control reference. `TRickUIBuilder.On(...)` does not return the created Text, Divider or Button; its Badge operation is the exception because it exposes an `IRickUIBuilderBadgeHandle`. Individual fluent builders return the generated control or handle and can therefore be more appropriate when later updates are required.
-
-RickUIBuilder remains unaware of DockHub Theme and Language:
+When a new Page uses this architecture, evaluate its real needs against the current pattern:
 
 ```text
-IDockHubTheme / IDockHubLanguage
-        ↓
-DockHub Page / Composition
-        ↓
-resolved colors and final strings
-        ↓
-RickUIBuilder
-        ↓
-FMX controls
-```
-
-RickUIBuilder defaults are library defaults and must not replace semantic Theme tokens when DockHub already defines the visual role. Likewise, user-facing strings must follow the Language rules instead of being embedded into Composition.
-
-Event wiring may be performed by the builder, but application semantics remain outside the library. Before runtime-UI work that depends on RickUIBuilder, consult the dedicated dependency reference and revalidate upstream behavior if the dependency revision has changed.
-
-## 13. Convention for new Pages
-
-When a real new Page is created and has its own runtime composition, use the pattern:
-
-```text
-src/view/Page/<Page>/
+src/view/Page/
+├── Contracts/
+├── Types/
+├── Impl/
+│   └── <Page>/
+│       └── DockHub.View.Page.Impl.<Page>.Composition.pas
 ├── DockHub.View.Page.<Page>.pas
-├── DockHub.View.Page.<Page>.fmx
-└── Composition/
-    └── DockHub.View.Page.<Page>.Composition.pas
+└── DockHub.View.Page.<Page>.fmx
 ```
 
-Do not create directories for hypothetical Pages before the Page itself exists.
+Shared `View.Page` types belong in `DockHub.View.Page.Types` when they represent domain-level structural state. Page-specific implementation remains under `Impl/<Page>`.
 
-## 14. Structural quality gate
+Do not create additional abstraction layers until a real reusable responsibility exists.
 
-When creating or evolving a Page, verify:
+## 14. Navigation
+
+A general navigation mechanism is not defined by the current source.
+
+Do not introduce `Navigator`, `Router`, `PageManager`, singleton or Service Locator merely because more Pages may exist in the future. Navigation requires a separate decision when a concrete use case exists.
+
+## 15. Tests
+
+The source contains:
+
+- contract/lifecycle tests for `TPageCompositionBase`;
+- FMX integration tests for `TPageMainComposition`;
+- separate Language and Theme fixtures.
+
+The base fixture validates the public lifecycle rather than exposing `FState` for testing. The Main fixture inspects observable FMX behavior rather than adding production accessors for private controls.
+
+Execution evidence is documented separately in [Automated Tests](../../../tests/README.md). Source test inventory must not be presented as proof of execution.
+
+## 16. Structural quality gate
+
+When evolving `View.Page`, verify:
 
 ```text
-[ ] Page-specific artifacts remain grouped
-[ ] namespace expresses product/layer/domain/responsibility
-[ ] Page retains lifecycle and presentation coordination
-[ ] Composition retains visual-construction responsibility
-[ ] Composition contains no business rules
-[ ] event wiring has not absorbed application semantics
-[ ] Theme does not depend on the concrete Page
+[ ] current project structure was inspected before deciding paths/namespaces
+[ ] shared enums/types are placed according to the existing Types pattern
+[ ] public contracts remain under Contracts
+[ ] common composition behavior remains in the abstract base only when genuinely shared
+[ ] Page-specific presentation remains under Impl/<Page>
+[ ] Page keeps lifecycle/state/action semantics
+[ ] composition lifecycle rules remain valid
+[ ] reference-counted lifetime remains safe for event callbacks
+[ ] Theme remains independent of concrete Page internals
 [ ] Language remains independent of FMX
-[ ] navigation was not invented without its own decision
-[ ] subdivisions were created only for real responsibilities
-[ ] no circular dependency was introduced
+[ ] no business rule was moved into Composition
+[ ] no navigation mechanism was invented without a separate requirement
+[ ] tests cover changed lifecycle/error paths
 ```
 
-## 15. Related documentation
+## 17. Related documentation
 
-- [ADR-0003 — View Page and Runtime Composition Architecture](../../adr/ADR-0003-view-page-architecture.md)
+- [ADR-0004 — View Page Composition Architecture](../../adr/ADR-0004-view-page-composition-architecture.md)
+- [ADR-0003 — superseded View Page architecture](../../adr/ADR-0003-view-page-architecture.md)
 - [RickUIBuilder — DockHub Integration Reference](../../dependencies/rickuibuilder/README.md)
 - [Theme Module](../theme/README.md)
 - [Language Module](../language/README.md)
+- [Automated Tests](../../../tests/README.md)
 - [DockHub Documentation](../../README.md)

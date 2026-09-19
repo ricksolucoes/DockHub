@@ -6,7 +6,7 @@ Este documento é a referência técnica do DockHub para consumo do **RickUIBuil
 
 Ele não substitui a documentação upstream do RickUIBuilder. Registra especificamente o que o DockHub precisa conhecer antes de consumir essa dependência.
 
-> **Status da integração no DockHub:** esta referência foi preparada para o trabalho de UI runtime, mas não afirma que `DockHub.View.Page.Main.Composition` já esteja funcionalmente integrada ao RickUIBuilder. O código atual deve confirmar essa integração antes que ela seja documentada como implementada.
+> **Status da integração no DockHub:** `DockHub.View.Page.Impl.Main.Composition` utiliza o RickUIBuilder em runtime para criar Labels, Badges, Dividers e Buttons. O card estrutural da Main continua sendo criado diretamente por FMX dentro da própria Composition porque o snapshot analisado não expõe um builder genérico de container/card.
 
 ## 1. Snapshot analisado
 
@@ -233,8 +233,8 @@ Essa forma é adequada para sequências curtas e fixas em que referências diret
 Esses conceitos não podem ser confundidos:
 
 ```text
-DockHub.View.Page.<Page>.Composition
-→ responsabilidade/unit arquitetural do DockHub para compor uma Page
+DockHub.View.Page.Impl.<Page>.Composition
+→ implementation page-specific do DockHub para compor uma Page
 
 TRickUIBuilder.On(AParent)
 → uma forma opcional de uso da API do RickUIBuilder
@@ -247,7 +247,7 @@ Uma Composition de Page do DockHub pode utilizar:
 - `TRickUIBuilder.On(...)`;
 - ou combinação justificada entre essas formas.
 
-A existência da pasta `Composition/` no DockHub **não** obriga que todos os controles sejam criados por `TRickUIBuilder.On(...)`.
+A existência de uma Page Composition do DockHub **não** obriga que todos os controles sejam criados por `TRickUIBuilder.On(...)`.
 
 ## 13. Regra de seleção para Pages runtime do DockHub
 
@@ -364,6 +364,14 @@ O repositório upstream contém testes DUnitX cobrindo:
 
 Esses testes foram inspecionados como evidência comportamental. Esta atualização de documentação do DockHub **não** afirma que a suíte upstream foi executada durante esta tarefa.
 
+### Uso atual na Main do DockHub
+
+A implementação atual da `Main` utiliza fluent builders individuais porque os controles precisam continuar acessíveis depois do `Build` para Language, Theme e estado visual. `TRickUIBuilder.On(AParent)` não é utilizado como mecanismo principal desta tela porque `AddText`, `AddDivider` e `AddButton` não devolvem as referências criadas.
+
+Como Button ainda não possui handle público para o caption, `TPageCompositionBase.FindButtonCaption` concentra a localização do `TLabel` filho gerado para todas as compositions de Page. Esse conhecimento não é duplicado nas implementações específicas.
+
+Os controles comuns de janela são construídos por `TPageCompositionBase` com `OnHover` e sem `HoverFillColor`. O handler da base consulta o `IDockHubTheme` corrente, evitando reutilizar cores de hover armazenadas quando o Theme é alterado em runtime.
+
 ## 19. Inconsistência conhecida na documentação upstream
 
 Diversos comentários do código RickUIBuilder referenciam:
@@ -392,7 +400,7 @@ Antes de implementar ou revisar UI runtime do DockHub que dependa do RickUIBuild
 ## Documentação relacionada
 
 - [DockHub View Pages](../../modules/view/README.pt-BR.md)
-- [ADR-0003 — Arquitetura de Pages e Composição Runtime da View](../../adr/ADR-0003-view-page-architecture.pt-BR.md)
+- [ADR-0004 — Arquitetura de Composição das Pages da View](../../adr/ADR-0004-view-page-composition-architecture.pt-BR.md)
 - [Módulo de Theme](../../modules/theme/README.pt-BR.md)
 - [Módulo de Idiomas](../../modules/language/README.pt-BR.md)
 - [Documentação do DockHub](../../README.pt-BR.md)

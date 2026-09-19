@@ -15,7 +15,11 @@ uses
   DUnitX.TestFramework,
   DockHub.Tests.Core.Language.Types in 'Core\DockHub.Tests.Core.Language.Types.pas',
   DockHub.Tests.Core.Language in 'Core\DockHub.Tests.Core.Language.pas',
-  DockHub.Tests.View.Theme in 'View\DockHub.Tests.View.Theme.pas';
+  DockHub.Tests.View.Theme in 'View\DockHub.Tests.View.Theme.pas',
+  DockHub.Tests.View.Page.Composition.Base in
+    'View\DockHub.Tests.View.Page.Composition.Base.pas',
+  DockHub.Tests.View.Page.Main.Composition in
+    'View\DockHub.Tests.View.Page.Main.Composition.pas';
 
 { keep comment here to protect the following conditional from being removed by the IDE when adding a unit }
 {$IFNDEF TESTINSIGHT}

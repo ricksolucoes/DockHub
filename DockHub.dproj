@@ -343,11 +343,14 @@
         <DCCReference Include="src\core\language\contracts\DockHub.Core.Language.Contracts.pas"/>
         <DCCReference Include="src\core\language\Translations\DockHub.Core.Language.Translations.PtBR.pas"/>
         <DCCReference Include="src\core\language\Translations\DockHub.Core.Language.Translations.EnUS.pas"/>
-        <DCCReference Include="src\view\Page\Main\DockHub.View.Page.Main.pas">
+        <DCCReference Include="src\view\Page\DockHub.View.Page.Main.pas">
             <Form>PageMain</Form>
             <FormType>fmx</FormType>
         </DCCReference>
-        <DCCReference Include="src\view\Page\Main\Composition\DockHub.View.Page.Main.Composition.pas"/>
+        <DCCReference Include="src\view\Page\Impl\Main\DockHub.View.Page.Impl.Main.Composition.pas"/>
+        <DCCReference Include="src\view\Page\Contracts\DockHub.View.Page.Contracts.pas"/>
+        <DCCReference Include="src\view\Page\Impl\DockHub.View.Page.Composition.Impl.Base.pas"/>
+        <DCCReference Include="src\view\Page\Types\DockHub.View.Page.Types.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

@@ -512,11 +512,11 @@ The current codebase already includes a small set of implemented foundation comp
 - **Runtime language module (`Core.Language`)** with `pt-BR` as the official/default language and `en-US` as a secondary language;
 - **interface-based language contract** with runtime switching, fallback to `pt-BR`, and per-language translation units;
 - **module-scoped translation keys** and centralized translation validation;
-- **Main View language integration** through `ApplyLanguage`;
+- **Main View integration** through `TPageMainComposition`, `ApplyLanguage`, and `ApplyTheme`;
 - **View Theme subsystem** with `Blue`, `Teal`, `Light` and `Dark`, semantic color tokens and Main View background integration;
-- **structural organization for View Pages**, starting with `Main`, using a physical boundary under `src/view/Page/<Page>/` and a page-specific `Composition/` responsibility for future runtime visual construction; the initial structure exists, while functional integration between `Main.Composition` and `TPageMain` is not yet treated as implemented;
+- **View Page composition architecture** organized under `src/view/Page` with `Types`, `Contracts`, an abstract `TPageCompositionBase`, and page-specific implementations such as `DockHub.View.Page.Impl.Main.Composition`;
 - **DUnitX automated test project** included in the project group;
-- **34 current DUnitX tests**: 17 for `Core.Language` and 17 for `View.Theme`; the latest supplied XML reports 34 successful tests, 0 failures and 0 errors.
+- **58 DUnitX tests declared by the current source**: 10 for Language types, 7 for `Core.Language`, 17 for `View.Theme`, 15 contract/lifecycle tests for `TPageCompositionBase`, and 9 FMX integration tests for `Main.Composition`; the latest supplied XML predates these Page Composition fixtures and reports 34 passed tests.
 
 Detailed documentation:
 
@@ -599,8 +599,8 @@ Business services and business rules will be progressively introduced as the pro
 
 ### Quality
 
-* [x] Unit tests — DUnitX coverage currently exists for `Core.Language` and `View.Theme` (34 tests in the latest supplied run).
-* [ ] Integration tests.
+* [x] Unit/contract tests — DUnitX coverage exists for `Core.Language`, `View.Theme`, and the `TPageCompositionBase` lifecycle contract.
+* [x] Integration tests — an FMX fixture exists for `Main.Composition`; the current Page Composition fixtures still require a new real RAD Studio execution to record current results.
 * [ ] API tests.
 * [ ] API documentation.
 * [ ] Health checks.
@@ -649,7 +649,7 @@ Integration-specific implementation details should not unnecessarily leak into a
 
 ## 🧪 Testing Strategy
 
-DockHub already contains a DUnitX unit-test project covering the implemented `Core.Language` and `View.Theme` modules. Additional testing levels should be introduced progressively as the corresponding production components are implemented.
+DockHub has a DUnitX project with tests for `Core.Language`, `View.Theme`, the `TPageCompositionBase` lifecycle contract, and an FMX integration fixture for `Main.Composition`. The latest available executed result predates the Page Composition fixtures; details and limitations are documented in `tests/README.md`.
 
 Current details: [Automated Tests](./tests/README.md).
 

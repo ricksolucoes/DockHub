@@ -101,7 +101,7 @@ Language units receive a registration callback rather than direct ownership of t
 
 ### 10. View update model
 
-The current UI uses an explicit `ApplyLanguage` method owned by each View. `TPageMain` applies the caption by calling `Translate`.
+The current UI uses an explicit `ApplyLanguage` flow coordinated by each View. `TPageMain` owns the active `IDockHubLanguage` state and delegates presentation mapping to `IPageCompositionMain.ApplyLanguage`; `TPageMainComposition` resolves the Main translation keys and applies them to the Form caption and runtime controls.
 
 Automatic Observer/event propagation is deliberately deferred until multiple windows or independent visible components justify it.
 
@@ -162,4 +162,4 @@ Revisit this ADR when one or more of the following become true:
 
 ## Validation
 
-The current DUnitX suite has been executed with 17 tests passing, 0 failures, 0 errors and 0 leaks. Current tests directly cover language helper behavior, default language, runtime switching, the Main caption in `PtBR` and `EnUS`, and missing-key exceptions. Direct fallback/cache branch coverage is still pending a suitable production key or a future test seam.
+The latest supplied DUnitX execution contains 17 successful Language tests inside the historical 34-test run dated 2026-09-13. The current Language fixture still declares 17 tests but its Main translation assertions have since expanded beyond the historical XML, so that execution is retained as historical evidence rather than proof of the current source. Direct fallback/cache branch coverage is still pending a suitable production key or a future test seam.

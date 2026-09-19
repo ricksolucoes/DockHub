@@ -308,42 +308,107 @@ Não crie namespaces artificiais apenas para aumentar profundidade.
 
 ### 7.1 Estrutura de `View.Page` e composição runtime
 
-Quando uma Page possuir composição visual própria criada em runtime, organize o domínio da página por proximidade física e responsabilidade:
+Antes de qualquer decisão estrutural em `View.Page`, examine a estrutura atual do domínio e os padrões equivalentes já existentes no projeto. Um trecho isolado de código não autoriza criar nova organização física, novo namespace, tipo aninhado ou abstração estrutural.
+
+No desenho atual confirmado para `View.Page`, preserve a separação por papel:
 
 ```text
-src/view/Page/<Page>/
+src/view/Page/
+├── Contracts/
+│   └── DockHub.View.Page.Contracts.pas
+├── Impl/
+│   ├── DockHub.View.Page.Composition.Impl.Base.pas
+│   └── <Page>/
+│       └── DockHub.View.Page.Impl.<Page>.Composition.pas
+├── Types/
+│   └── DockHub.View.Page.Types.pas
 ├── DockHub.View.Page.<Page>.pas
-├── DockHub.View.Page.<Page>.fmx          # quando aplicável
-└── Composition/
-    └── DockHub.View.Page.<Page>.Composition.pas
+└── DockHub.View.Page.<Page>.fmx          # quando aplicável
 ```
 
-O namespace continua expressando produto, layer, domínio e responsabilidade:
+Responsabilidades confirmadas:
 
 ```text
-DockHub.View.Page.Main
-DockHub.View.Page.Main.Composition
-```
+Types
+→ enums e tipos compartilhados do domínio View.Page
+→ enums com {$SCOPEDENUMS ON} quando aplicável
+→ acesso qualificado aos membros do enum
 
-A pasta física `<Page>` agrupa artefatos exclusivos daquela Page. Ela não exige acrescentar um role artificial como `.Form` ao namespace da unit principal.
+Contracts
+→ interfaces e contratos públicos do domínio View.Page
 
-Responsabilidades esperadas:
+Composition.Impl.Base
+→ comportamento comum das compositions
+→ template abstrato compartilhado pelas Pages
 
-```text
-Page
+Impl.<Page>.Composition
+→ construção e apresentação específicas de cada Page
+
+DockHub.View.Page.<Page>
 → ciclo de vida da Form/View
 → estado e colaboradores da página
-→ ApplyLanguage / ApplyTheme ou equivalentes
-→ handlers e semântica das interações
-→ coordenação com navegação quando esse mecanismo existir
-
-Composition
-→ construção runtime da árvore visual específica da Page
-→ criação e configuração de controles
-→ parent/ownership visual necessário à composição
-→ posicionamento e hierarquia dos componentes
-→ associação de callbacks/handlers fornecidos pela Page
+→ coordenação com a composition
+→ semântica das interações
 ```
+
+Para enums pertencentes ao domínio `View.Page`, não declare o tipo dentro de classes de implementação apenas por ele ter um consumidor imediato. Primeiro verifique `DockHub.View.Page.Types.pas`. Quando o tipo representar estado ou contrato estrutural do domínio, mantenha-o nessa unit e preserve o padrão scoped já adotado pelo projeto.
+
+Exemplo esperado:
+
+```pascal
+{$SCOPEDENUMS ON}
+
+type
+  TPageCompositionState = (
+    Configuring,
+    Building,
+    Built,
+    Failed
+  );
+```
+
+Uso:
+
+```pascal
+TPageCompositionState.Configuring
+TPageCompositionState.Built
+```
+
+Lifecycle atualmente implementado para `TPageCompositionBase`:
+
+```text
+Configuring
+    │
+    └── Build
+          ↓
+       Building
+       ↙      ↘
+    Built    Failed
+```
+
+Regras obrigatórias do contrato atual:
+
+- `Form`, `OnMinimize` e `OnClose` só podem ser configurados em `Configuring`;
+- `Build` exige Form e os callbacks obrigatórios antes de iniciar;
+- Build bem-sucedido termina em `Built`;
+- exception durante Build leva a `Failed` e é relançada;
+- segundo Build em `Built` é idempotente;
+- Build em `Building` ou `Failed` é inválido;
+- `ApplyLanguage` e `ApplyTheme` só são válidos em `Built`;
+- Language/Theme `nil` são inválidos;
+- instância em `Failed` não deve ser reutilizada.
+
+Não exponha `FState` ou outro detalhe privado apenas para facilitar testes. Valide o lifecycle pelo comportamento público.
+
+Lifetime atual da Composition:
+
+```text
+Page mantém IPageComposition / IPageCompositionMain
+→ reference counting mantém a Composition viva
+→ controles FMX podem chamar handlers da Composition
+```
+
+A Page deve manter essa interface referenciada enquanto controles criados pela Composition puderem disparar handlers contra a instância. Não zere a interface antecipadamente durante a vida desses controles. O lifetime dos controles continua sendo definido pela hierarquia Owner/Parent do FMX.
 
 `Composition` não deve assumir automaticamente:
 
@@ -354,29 +419,23 @@ Composition
 - criação direta de outras Pages como efeito de um clique;
 - abstrações compartilhadas antes de existir reutilização real.
 
-Quando um componente criado pela Composition precisar participar de `ApplyLanguage`, `ApplyTheme` ou atualização de estado, a Page continua responsável pela coordenação da apresentação. O contrato concreto para manter ou expor referências visuais deve ser definido a partir da necessidade real da Page; não invente antecipadamente interfaces, records de handles ou managers genéricos.
+A associação de eventos pode ocorrer durante a composition, mas o significado da ação deve permanecer no contrato/colaborador adequado da Page. Interfaces específicas, como `IPageCompositionMain`, podem existir quando a própria Page possui ações conhecidas ou previstas que precisam de contrato próprio; não elimine esse contrato apenas por ele ainda possuir poucas operações. No estado atual, `IPageCompositionMain` é intencionalmente preservada como ponto de extensão das ações já conhecidas da Main (serviço/configuração/logs), mas métodos concretos só devem ser adicionados quando o comportamento real dessas ações estiver definido.
 
-A associação de eventos pode ocorrer durante a composição, mas o significado da ação deve permanecer fora da responsabilidade estrutural de `Composition`. Exemplo conceitual:
+Se uma Page crescer, subdivida sua implementation somente quando existirem responsabilidades reais e coesas. Não crie antecipadamente novas units apenas por expectativa de crescimento.
 
-```text
-Composition
-→ cria botão
-→ associa callback recebido
-
-Page/collaborator
-→ decide o que o clique significa
-```
-
-Se uma Page crescer, subdivida sua Composition somente quando existirem responsabilidades visuais reais e coesas. Não crie antecipadamente `Header`, `Sidebar`, `Content`, `Footer`, `Components` ou outras units apenas por expectativa de crescimento.
-
-Se um elemento visual passar a ser reutilizado por múltiplas Pages, avalie uma responsabilidade compartilhada da camada View em decisão própria. Não mova automaticamente artefatos page-specific para uma pasta global apenas por semelhança visual.
-
-A decisão arquitetural correspondente está documentada em:
+Regra de auditoria estrutural obrigatória:
 
 ```text
-docs/adr/ADR-0003-view-page-architecture.md
-docs/modules/view/README.md
+antes de criar ou mover Types / Contracts / Impl
+→ inspecionar o domínio atual
+→ localizar padrões equivalentes no projeto
+→ confirmar namespace e pasta existentes
+→ somente então decidir a estrutura
 ```
+
+Não deduza estrutura a partir de um recorte parcial quando o projeto completo ou uma referência estrutural estiver disponível.
+
+A decisão arquitetural correspondente deve permanecer coerente com a implementação e com a documentação da camada View.
 
 ### 7.2 RickUIBuilder como dependência de composição visual
 
@@ -391,14 +450,14 @@ Essa referência registra o snapshot upstream efetivamente analisado, o funciona
 Não confunda:
 
 ```text
-DockHub.View.Page.<Page>.Composition
-→ responsabilidade arquitetural page-specific do DockHub
+DockHub.View.Page.Impl.<Page>.Composition
+→ implementação page-specific da composition no DockHub
 
 Rick.UIBuilder.Composition / TRickUIBuilder.On(AParent)
 → uma das formas de uso da biblioteca RickUIBuilder
 ```
 
-Uma `DockHub.View.Page.<Page>.Composition` pode usar Factory, Fluent Builders, `TRickUIBuilder.On(...)` ou uma combinação tecnicamente justificada. A escolha deve partir da necessidade concreta de cada controle, especialmente:
+Uma `DockHub.View.Page.Impl.<Page>.Composition` pode usar Factory, Fluent Builders, `TRickUIBuilder.On(...)` ou uma combinação tecnicamente justificada. A escolha deve partir da necessidade concreta de cada controle, especialmente:
 
 - configuração adicional necessária;
 - necessidade de `OnClick` / `OnHover`;

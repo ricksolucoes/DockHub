@@ -71,8 +71,8 @@
         <Base>true</Base>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
-        <DCC_DcuOutput>.\Temp\$(Platform)\$(Config)</DCC_DcuOutput>
-        <DCC_ExeOutput>.\APP\$(Config)</DCC_ExeOutput>
+        <DCC_DcuOutput>.\..\Temp\Test\$(Platform)\$(Config)</DCC_DcuOutput>
+        <DCC_ExeOutput>.\..\APP\$(Config)</DCC_ExeOutput>
         <DCC_E>false</DCC_E>
         <DCC_N>false</DCC_N>
         <DCC_S>false</DCC_S>
@@ -82,7 +82,7 @@
         <UsingDelphiRTL>true</UsingDelphiRTL>
         <Icon_MainIcon>$(BDS)\bin\delphi_PROJECTICON.ico</Icon_MainIcon>
         <Icns_MainIcns>$(BDS)\bin\delphi_PROJECTICNS.icns</Icns_MainIcns>
-        <DCC_UnitSearchPath>$(DUnitX);..\src\core\Language;..\src\core\Language\Contracts;..\src\core\Language\Impl;..\src\core\Language\Keys;..\src\core\Language\Translations;..\src\view\Theme;..\src\view\Theme\Contracts;..\src\view\Theme\Impl;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_UnitSearchPath>$(DUnitX);..\src\core\Language;..\src\core\Language\Contracts;..\src\core\Language\Impl;..\src\core\Language\Keys;..\src\core\Language\Translations;..\src\view\Theme;..\src\view\Theme\Contracts;..\src\view\Theme\Impl;..\src\view\Page;..\src\view\Page\Contracts;..\src\view\Page\Types;..\src\view\Page\Impl;..\src\view\Page\Impl\Main;..\modules\github_com_ricksolucoes_RickUIBuilder\src;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <SanitizedProjectName>DockHub_Tests</SanitizedProjectName>
         <VerInfo_Locale>1046</VerInfo_Locale>
         <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
@@ -244,6 +244,8 @@
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
         <DCC_RemoteDebug>false</DCC_RemoteDebug>
         <VerInfo_Locale>1033</VerInfo_Locale>
+        <Icon_MainIcon>$(ProjectName).Artwork\Windows\AppIcon.ico</Icon_MainIcon>
+        <Icns_MainIcns>$(ProjectName).Artwork\Windows\AppIcon.icns</Icns_MainIcns>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
         <DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
@@ -258,6 +260,8 @@
         <DCCReference Include="Core\DockHub.Tests.Core.Language.Types.pas"/>
         <DCCReference Include="Core\DockHub.Tests.Core.Language.pas"/>
         <DCCReference Include="View\DockHub.Tests.View.Theme.pas"/>
+        <DCCReference Include="View\DockHub.Tests.View.Page.Composition.Base.pas"/>
+        <DCCReference Include="View\DockHub.Tests.View.Page.Main.Composition.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

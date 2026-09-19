@@ -10,7 +10,7 @@
 
 O DockHub precisa centralizar os papéis visuais, em vez de representar a identidade visual por valores de cor repetidos entre as Views. A aplicação deve suportar múltiplas paletas e troca de Theme em runtime, mantendo o mapeamento da apresentação dentro da camada de View.
 
-O subsistema Theme atual já expõe papéis visuais semânticos através de `IDockHubTheme`, suporta as paletas `Blue`, `Teal`, `Light` e `Dark`, altera a paleta ativa na mesma instância de Theme e fornece construção reutilizável do gradiente de fundo. Atualmente, `TPageMain` consome sua própria referência `IDockHubTheme` e reaplica explicitamente sua apresentação através de `ApplyTheme`.
+O subsistema Theme atual já expõe papéis visuais semânticos através de `IDockHubTheme`, suporta as paletas `Blue`, `Teal`, `Light` e `Dark`, altera a paleta ativa na mesma instância de Theme e fornece construção reutilizável do gradiente de fundo. `TPageMain` mantém seu estado `IDockHubTheme` e delega o mapeamento de apresentação por `IPageCompositionMain.ApplyTheme`; a Composition específica aplica os valores à Form e aos controles runtime.
 
 Isso é suficiente para o estágio atual da aplicação, mas ainda não estabelece um estado de Theme compartilhado por toda a aplicação nem propagação automática para múltiplas Views independentes. Essas responsabilidades são deliberadamente adiadas até que existam consumidores que realmente necessitem delas.
 
@@ -229,7 +229,7 @@ Este ADR deve ser reavaliado quando uma ou mais das situações abaixo ocorrerem
 
 O baseline automatizado atual contém 34 testes DUnitX executados, com 0 falhas e 0 erros. `TDockHubThemeTests` contribui com 17 testes aprovados que exercitam o contrato e o comportamento da implementação de Theme.
 
-Atualmente não existe fixture automatizado de integração da `TPageMain` com Theme; portanto, o baseline automatizado valida o subsistema Theme em si, e não a apresentação renderizada pela Main View.
+O fonte atual possui uma fixture FMX de integração de `TPageMainComposition` e uma fixture separada de contrato de `TPageCompositionBase`. O baseline XML de 34 testes é anterior a essas fixtures; portanto, essa execução histórica valida apenas a suíte antiga e não comprova que os testes atuais de integração da Main passam.
 
 O inventário detalhado e as informações de execução permanecem em [Testes Automatizados](../../tests/README.pt-BR.md).
 

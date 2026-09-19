@@ -59,7 +59,7 @@ Caption := 'DockHub - Integration Hub';
 
 Translation literals belong to language-specific translation units. Technical identifiers, culture codes, exception diagnostics and other non-presentational internal strings are not localized by this rule.
 
-For FireMonkey forms, user-facing design-time text should remain empty when the runtime value is provided by `ApplyLanguage`. The final project state confirmed for this module removes the direct form caption and assigns it through the translator during form creation.
+For FireMonkey forms, user-facing design-time text should remain empty when the runtime value is provided by `ApplyLanguage`. In the current Main flow, `TPageMain` coordinates the active Language contract and the page-specific Composition applies translated values, including the Form caption, to the FMX presentation.
 
 ---
 
@@ -539,48 +539,39 @@ These exception messages are technical diagnostics. They are not user-facing tra
 
 ## 16. Main View integration
 
-`TPageMain` currently owns an interface reference:
+Main View keeps `FLanguage: IDockHubLanguage`. `TPageMain.ApplyLanguage` no longer translates concrete controls itself; it delegates the active contract to `IPageCompositionMain.ApplyLanguage`. `TPageMainComposition.DoApplyLanguage` owns the current presentation mapping, including the Form caption and the runtime controls it created.
 
-```pascal
-FLanguage: IDockHubLanguage;
-```
+Main's current catalog includes:
 
-The form creates the language object during construction:
+- the Form caption;
+- the screen subtitle;
+- Windows Service, API, Port, and Environment labels;
+- Install, Uninstall, Start, Stop, Open configuration, and Open logs actions;
+- the neutral `Not verified` status.
 
-```pascal
-FLanguage := TDockHubLanguage.New;
-```
+The `DockHub` product name, the `-` placeholder, and minimize/close symbols are not translation keys.
 
-and then applies presentation text through:
-
-```pascal
-procedure TPageMain.ApplyLanguage;
-begin
-  Caption := FLanguage.Translate(_VIEW_MAIN_CAPTION);
-end;
-```
-
-The form constructor performs:
+The current direction is:
 
 ```text
-create language object
-→ ConfigureForm
-→ ApplyLanguage
+TPageMain
+    ↓ owns IDockHubLanguage
+IPageCompositionMain.ApplyLanguage
+    ↓
+TPageMainComposition.DoApplyLanguage
+    ↓
+Form caption + FMX controls created by Composition
 ```
 
-The final project state confirmed for the module removes the design-time caption text so the presented caption is supplied by `ApplyLanguage`.
+`Core.Language` remains unaware of FMX. The Page coordinates Language state; the page-specific Composition maps translations to its own presentation.
 
-### Current language-change integration
+`ApplyLanguage` is valid only after the Composition has completed `Build` successfully. This lifecycle validation belongs to `TPageCompositionBase`, not to `Core.Language`.
 
-`TPageMain` currently has a `ChangeLanguage` method that:
+### Current runtime language switching in View
 
-1. avoids work if the requested language is already active;
-2. changes the language through `IDockHubLanguage`;
-3. calls `ApplyLanguage` again.
+`TPageMain.ChangeLanguage` changes `FLanguage.Language` and calls `ApplyLanguage`. Because Composition keeps references to translatable controls, the change updates existing objects and does not rebuild the visual tree.
 
-At the current stage this method is an internal View mechanism; there is no language-selection UI in the project.
-
----
+At this stage the mechanism remains internal to View; the project still has no visual language selector.
 
 ## 17. Adding a new translation key
 
@@ -666,7 +657,7 @@ Current fixtures cover:
 - default language selection;
 - `PtBR → EnUS` switching;
 - `EnUS → PtBR` switching;
-- Main View caption translation in both current catalogs;
+- the texts currently used by Main View in both supported catalogs;
 - missing-key behavior in `PtBR`;
 - missing-key behavior while `EnUS` is active.
 
@@ -680,6 +671,8 @@ Tests Leaked  : 0
 Tests Failed  : 0
 Tests Errored : 0
 ```
+
+That executed result predates the current expansion of Main View texts; it remains historical evidence rather than validation of this change.
 
 See [tests/README.md](../../../tests/README.md) for the complete test project documentation.
 
@@ -780,9 +773,9 @@ Before merging a Language change, verify:
 
 ## 22. Validation status
 
-The module documentation was derived from the current DockHub source structure and the successful DUnitX execution supplied for the project.
+The module documentation was derived from the current DockHub source structure and from historical DUnitX evidence supplied for the project. The execution below predates the current expansion of Main View texts and is retained only as historical evidence.
 
-Validated by automated execution supplied by the project owner:
+Historical automated execution supplied by the project owner:
 
 ```text
 17 tests found

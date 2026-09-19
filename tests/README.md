@@ -2,132 +2,129 @@
 
 [Português (Brasil)](./README.pt-BR.md)
 
-DockHub currently contains a dedicated DUnitX console test project:
+DockHub uses DUnitX. This document distinguishes the current source test inventory from the latest available execution evidence.
+
+## Current structure
 
 ```text
 tests/
-├── DockHub.Tests.dpr
-├── DockHub.Tests.dproj
 ├── Core/
 │   ├── DockHub.Tests.Core.Language.Types.pas
 │   └── DockHub.Tests.Core.Language.pas
-└── View/
-    └── DockHub.Tests.View.Theme.pas
+├── View/
+│   ├── DockHub.Tests.View.Theme.pas
+│   ├── DockHub.Tests.View.Page.Composition.Base.pas
+│   └── DockHub.Tests.View.Page.Main.Composition.pas
+├── DockHub.Tests.dpr
+└── DockHub.Tests.dproj
 ```
 
-The project is also included in `Dock.Hub.groupproj` together with the main FMX application.
+## Source test inventory
+
+The current source declares **58 tests**:
+
+```text
+TDockHubLanguageTypeTests            : 10
+TDockHubLanguageTests                :  7
+TDockHubThemeTests                   : 17
+TDockHubPageCompositionBaseTests     : 15
+TDockHubPageMainCompositionTests     :  9
+                                        --
+Total                                : 58
+```
+
+This is a source-code inventory. It is **not** proof that all 58 tests compiled or executed successfully.
 
 ## Framework and runner
 
-The test project uses DUnitX.
-
-`DockHub.Tests.dpr` supports two execution paths:
-
-- `TestInsight.DUnitX.RunRegisteredTests` when `TESTINSIGHT` is defined;
-- the normal DUnitX console runner otherwise.
-
-The console runner currently adds:
-
-- `TDUnitXConsoleLogger`;
-- `TDUnitXXMLNUnitFileLogger`.
-
-The project defaults to `Debug` / `Win32` in `DockHub.Tests.dproj`.
-
-The current debugger parameter stored in the project is:
-
-```text
---exitbehavior:Pause
-```
-
-This keeps the console open after execution when the normal runner is used outside CI.
+The runner uses DUnitX. Without `TESTINSIGHT`, the project runs as a console application and registers console plus NUnit-compatible XML logging. With `TESTINSIGHT`, it uses `TestInsight.DUnitX`.
 
 ## Search paths
 
-The test project currently references the existing Language paths plus the Theme paths required by `TDockHubThemeTests`:
+The current test project includes the source paths required by Language, Theme and the current `View.Page` architecture, including:
 
 ```text
-$(DUnitX)
-..\src\core\Language
-..\src\core\Language\Contracts
-..\src\core\Language\Impl
-..\src\core\Language\Keys
-..\src\core\Language\Translations
-..\src\view\Theme
-..\src\view\Theme\Contracts
-..\src\view\Theme\Impl
+..\src\view\Page
+..\src\view\Page\Contracts
+..\src\view\Page\Types
+..\src\view\Page\Impl
+..\src\view\Page\Impl\Main
+..\modules\github_com_ricksolucoes_RickUIBuilder\src
 ```
 
-## Fixture: `TDockHubLanguageTypeTests`
+The previous `..\src\view\Page\Main` / `..\src\view\Page\Main\Composition` paths are no longer part of the current test project structure.
 
-The fixture contains 10 tests:
+## `TDockHubLanguageTypeTests`
 
-| Test | Behavior validated |
-| --- | --- |
-| `PtBR_ToString` | `PtBR` technical name is `PtBR`. |
-| `EnUS_ToString` | `EnUS` technical name is `EnUS`. |
-| `PtBR_ToCultureCode` | `PtBR` maps to `pt-BR`. |
-| `EnUS_ToCultureCode` | `EnUS` maps to `en-US`. |
-| `FromString_PtBR_CultureCode` | `pt-BR` parses as `PtBR`. |
-| `FromString_PtBR_EnumName` | `PtBR` parses as `PtBR`. |
-| `FromString_EnUS_CultureCode` | `en-US` parses as `EnUS`. |
-| `FromString_EnUS_EnumName` | `EnUS` parses as `EnUS`. |
-| `FromString_IsCaseInsensitive` | Accepted forms are case-insensitive. |
-| `FromString_Invalid_RaisesException` | Unsupported text such as `es-ES` raises `EArgumentException`. |
+Keeps the 10 existing tests for `TDockHubLanguageType` and helper conversions.
 
-## Fixture: `TDockHubLanguageTests`
+## `TDockHubLanguageTests`
 
-Each test receives a fresh `IDockHubLanguage` instance in `Setup` and releases it in `TearDown`.
+Keeps 7 tests covering default/switching behavior, the Main View translation set for `pt-BR` and `en-US`, and unknown-key behavior.
 
-The fixture contains 7 tests:
+The production Main translation set currently includes caption, subtitle, status labels, actions and neutral status text.
 
-| Test | Behavior validated |
-| --- | --- |
-| `New_DefaultLanguage_IsPtBR` | New instances start with `PtBR`. |
-| `Language_ChangesTo_EnUS` | Runtime change to `EnUS` is retained. |
-| `Language_ReturnsTo_PtBR` | Runtime change can return from `EnUS` to `PtBR`. |
-| `Translate_PtBR_ReturnsPortugueseCaption` | Main caption resolves to `DockHub - Hub de Integração`. |
-| `Translate_EnUS_ReturnsEnglishCaption` | Main caption resolves to `DockHub - Integration Hub`. |
-| `Translate_PtBR_UnknownKey_RaisesNotFound` | Unknown key in default mode raises `EDockHubTranslationNotFound`. |
-| `Translate_EnUS_UnknownKey_RaisesNotFound` | Unknown key that cannot be resolved while `EnUS` is active also raises `EDockHubTranslationNotFound`. |
+## `TDockHubThemeTests`
 
-The unknown-key tests use a test-only constant:
+Keeps the existing 17 tests for the `Blue`, `Teal`, `Light` and `Dark` palettes, gradient behavior, semantic tokens and Theme transitions.
+
+## `TDockHubPageCompositionBaseTests`
+
+This fixture is marked:
 
 ```pascal
-_UNKNOWN_TRANSLATION_KEY:
-  TDockHubTranslationKey = 'Tests.Unknown.Translation';
+[Category('Contract')]
 ```
 
-This constant follows the project convention that constants begin with `_`.
+It validates the public lifecycle/contract of `TPageCompositionBase` without exposing its private `FState` only for testing.
 
-## Fixture: `TDockHubThemeTests`
+The 15 source tests cover:
 
-Each test receives a fresh real `TDockHubTheme` instance through an `IDockHubTheme` reference in `Setup` and releases the interface in `TearDown`.
+- nil host Form rejection;
+- nil minimize callback rejection;
+- nil close callback rejection;
+- Build validation when Form is missing;
+- Build validation when minimize callback is missing;
+- Build validation when close callback is missing;
+- `ApplyTheme` rejection before successful Build;
+- `ApplyLanguage` rejection before successful Build;
+- nil Theme rejection after Build;
+- nil Language rejection after Build;
+- configuration being closed after Build;
+- idempotent second Build after `Built`;
+- Build failure becoming terminal and blocking retry;
+- common minimize/close callbacks;
+- common window hover using the most recently applied Theme.
 
-Expected values for Blue, Teal, Light and Dark are centralized in test-only `TDockHubExpectedTheme` data. The fixture contains 17 tests:
+The fixture declares a test-only derived class that implements the abstract Template Method hooks. No production seam or public lifecycle-state accessor was added solely for test purposes.
 
-| Test | Behavior validated |
-| --- | --- |
-| `New_DefaultTheme_IsBlue` | New Theme instances start in `Blue`. |
-| `New_DefaultTheme_HasExpectedBluePalette` | The default instance exposes the complete expected Blue palette. |
-| `Theme_ChangesFromBlueToTeal` | Switching to Teal changes the background and exposes the complete expected Teal palette. |
-| `Theme_ChangesFromBlueToLight` | Switching to Light changes the background and exposes the complete expected Light palette. |
-| `Theme_ChangesFromBlueToDark` | Switching to Dark changes the background and exposes the complete expected Dark palette. |
-| `Theme_ChangesBackToBlue` | A changed Theme can return to the complete Blue palette. |
-| `Theme_SequentialChanges_UpdateEntirePalette` | Sequential Blue → Teal → Dark → Light → Blue changes validate the full palette after every transition. |
-| `BackgroundGradient_ConfiguresGradientBrush` | Gradient kind, linear style, two points, colors and offsets are configured from the active Theme. |
-| `BackgroundGradient_ChangesWithTheme` | Reapplying a brush after a Theme change uses the new gradient colors. |
-| `BackgroundGradient_DefaultAngle_Equals65Degrees` | The overload without an angle produces the same positions as explicit `65` degrees. |
-| `BackgroundGradient_ZeroDegrees` | The 0° gradient positions match the expected horizontal endpoints. |
-| `BackgroundGradient_NinetyDegrees` | The 90° gradient positions match the expected vertical endpoints. |
-| `BackgroundGradient_Nil_DoesNotRaiseException` | Passing `nil` does not raise an exception. |
-| `BadgeBackground_True_ReturnsSuccess` | `True` returns `BadgeSuccessBg`. |
-| `BadgeBackground_False_ReturnsDanger` | `False` returns `BadgeDangerBg`. |
-| `BadgeText_True_ReturnsSuccess` | `True` returns `BadgeSuccessText`. |
-| `BadgeText_False_ReturnsDanger` | `False` returns `BadgeDangerText`. |
+## `TDockHubPageMainCompositionTests`
 
-## Latest execution result
+This fixture is marked:
 
-The latest supplied DUnitX XML result is dated 2026-09-13 and reports:
+```pascal
+[Category('Integration')]
+```
+
+It uses a real `TForm.CreateNew(nil)` plus the current `IPageCompositionMain` / `TPageMainComposition.New` API.
+
+The 9 source tests cover:
+
+- centered Main card creation;
+- idempotent Build without duplicate visual tree;
+- `pt-BR` text application;
+- `en-US` runtime change reusing existing controls;
+- Theme runtime change on the Main card;
+- window hover using the current Theme after runtime change;
+- unimplemented administrative actions remaining disabled;
+- configured minimize/close callbacks;
+- host destruction while the interface keeps the composition alive until the FMX controls are destroyed.
+
+The fixture validates observable FMX behavior and does not expose private Main Composition fields merely for test access.
+
+## Latest available executed result
+
+The latest XML currently available at `tests/APP/Debug/dunitx-results.xml` is dated **2026-09-13** and reports:
 
 ```text
 Total tests : 34
@@ -137,79 +134,41 @@ Failures    : 0
 Errors      : 0
 ```
 
-The XML also reports `not-run=0`, `skipped=0`, `invalid=0` and `inconclusive=0`.
+That XML predates both Page Composition fixtures and the expanded Main View translation assertions. It is historical evidence only.
 
-The XML format supplied for this run does not contain a leak-count field. This documentation therefore does not infer a leak count from the artifact.
+It does **not** validate the 58 tests currently declared in source and must not be presented as proof that the current test project passes.
 
-The 34 tests are distributed as:
+## Running the current suite
 
-```text
-TDockHubLanguageTypeTests : 10
-TDockHubLanguageTests     :  7
-TDockHubThemeTests        : 17
-                              --
-Total                     : 34
-```
+1. Open `Dock.Hub.groupproj` or `tests/DockHub.Tests.dproj` in RAD Studio.
+2. Select the `DockHub.Tests` project.
+3. Select the desired configuration/platform.
+4. Compile the test project.
+5. Run DUnitX or TestInsight.
+6. Treat the actual runner/XML result as the execution authority.
 
-## What this execution proves
-
-The run directly proves the 34 behaviors represented by the three fixtures above and shows every listed test case with a successful result in the supplied XML.
-
-It demonstrates that the production units required by those tests were compilable in the environment where `DockHub.Tests.exe` was built and executed.
-
-It does **not** by itself prove that every platform/configuration of the main FMX application builds successfully, and it does **not** prove `TPageMain` Theme rendering because there is currently no Main View integration fixture.
+For focused diagnosis, run the Page Composition contract fixture before the Main integration fixture, then run the complete suite.
 
 ## Current coverage gaps
 
-### Language
+The current source still does not directly cover every implemented branch. Known gaps include:
 
-The implementation contains additional branches that are not yet directly exercised by the current suite:
+- `EnUS → PtBR` fallback with a production key deliberately missing from `EnUS`;
+- fallback-cache reuse in `Core.Language`;
+- duplicate translation registration;
+- empty translation key/value validation;
+- the real unsupported-language branch;
+- pixel-level visual rendering of Main;
+- administrative Main actions, because their application use cases are not implemented yet.
 
-- a key missing in `EnUS` but present in `PtBR` falling back to `PtBR`;
-- the second lookup of that key hitting the fallback value cached in `FCurrentTranslations`;
-- duplicate registration raising `EDockHubTranslationDuplicate`;
-- empty key/value validation raising `EDockHubTranslationInvalid`;
-- a nil translation callback raising `EDockHubTranslationInvalid`;
-- `EDockHubLanguageNotSupported` through a real unsupported enum branch.
+## Maintenance rules
 
-### Theme / View integration
+When behavior changes:
 
-The Theme contract and implementation are covered by the 17 Theme tests described above. `TPageMain` itself is deliberately not covered by a Theme integration test at this stage, so construction and visual application of `BackgroundGradient(Fill)` are not asserted by this suite.
-
-These are documented coverage gaps, not known implementation failures.
-
-## Running the tests
-
-### RAD Studio / console runner
-
-1. Open `Dock.Hub.groupproj` or `tests/DockHub.Tests.dproj`.
-2. Select the `DockHub.Tests` project.
-3. Use the intended configuration/platform. The current project defaults are `Debug` and `Win32`.
-4. Build/compile the test project.
-5. Run it.
-6. With `--exitbehavior:Pause`, review the summary before pressing Enter.
-
-The current regression baseline is 34 successful tests with zero failures/errors. Use the actual runner/XML output as the authority for each new execution rather than assuming the previous result.
-
-### TestInsight
-
-The `.dpr` contains conditional support for TestInsight through the `TESTINSIGHT` define. This documentation does not assert that TestInsight is installed or enabled in every developer environment.
-
-### CI
-
-The runner already excludes the pause behavior when `CI` is defined. A future CI pipeline can execute the console test binary and consume the NUnit-compatible XML output generated by `TDUnitXXMLNUnitFileLogger`.
-
-No CI workflow is currently documented as implemented.
-
-## Adding tests
-
-When production behavior changes:
-
-- test the public contract whenever possible;
-- avoid exposing private implementation details only to assert internal call counts;
-- keep fixture names aligned with the production type being exercised;
-- keep expected Theme palettes centralized in test-only structures;
-- add a regression test for an intentional Theme behavior change;
-- add Language fallback regression coverage when a legitimate missing-secondary-key case exists;
-- do not add a `TPageMain` integration test until that scope is intentionally introduced;
-- never change production behavior merely to make a test pass.
+- test contracts and observable behavior rather than private fields;
+- cover lifecycle/error transitions when they change;
+- distinguish contract/unit tests from FMX integration tests;
+- do not change production design merely to make a test easier;
+- update `DockHub.Tests.dpr` and `.dproj` when adding a fixture;
+- do not report a source test count as an executed/passed count;
+- do not replace historical XML evidence until a new real execution exists.

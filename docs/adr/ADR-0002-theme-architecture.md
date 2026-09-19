@@ -10,7 +10,7 @@
 
 DockHub requires visual roles to be centralized instead of being represented by repeated color literals across Views. The application must support multiple palettes and runtime Theme changes while keeping presentation mapping inside the View layer.
 
-The current Theme subsystem already exposes semantic visual roles through `IDockHubTheme`, supports the `Blue`, `Teal`, `Light` and `Dark` palettes, changes the active palette on the same Theme instance, and provides reusable background-gradient construction. `TPageMain` currently consumes its own `IDockHubTheme` reference and explicitly reapplies its presentation through `ApplyTheme`.
+The current Theme subsystem already exposes semantic visual roles through `IDockHubTheme`, supports the `Blue`, `Teal`, `Light` and `Dark` palettes, changes the active palette on the same Theme instance, and provides reusable background-gradient construction. `TPageMain` owns its `IDockHubTheme` state and delegates presentation mapping through `IPageCompositionMain.ApplyTheme`; the page-specific Composition applies Theme values to the Form and runtime controls.
 
 This is sufficient for the current application stage, but it does not yet establish an application-wide Theme state or automatic propagation to multiple independent Views. Those concerns are intentionally deferred until the application has consumers that require them.
 
@@ -229,7 +229,7 @@ Revisit this ADR when one or more of the following become true:
 
 The current automated baseline contains 34 executed DUnitX tests with 0 failures and 0 errors. `TDockHubThemeTests` contributes 17 successful tests covering the Theme contract and implementation behavior.
 
-There is currently no automated `TPageMain` Theme integration fixture, so the automated baseline validates the Theme subsystem itself rather than the Main View's rendered presentation.
+The current source contains an FMX `TPageMainComposition` integration fixture and a separate `TPageCompositionBase` contract fixture. The 34-test XML baseline predates those fixtures, so that historical execution validates the older suite only and does not prove the current Main integration tests pass.
 
 Detailed test inventory and execution information remain in [Automated Tests](../../tests/README.md).
 

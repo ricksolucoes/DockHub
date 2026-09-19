@@ -516,11 +516,11 @@ O código atual já possui alguns componentes de fundação implementados, além
 - **módulo de idiomas em runtime (`Core.Language`)** com `pt-BR` como idioma oficial/default e `en-US` como idioma secundário;
 - **contrato de idioma orientado a interface**, com troca em runtime, fallback para `pt-BR` e uma unit de tradução por idioma;
 - **chaves de tradução organizadas por módulo** e validação central dos catálogos;
-- **integração da Main View** através de `ApplyLanguage`;
+- **integração da Main View** com `TPageMainComposition`, `ApplyLanguage` e `ApplyTheme`;
 - **subsistema de Theme da View** com `Blue`, `Teal`, `Light` e `Dark`, tokens semânticos de cor e integração do background da Main View;
-- **organização estrutural de Pages da View**, iniciada pela `Main`, com boundary físico em `src/view/Page/<Page>/` e responsabilidade page-specific em `Composition/` para a futura montagem visual runtime; a estrutura inicial existe, mas a integração funcional da `Main.Composition` com `TPageMain` ainda não é tratada como implementada;
+- **arquitetura de composition das Pages** organizada em `src/view/Page` com `Types`, `Contracts`, uma `TPageCompositionBase` abstrata e implementações específicas como `DockHub.View.Page.Impl.Main.Composition`;
 - **projeto de testes automatizados DUnitX** incluído no project group;
-- **34 testes DUnitX atuais**: 17 para `Core.Language` e 17 para `View.Theme`; o último XML fornecido registra 34 testes com sucesso, 0 falhas e 0 erros.
+- **58 testes DUnitX declarados no código atual**: 10 para tipos de Language, 7 para `Core.Language`, 17 para `View.Theme`, 15 de contrato/lifecycle de `TPageCompositionBase` e 9 de integração FMX de `Main.Composition`; o último XML fornecido é anterior às fixtures de Page Composition e registra 34 testes aprovados.
 
 Documentação detalhada:
 
@@ -603,8 +603,8 @@ Serviços de aplicação e regras de negócio serão introduzidos progressivamen
 
 ### Qualidade
 
-* [x] Testes unitários — atualmente existe cobertura DUnitX para `Core.Language` e `View.Theme` (34 testes na última execução fornecida).
-* [ ] Testes de integração.
+* [x] Testes unitários/contrato — existe cobertura DUnitX para `Core.Language`, `View.Theme` e para o contrato de lifecycle de `TPageCompositionBase`.
+* [x] Testes de integração — existe fixture FMX para `Main.Composition`; as fixtures atuais de Page Composition ainda precisam de nova execução real no RAD Studio para registrar resultados atuais.
 * [ ] Testes da API.
 * [ ] Documentação da API.
 * [ ] Health checks.
@@ -653,7 +653,7 @@ Detalhes específicos das integrações não devem contaminar desnecessariamente
 
 ## 🧪 Estratégia de Testes
 
-O DockHub já possui um projeto de testes unitários DUnitX cobrindo os módulos implementados `Core.Language` e `View.Theme`. Os demais níveis de testes deverão ser introduzidos progressivamente conforme os componentes de produção correspondentes forem implementados.
+O DockHub possui um projeto DUnitX com testes de `Core.Language`, `View.Theme`, do contrato de lifecycle de `TPageCompositionBase` e uma fixture de integração FMX para `Main.Composition`. O resultado executado mais recente disponível é anterior às fixtures de Page Composition; detalhes e limitações estão documentados em `tests/README.pt-BR.md`.
 
 Detalhes atuais: [Testes Automatizados](./tests/README.pt-BR.md).
 

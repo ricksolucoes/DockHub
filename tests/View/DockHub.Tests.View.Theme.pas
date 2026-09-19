@@ -72,6 +72,44 @@ type
     function ExpectedLight: TDockHubExpectedTheme;
     function ExpectedDark: TDockHubExpectedTheme;
 
+    { Asserts agrupados por área da paleta - cada um cobre um subconjunto
+      coeso de campos, mantendo os métodos curtos e de baixa complexidade. }
+    procedure AssertSurfaceColors(
+      const AExpected: TDockHubExpectedTheme;
+      const AActual: IDockHubTheme);
+
+    procedure AssertTextColors(
+      const AExpected: TDockHubExpectedTheme;
+      const AActual: IDockHubTheme);
+
+    procedure AssertAccentColors(
+      const AExpected: TDockHubExpectedTheme;
+      const AActual: IDockHubTheme);
+
+    procedure AssertBadgeInfoColors(
+      const AExpected: TDockHubExpectedTheme;
+      const AActual: IDockHubTheme);
+
+    procedure AssertButtonPrimaryColors(
+      const AExpected: TDockHubExpectedTheme;
+      const AActual: IDockHubTheme);
+
+    procedure AssertGradientColors(
+      const AExpected: TDockHubExpectedTheme;
+      const AActual: IDockHubTheme);
+
+    procedure AssertStatusColors(
+      const AExpected: TDockHubExpectedTheme;
+      const AActual: IDockHubTheme);
+
+    procedure AssertBadgeStatusColors(
+      const AExpected: TDockHubExpectedTheme;
+      const AActual: IDockHubTheme);
+
+    procedure AssertButtonDangerColors(
+      const AExpected: TDockHubExpectedTheme;
+      const AActual: IDockHubTheme);
+
     procedure AssertThemePalette(
       const AExpected: TDockHubExpectedTheme;
       const AActual: IDockHubTheme);
@@ -151,6 +189,217 @@ uses
 const
   _POSITION_TOLERANCE = 0.0001;
 
+{ -----------------------------------------------------------------------
+  Dados de paleta esperados por tema.
+
+  Em vez de funções procedimentais com ~35 atribuições sequenciais
+  (Result.Campo := Valor), os valores são declarados como CONSTANTES
+  TIPADAS. Isso separa DADO de LÓGICA: as funções Expected* abaixo
+  passam a ser apenas "Result := CExpectedXxx", eliminando o excesso
+  de linhas/repetição que gerava a alta toxicidade.
+  ----------------------------------------------------------------------- }
+
+const
+  _MAP_THEME_BLUE: TDockHubExpectedTheme = (
+    ThemeType: TDockHubThemeType.Blue;
+
+    Background: TAlphaColor($FF0F172A);
+    SurfaceCard: TAlphaColor($FF1E293B);
+    SurfaceElevated: TAlphaColor($FF273449);
+    Border: TAlphaColor($FF334155);
+    Divider: TAlphaColor($FF2A3441);
+
+    TextPrimary: TAlphaColor($FFF1F5F9);
+    TextSecondary: TAlphaColor($FF94A3B8);
+    TextDisabled: TAlphaColor($FF64748B);
+
+    Accent: TAlphaColor($FF3B82F6);
+    AccentHover: TAlphaColor($FF2563EB);
+    AccentLight: TAlphaColor($FF60A5FA);
+
+    BadgeInfoBg: TAlphaColor($263B82F6);
+    BadgeInfoText: TAlphaColor($FF60A5FA);
+
+    ButtonPrimaryBg: TAlphaColor($FF3B82F6);
+    ButtonPrimaryHoverBg: TAlphaColor($FF2563EB);
+    ButtonPrimaryText: TAlphaColor($FFFFFFFF);
+
+    GradientStart: TAlphaColor($FF0F172A);
+    GradientEnd: TAlphaColor($FF1E293B);
+
+    Transparent: TAlphaColor($00000000);
+
+    StatusSuccess: TAlphaColor($FF22C55E);
+    StatusDanger: TAlphaColor($FFEF4444);
+    StatusWarning: TAlphaColor($FFF59E0B);
+    StatusNeutral: TAlphaColor($FF64748B);
+
+    BadgeSuccessBg: TAlphaColor($2622C55E);
+    BadgeSuccessText: TAlphaColor($FF4ADE80);
+    BadgeDangerBg: TAlphaColor($26EF4444);
+    BadgeDangerText: TAlphaColor($FFF87171);
+    BadgeWarningBg: TAlphaColor($26F59E0B);
+    BadgeWarningText: TAlphaColor($FFFBBF24);
+    BadgeNeutralBg: TAlphaColor($2664748B);
+    BadgeNeutralText: TAlphaColor($FF94A3B8);
+
+    ButtonDangerBg: TAlphaColor($FFEF4444);
+    ButtonDangerHoverBg: TAlphaColor($FFDC2626);
+    ButtonDangerText: TAlphaColor($FFFFFFFF);
+    ButtonDangerOutlineText: TAlphaColor($FFF87171);
+    ButtonGhostText: TAlphaColor($FF94A3B8);
+  );
+
+  _MAP_THEME_TEAL: TDockHubExpectedTheme = (
+    ThemeType: TDockHubThemeType.Teal;
+
+    Background: TAlphaColor($FF0A1717);
+    SurfaceCard: TAlphaColor($FF132424);
+    SurfaceElevated: TAlphaColor($FF1B3131);
+    Border: TAlphaColor($FF2A4545);
+    Divider: TAlphaColor($FF1F3535);
+
+    TextPrimary: TAlphaColor($FFF0F5F5);
+    TextSecondary: TAlphaColor($FF8FA8A8);
+    TextDisabled: TAlphaColor($FF5C7373);
+
+    Accent: TAlphaColor($FF008080);
+    AccentHover: TAlphaColor($FF006666);
+    AccentLight: TAlphaColor($FF2DD4D4);
+
+    BadgeInfoBg: TAlphaColor($2E008080);
+    BadgeInfoText: TAlphaColor($FF2DD4D4);
+
+    ButtonPrimaryBg: TAlphaColor($FF008080);
+    ButtonPrimaryHoverBg: TAlphaColor($FF006666);
+    ButtonPrimaryText: TAlphaColor($FFFFFFFF);
+
+    GradientStart: TAlphaColor($FF0A1717);
+    GradientEnd: TAlphaColor($FF1B3131);
+
+    Transparent: TAlphaColor($00000000);
+
+    StatusSuccess: TAlphaColor($FF22C55E);
+    StatusDanger: TAlphaColor($FFEF4444);
+    StatusWarning: TAlphaColor($FFF59E0B);
+    StatusNeutral: TAlphaColor($FF64748B);
+
+    BadgeSuccessBg: TAlphaColor($2622C55E);
+    BadgeSuccessText: TAlphaColor($FF4ADE80);
+    BadgeDangerBg: TAlphaColor($26EF4444);
+    BadgeDangerText: TAlphaColor($FFF87171);
+    BadgeWarningBg: TAlphaColor($26F59E0B);
+    BadgeWarningText: TAlphaColor($FFFBBF24);
+    BadgeNeutralBg: TAlphaColor($2664748B);
+    BadgeNeutralText: TAlphaColor($FF94A3B8);
+
+    ButtonDangerBg: TAlphaColor($FFEF4444);
+    ButtonDangerHoverBg: TAlphaColor($FFDC2626);
+    ButtonDangerText: TAlphaColor($FFFFFFFF);
+    ButtonDangerOutlineText: TAlphaColor($FFF87171);
+    ButtonGhostText: TAlphaColor($FF94A8A8);
+  );
+
+  _MAP_THEME_LIGHT: TDockHubExpectedTheme = (
+    ThemeType: TDockHubThemeType.Light;
+
+    Background: TAlphaColor($FFE8E8E8);
+    SurfaceCard: TAlphaColor($FFFFFFFF);
+    SurfaceElevated: TAlphaColor($FFF5F5F5);
+    Border: TAlphaColor($FFD4D4D4);
+    Divider: TAlphaColor($FFE0E0E0);
+
+    TextPrimary: TAlphaColor($FF1A1A1A);
+    TextSecondary: TAlphaColor($FF595959);
+    TextDisabled: TAlphaColor($FFA6A6A6);
+
+    Accent: TAlphaColor($FF3B82F6);
+    AccentHover: TAlphaColor($FF2563EB);
+    AccentLight: TAlphaColor($FF60A5FA);
+
+    BadgeInfoBg: TAlphaColor($FFDBEAFE);
+    BadgeInfoText: TAlphaColor($FF2563EB);
+
+    ButtonPrimaryBg: TAlphaColor($FF3B82F6);
+    ButtonPrimaryHoverBg: TAlphaColor($FF2563EB);
+    ButtonPrimaryText: TAlphaColor($FFFFFFFF);
+
+    GradientStart: TAlphaColor($FFE8E8E8);
+    GradientEnd: TAlphaColor($FFF5F5F5);
+
+    Transparent: TAlphaColor($00000000);
+
+    StatusSuccess: TAlphaColor($FF15803D);
+    StatusDanger: TAlphaColor($FFB91C1C);
+    StatusWarning: TAlphaColor($FFB45309);
+    StatusNeutral: TAlphaColor($FF6B7280);
+
+    BadgeSuccessBg: TAlphaColor($FFDCFCE7);
+    BadgeSuccessText: TAlphaColor($FF15803D);
+    BadgeDangerBg: TAlphaColor($FFFEE2E2);
+    BadgeDangerText: TAlphaColor($FFB91C1C);
+    BadgeWarningBg: TAlphaColor($FFFEF3C7);
+    BadgeWarningText: TAlphaColor($FFB45309);
+    BadgeNeutralBg: TAlphaColor($FFF3F4F6);
+    BadgeNeutralText: TAlphaColor($FF4B5563);
+
+    ButtonDangerBg: TAlphaColor($FFDC2626);
+    ButtonDangerHoverBg: TAlphaColor($FFB91C1C);
+    ButtonDangerText: TAlphaColor($FFFFFFFF);
+    ButtonDangerOutlineText: TAlphaColor($FFB91C1C);
+    ButtonGhostText: TAlphaColor($FF595959);
+  );
+
+  _MAP_THEME_DARK: TDockHubExpectedTheme = (
+    ThemeType: TDockHubThemeType.Dark;
+
+    Background: TAlphaColor($FF303030);
+    SurfaceCard: TAlphaColor($FF3D3D3D);
+    SurfaceElevated: TAlphaColor($FF474747);
+    Border: TAlphaColor($FF525252);
+    Divider: TAlphaColor($FF3A3A3A);
+
+    TextPrimary: TAlphaColor($FFF5F5F5);
+    TextSecondary: TAlphaColor($FFB0B0B0);
+    TextDisabled: TAlphaColor($FF757575);
+
+    Accent: TAlphaColor($FF3B82F6);
+    AccentHover: TAlphaColor($FF2563EB);
+    AccentLight: TAlphaColor($FF60A5FA);
+
+    BadgeInfoBg: TAlphaColor($263B82F6);
+    BadgeInfoText: TAlphaColor($FF60A5FA);
+
+    ButtonPrimaryBg: TAlphaColor($FF3B82F6);
+    ButtonPrimaryHoverBg: TAlphaColor($FF2563EB);
+    ButtonPrimaryText: TAlphaColor($FFFFFFFF);
+
+    GradientStart: TAlphaColor($FF303030);
+    GradientEnd: TAlphaColor($FF474747);
+
+    Transparent: TAlphaColor($00000000);
+
+    StatusSuccess: TAlphaColor($FF22C55E);
+    StatusDanger: TAlphaColor($FFEF4444);
+    StatusWarning: TAlphaColor($FFF59E0B);
+    StatusNeutral: TAlphaColor($FF64748B);
+
+    BadgeSuccessBg: TAlphaColor($2E22C55E);
+    BadgeSuccessText: TAlphaColor($FF4ADE80);
+    BadgeDangerBg: TAlphaColor($2EEF4444);
+    BadgeDangerText: TAlphaColor($FFF87171);
+    BadgeWarningBg: TAlphaColor($2EF59E0B);
+    BadgeWarningText: TAlphaColor($FFFBBF24);
+    BadgeNeutralBg: TAlphaColor($2E64748B);
+    BadgeNeutralText: TAlphaColor($FFB0B0B0);
+
+    ButtonDangerBg: TAlphaColor($FFEF4444);
+    ButtonDangerHoverBg: TAlphaColor($FFDC2626);
+    ButtonDangerText: TAlphaColor($FFFFFFFF);
+    ButtonDangerOutlineText: TAlphaColor($FFF87171);
+    ButtonGhostText: TAlphaColor($FFB0B0B0);
+  );
+
 { TDockHubThemeTests }
 
 procedure TDockHubThemeTests.Setup;
@@ -165,209 +414,33 @@ end;
 
 function TDockHubThemeTests.ExpectedBlue: TDockHubExpectedTheme;
 begin
-  Result.ThemeType := TDockHubThemeType.Blue;
-
-  Result.Background := TAlphaColor($FF0F172A);
-  Result.SurfaceCard := TAlphaColor($FF1E293B);
-  Result.SurfaceElevated := TAlphaColor($FF273449);
-  Result.Border := TAlphaColor($FF334155);
-  Result.Divider := TAlphaColor($FF2A3441);
-
-  Result.TextPrimary := TAlphaColor($FFF1F5F9);
-  Result.TextSecondary := TAlphaColor($FF94A3B8);
-  Result.TextDisabled := TAlphaColor($FF64748B);
-
-  Result.Accent := TAlphaColor($FF3B82F6);
-  Result.AccentHover := TAlphaColor($FF2563EB);
-  Result.AccentLight := TAlphaColor($FF60A5FA);
-
-  Result.BadgeInfoBg := TAlphaColor($263B82F6);
-  Result.BadgeInfoText := TAlphaColor($FF60A5FA);
-
-  Result.ButtonPrimaryBg := TAlphaColor($FF3B82F6);
-  Result.ButtonPrimaryHoverBg := TAlphaColor($FF2563EB);
-  Result.ButtonPrimaryText := TAlphaColor($FFFFFFFF);
-
-  Result.GradientStart := TAlphaColor($FF0F172A);
-  Result.GradientEnd := TAlphaColor($FF1E293B);
-
-  Result.Transparent := TAlphaColor($00000000);
-
-  Result.StatusSuccess := TAlphaColor($FF22C55E);
-  Result.StatusDanger := TAlphaColor($FFEF4444);
-  Result.StatusWarning := TAlphaColor($FFF59E0B);
-  Result.StatusNeutral := TAlphaColor($FF64748B);
-
-  Result.BadgeSuccessBg := TAlphaColor($2622C55E);
-  Result.BadgeSuccessText := TAlphaColor($FF4ADE80);
-  Result.BadgeDangerBg := TAlphaColor($26EF4444);
-  Result.BadgeDangerText := TAlphaColor($FFF87171);
-  Result.BadgeWarningBg := TAlphaColor($26F59E0B);
-  Result.BadgeWarningText := TAlphaColor($FFFBBF24);
-  Result.BadgeNeutralBg := TAlphaColor($2664748B);
-  Result.BadgeNeutralText := TAlphaColor($FF94A3B8);
-
-  Result.ButtonDangerBg := TAlphaColor($FFEF4444);
-  Result.ButtonDangerHoverBg := TAlphaColor($FFDC2626);
-  Result.ButtonDangerText := TAlphaColor($FFFFFFFF);
-  Result.ButtonDangerOutlineText := TAlphaColor($FFF87171);
-  Result.ButtonGhostText := TAlphaColor($FF94A3B8);
+  Result := _MAP_THEME_BLUE;
 end;
 
 function TDockHubThemeTests.ExpectedTeal: TDockHubExpectedTheme;
 begin
-  Result.ThemeType := TDockHubThemeType.Teal;
-
-  Result.Background := TAlphaColor($FF0A1717);
-  Result.SurfaceCard := TAlphaColor($FF132424);
-  Result.SurfaceElevated := TAlphaColor($FF1B3131);
-  Result.Border := TAlphaColor($FF2A4545);
-  Result.Divider := TAlphaColor($FF1F3535);
-
-  Result.TextPrimary := TAlphaColor($FFF0F5F5);
-  Result.TextSecondary := TAlphaColor($FF8FA8A8);
-  Result.TextDisabled := TAlphaColor($FF5C7373);
-
-  Result.Accent := TAlphaColor($FF008080);
-  Result.AccentHover := TAlphaColor($FF006666);
-  Result.AccentLight := TAlphaColor($FF2DD4D4);
-
-  Result.BadgeInfoBg := TAlphaColor($2E008080);
-  Result.BadgeInfoText := TAlphaColor($FF2DD4D4);
-
-  Result.ButtonPrimaryBg := TAlphaColor($FF008080);
-  Result.ButtonPrimaryHoverBg := TAlphaColor($FF006666);
-  Result.ButtonPrimaryText := TAlphaColor($FFFFFFFF);
-
-  Result.GradientStart := TAlphaColor($FF0A1717);
-  Result.GradientEnd := TAlphaColor($FF1B3131);
-
-  Result.Transparent := TAlphaColor($00000000);
-
-  Result.StatusSuccess := TAlphaColor($FF22C55E);
-  Result.StatusDanger := TAlphaColor($FFEF4444);
-  Result.StatusWarning := TAlphaColor($FFF59E0B);
-  Result.StatusNeutral := TAlphaColor($FF64748B);
-
-  Result.BadgeSuccessBg := TAlphaColor($2622C55E);
-  Result.BadgeSuccessText := TAlphaColor($FF4ADE80);
-  Result.BadgeDangerBg := TAlphaColor($26EF4444);
-  Result.BadgeDangerText := TAlphaColor($FFF87171);
-  Result.BadgeWarningBg := TAlphaColor($26F59E0B);
-  Result.BadgeWarningText := TAlphaColor($FFFBBF24);
-  Result.BadgeNeutralBg := TAlphaColor($2664748B);
-  Result.BadgeNeutralText := TAlphaColor($FF94A3B8);
-
-  Result.ButtonDangerBg := TAlphaColor($FFEF4444);
-  Result.ButtonDangerHoverBg := TAlphaColor($FFDC2626);
-  Result.ButtonDangerText := TAlphaColor($FFFFFFFF);
-  Result.ButtonDangerOutlineText := TAlphaColor($FFF87171);
-  Result.ButtonGhostText := TAlphaColor($FF94A8A8);
+  Result := _MAP_THEME_TEAL;
 end;
 
 function TDockHubThemeTests.ExpectedLight: TDockHubExpectedTheme;
 begin
-  Result.ThemeType := TDockHubThemeType.Light;
-
-  Result.Background := TAlphaColor($FFE8E8E8);
-  Result.SurfaceCard := TAlphaColor($FFFFFFFF);
-  Result.SurfaceElevated := TAlphaColor($FFF5F5F5);
-  Result.Border := TAlphaColor($FFD4D4D4);
-  Result.Divider := TAlphaColor($FFE0E0E0);
-
-  Result.TextPrimary := TAlphaColor($FF1A1A1A);
-  Result.TextSecondary := TAlphaColor($FF595959);
-  Result.TextDisabled := TAlphaColor($FFA6A6A6);
-
-  Result.Accent := TAlphaColor($FF3B82F6);
-  Result.AccentHover := TAlphaColor($FF2563EB);
-  Result.AccentLight := TAlphaColor($FF60A5FA);
-
-  Result.BadgeInfoBg := TAlphaColor($FFDBEAFE);
-  Result.BadgeInfoText := TAlphaColor($FF2563EB);
-
-  Result.ButtonPrimaryBg := TAlphaColor($FF3B82F6);
-  Result.ButtonPrimaryHoverBg := TAlphaColor($FF2563EB);
-  Result.ButtonPrimaryText := TAlphaColor($FFFFFFFF);
-
-  Result.GradientStart := TAlphaColor($FFE8E8E8);
-  Result.GradientEnd := TAlphaColor($FFF5F5F5);
-
-  Result.Transparent := TAlphaColor($00000000);
-
-  Result.StatusSuccess := TAlphaColor($FF15803D);
-  Result.StatusDanger := TAlphaColor($FFB91C1C);
-  Result.StatusWarning := TAlphaColor($FFB45309);
-  Result.StatusNeutral := TAlphaColor($FF6B7280);
-
-  Result.BadgeSuccessBg := TAlphaColor($FFDCFCE7);
-  Result.BadgeSuccessText := TAlphaColor($FF15803D);
-  Result.BadgeDangerBg := TAlphaColor($FFFEE2E2);
-  Result.BadgeDangerText := TAlphaColor($FFB91C1C);
-  Result.BadgeWarningBg := TAlphaColor($FFFEF3C7);
-  Result.BadgeWarningText := TAlphaColor($FFB45309);
-  Result.BadgeNeutralBg := TAlphaColor($FFF3F4F6);
-  Result.BadgeNeutralText := TAlphaColor($FF4B5563);
-
-  Result.ButtonDangerBg := TAlphaColor($FFDC2626);
-  Result.ButtonDangerHoverBg := TAlphaColor($FFB91C1C);
-  Result.ButtonDangerText := TAlphaColor($FFFFFFFF);
-  Result.ButtonDangerOutlineText := TAlphaColor($FFB91C1C);
-  Result.ButtonGhostText := TAlphaColor($FF595959);
+  Result := _MAP_THEME_LIGHT;
 end;
 
 function TDockHubThemeTests.ExpectedDark: TDockHubExpectedTheme;
 begin
-  Result.ThemeType := TDockHubThemeType.Dark;
-
-  Result.Background := TAlphaColor($FF303030);
-  Result.SurfaceCard := TAlphaColor($FF3D3D3D);
-  Result.SurfaceElevated := TAlphaColor($FF474747);
-  Result.Border := TAlphaColor($FF525252);
-  Result.Divider := TAlphaColor($FF3A3A3A);
-
-  Result.TextPrimary := TAlphaColor($FFF5F5F5);
-  Result.TextSecondary := TAlphaColor($FFB0B0B0);
-  Result.TextDisabled := TAlphaColor($FF757575);
-
-  Result.Accent := TAlphaColor($FF3B82F6);
-  Result.AccentHover := TAlphaColor($FF2563EB);
-  Result.AccentLight := TAlphaColor($FF60A5FA);
-
-  Result.BadgeInfoBg := TAlphaColor($263B82F6);
-  Result.BadgeInfoText := TAlphaColor($FF60A5FA);
-
-  Result.ButtonPrimaryBg := TAlphaColor($FF3B82F6);
-  Result.ButtonPrimaryHoverBg := TAlphaColor($FF2563EB);
-  Result.ButtonPrimaryText := TAlphaColor($FFFFFFFF);
-
-  Result.GradientStart := TAlphaColor($FF303030);
-  Result.GradientEnd := TAlphaColor($FF474747);
-
-  Result.Transparent := TAlphaColor($00000000);
-
-  Result.StatusSuccess := TAlphaColor($FF22C55E);
-  Result.StatusDanger := TAlphaColor($FFEF4444);
-  Result.StatusWarning := TAlphaColor($FFF59E0B);
-  Result.StatusNeutral := TAlphaColor($FF64748B);
-
-  Result.BadgeSuccessBg := TAlphaColor($2E22C55E);
-  Result.BadgeSuccessText := TAlphaColor($FF4ADE80);
-  Result.BadgeDangerBg := TAlphaColor($2EEF4444);
-  Result.BadgeDangerText := TAlphaColor($FFF87171);
-  Result.BadgeWarningBg := TAlphaColor($2EF59E0B);
-  Result.BadgeWarningText := TAlphaColor($FFFBBF24);
-  Result.BadgeNeutralBg := TAlphaColor($2E64748B);
-  Result.BadgeNeutralText := TAlphaColor($FFB0B0B0);
-
-  Result.ButtonDangerBg := TAlphaColor($FFEF4444);
-  Result.ButtonDangerHoverBg := TAlphaColor($FFDC2626);
-  Result.ButtonDangerText := TAlphaColor($FFFFFFFF);
-  Result.ButtonDangerOutlineText := TAlphaColor($FFF87171);
-  Result.ButtonGhostText := TAlphaColor($FFB0B0B0);
+  Result := _MAP_THEME_DARK;
 end;
 
-procedure TDockHubThemeTests.AssertThemePalette(
+{ -----------------------------------------------------------------------
+  Asserts agrupados por área da paleta.
+
+  AssertThemePalette deixa de concentrar ~35 Assert.AreEqual em um único
+  corpo e passa a orquestrar chamadas a métodos menores, cada um
+  responsável por um subconjunto coeso de campos.
+  ----------------------------------------------------------------------- }
+
+procedure TDockHubThemeTests.AssertSurfaceColors(
   const AExpected: TDockHubExpectedTheme;
   const AActual: IDockHubTheme);
 begin
@@ -378,32 +451,66 @@ begin
   Assert.AreEqual<TAlphaColor>(AExpected.SurfaceElevated, AActual.SurfaceElevated);
   Assert.AreEqual<TAlphaColor>(AExpected.Border, AActual.Border);
   Assert.AreEqual<TAlphaColor>(AExpected.Divider, AActual.Divider);
+end;
 
+procedure TDockHubThemeTests.AssertTextColors(
+  const AExpected: TDockHubExpectedTheme;
+  const AActual: IDockHubTheme);
+begin
   Assert.AreEqual<TAlphaColor>(AExpected.TextPrimary, AActual.TextPrimary);
   Assert.AreEqual<TAlphaColor>(AExpected.TextSecondary, AActual.TextSecondary);
   Assert.AreEqual<TAlphaColor>(AExpected.TextDisabled, AActual.TextDisabled);
+end;
 
+procedure TDockHubThemeTests.AssertAccentColors(
+  const AExpected: TDockHubExpectedTheme;
+  const AActual: IDockHubTheme);
+begin
   Assert.AreEqual<TAlphaColor>(AExpected.Accent, AActual.Accent);
   Assert.AreEqual<TAlphaColor>(AExpected.AccentHover, AActual.AccentHover);
   Assert.AreEqual<TAlphaColor>(AExpected.AccentLight, AActual.AccentLight);
+end;
 
+procedure TDockHubThemeTests.AssertBadgeInfoColors(
+  const AExpected: TDockHubExpectedTheme;
+  const AActual: IDockHubTheme);
+begin
   Assert.AreEqual<TAlphaColor>(AExpected.BadgeInfoBg, AActual.BadgeInfoBg);
   Assert.AreEqual<TAlphaColor>(AExpected.BadgeInfoText, AActual.BadgeInfoText);
+end;
 
+procedure TDockHubThemeTests.AssertButtonPrimaryColors(
+  const AExpected: TDockHubExpectedTheme;
+  const AActual: IDockHubTheme);
+begin
   Assert.AreEqual<TAlphaColor>(AExpected.ButtonPrimaryBg, AActual.ButtonPrimaryBg);
   Assert.AreEqual<TAlphaColor>(AExpected.ButtonPrimaryHoverBg, AActual.ButtonPrimaryHoverBg);
   Assert.AreEqual<TAlphaColor>(AExpected.ButtonPrimaryText, AActual.ButtonPrimaryText);
+end;
 
+procedure TDockHubThemeTests.AssertGradientColors(
+  const AExpected: TDockHubExpectedTheme;
+  const AActual: IDockHubTheme);
+begin
   Assert.AreEqual<TAlphaColor>(AExpected.GradientStart, AActual.GradientStart);
   Assert.AreEqual<TAlphaColor>(AExpected.GradientEnd, AActual.GradientEnd);
-
   Assert.AreEqual<TAlphaColor>(AExpected.Transparent, AActual.Transparent);
+end;
 
+procedure TDockHubThemeTests.AssertStatusColors(
+  const AExpected: TDockHubExpectedTheme;
+  const AActual: IDockHubTheme);
+begin
   Assert.AreEqual<TAlphaColor>(AExpected.StatusSuccess, AActual.StatusSuccess);
   Assert.AreEqual<TAlphaColor>(AExpected.StatusDanger, AActual.StatusDanger);
   Assert.AreEqual<TAlphaColor>(AExpected.StatusWarning, AActual.StatusWarning);
   Assert.AreEqual<TAlphaColor>(AExpected.StatusNeutral, AActual.StatusNeutral);
+end;
 
+procedure TDockHubThemeTests.AssertBadgeStatusColors(
+  const AExpected: TDockHubExpectedTheme;
+  const AActual: IDockHubTheme);
+begin
   Assert.AreEqual<TAlphaColor>(AExpected.BadgeSuccessBg, AActual.BadgeSuccessBg);
   Assert.AreEqual<TAlphaColor>(AExpected.BadgeSuccessText, AActual.BadgeSuccessText);
   Assert.AreEqual<TAlphaColor>(AExpected.BadgeDangerBg, AActual.BadgeDangerBg);
@@ -412,12 +519,32 @@ begin
   Assert.AreEqual<TAlphaColor>(AExpected.BadgeWarningText, AActual.BadgeWarningText);
   Assert.AreEqual<TAlphaColor>(AExpected.BadgeNeutralBg, AActual.BadgeNeutralBg);
   Assert.AreEqual<TAlphaColor>(AExpected.BadgeNeutralText, AActual.BadgeNeutralText);
+end;
 
+procedure TDockHubThemeTests.AssertButtonDangerColors(
+  const AExpected: TDockHubExpectedTheme;
+  const AActual: IDockHubTheme);
+begin
   Assert.AreEqual<TAlphaColor>(AExpected.ButtonDangerBg, AActual.ButtonDangerBg);
   Assert.AreEqual<TAlphaColor>(AExpected.ButtonDangerHoverBg, AActual.ButtonDangerHoverBg);
   Assert.AreEqual<TAlphaColor>(AExpected.ButtonDangerText, AActual.ButtonDangerText);
   Assert.AreEqual<TAlphaColor>(AExpected.ButtonDangerOutlineText, AActual.ButtonDangerOutlineText);
   Assert.AreEqual<TAlphaColor>(AExpected.ButtonGhostText, AActual.ButtonGhostText);
+end;
+
+procedure TDockHubThemeTests.AssertThemePalette(
+  const AExpected: TDockHubExpectedTheme;
+  const AActual: IDockHubTheme);
+begin
+  AssertSurfaceColors(AExpected, AActual);
+  AssertTextColors(AExpected, AActual);
+  AssertAccentColors(AExpected, AActual);
+  AssertBadgeInfoColors(AExpected, AActual);
+  AssertButtonPrimaryColors(AExpected, AActual);
+  AssertGradientColors(AExpected, AActual);
+  AssertStatusColors(AExpected, AActual);
+  AssertBadgeStatusColors(AExpected, AActual);
+  AssertButtonDangerColors(AExpected, AActual);
 end;
 
 procedure TDockHubThemeTests.AssertPositionEquals(

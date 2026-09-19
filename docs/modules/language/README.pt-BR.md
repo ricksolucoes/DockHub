@@ -59,7 +59,7 @@ Caption := 'DockHub - Hub de Integração';
 
 Os textos literais traduzíveis pertencem às units específicas de idioma. Identificadores técnicos, culture codes, diagnósticos de exceção e outras strings internas não destinadas à apresentação não são localizadas por essa regra.
 
-Em Forms FireMonkey, textos de design-time destinados ao usuário devem permanecer vazios quando seu valor em runtime é aplicado por `ApplyLanguage`. O estado final confirmado do projeto remove o Caption direto da Form e aplica o título pelo tradutor durante a criação da tela.
+Em Forms FireMonkey, textos de design-time destinados ao usuário devem permanecer vazios quando seu valor em runtime é aplicado por `ApplyLanguage`. No fluxo atual da Main, `TPageMain` coordena o contrato de Language ativo e a Composition específica aplica os valores traduzidos, incluindo o caption da Form, à apresentação FMX.
 
 ---
 
@@ -539,48 +539,39 @@ As mensagens dessas exceções são diagnósticos técnicos. Elas não são text
 
 ## 16. Integração com a Main View
 
-`TPageMain` mantém uma referência de interface:
+A Main View mantém `FLanguage: IDockHubLanguage`. `TPageMain.ApplyLanguage` não traduz mais controles concretos diretamente; ele delega o contrato ativo para `IPageCompositionMain.ApplyLanguage`. `TPageMainComposition.DoApplyLanguage` concentra o mapeamento atual de apresentação, incluindo o caption da Form e os controles runtime que ela própria criou.
 
-```pascal
-FLanguage: IDockHubLanguage;
-```
+O catálogo atual da Main inclui:
 
-A Form cria o objeto no construtor:
+- caption da Form;
+- subtítulo da tela;
+- rótulos de Serviço Windows, API, Porta e Ambiente;
+- ações Instalar, Desinstalar, Iniciar, Parar, Abrir configuração e Abrir logs;
+- status neutro `Não verificado`.
 
-```pascal
-FLanguage := TDockHubLanguage.New;
-```
+O nome do produto `DockHub`, o valor placeholder `-` e os símbolos de minimizar/fechar não são chaves de tradução.
 
-e aplica o texto através de:
-
-```pascal
-procedure TPageMain.ApplyLanguage;
-begin
-  Caption := FLanguage.Translate(_VIEW_MAIN_CAPTION);
-end;
-```
-
-O construtor segue:
+A direção atual é:
 
 ```text
-cria Language
-→ ConfigureForm
-→ ApplyLanguage
+TPageMain
+    ↓ mantém IDockHubLanguage
+IPageCompositionMain.ApplyLanguage
+    ↓
+TPageMainComposition.DoApplyLanguage
+    ↓
+Caption da Form + controles FMX criados pela Composition
 ```
 
-O estado final confirmado do projeto remove o Caption direto de design-time, permitindo que o texto apresentado seja fornecido por `ApplyLanguage`.
+`Core.Language` continua sem conhecer FMX. A Page coordena o estado de Language; a Composition específica mapeia as traduções para sua apresentação.
+
+`ApplyLanguage` só é válido depois que a Composition conclui `Build` com sucesso. Essa validação de lifecycle pertence a `TPageCompositionBase`, e não a `Core.Language`.
 
 ### Troca atual de idioma na View
 
-`TPageMain` possui atualmente um método `ChangeLanguage` que:
+`TPageMain.ChangeLanguage` altera `FLanguage.Language` e chama `ApplyLanguage`. Como a Composition mantém referências para os controles traduzíveis, a troca atualiza os objetos existentes e não reconstrói a árvore visual.
 
-1. evita processamento quando o idioma solicitado já está ativo;
-2. altera o idioma pelo contrato `IDockHubLanguage`;
-3. executa `ApplyLanguage` novamente.
-
-No estágio atual esse é um mecanismo interno da View; ainda não existe seletor visual de idioma no projeto.
-
----
+Neste estágio esse mecanismo continua interno à View; ainda não existe seletor visual de idioma no projeto.
 
 ## 17. Como adicionar uma nova chave
 
@@ -666,7 +657,7 @@ Os fixtures atuais cobrem:
 - idioma default;
 - troca `PtBR → EnUS`;
 - retorno `EnUS → PtBR`;
-- Caption da Main View nos dois idiomas atuais;
+- textos atualmente utilizados pela Main View nos dois idiomas suportados;
 - chave desconhecida com `PtBR` ativo;
 - chave desconhecida com `EnUS` ativo.
 
@@ -680,6 +671,8 @@ Tests Leaked  : 0
 Tests Failed  : 0
 Tests Errored : 0
 ```
+
+Esse resultado executado é anterior à ampliação atual dos textos da Main; ele permanece como evidência histórica, não como validação desta alteração.
 
 Consulte [tests/README.pt-BR.md](../../../tests/README.pt-BR.md) para a documentação completa do projeto de testes.
 
@@ -782,9 +775,9 @@ Antes de integrar uma alteração no Language, verificar:
 
 ## 22. Estado de validação
 
-A documentação foi elaborada a partir da estrutura atual dos fontes do DockHub e da execução DUnitX fornecida para o projeto.
+A documentação foi elaborada a partir da estrutura atual dos fontes do DockHub e de evidência DUnitX histórica fornecida para o projeto. A execução abaixo é anterior à ampliação atual dos textos da Main e é mantida apenas como evidência histórica.
 
-Execução automatizada confirmada pelo responsável pelo projeto:
+Execução automatizada histórica fornecida pelo responsável pelo projeto:
 
 ```text
 17 testes encontrados

@@ -272,51 +272,34 @@ BadgeText(False)       → BadgeDangerText
 
 ## 12. Integração com a Main View
 
-`TPageMain` atualmente mantém os contratos de Theme e Language independentemente:
+`TPageMain` atualmente mantém os contratos de Theme e Language e a referência da composition específica:
 
 ```pascal
 FLanguage: IDockHubLanguage;
 FTheme: IDockHubTheme;
+FComposition: IPageCompositionMain;
 ```
 
-O constructor cria os dois serviços e aplica as duas responsabilidades de apresentação:
-
-```pascal
-FLanguage := TDockHubLanguage.New;
-FTheme    := TDockHubTheme.New;
-
-ConfigureForm;
-ApplyLanguage;
-ApplyTheme;
-```
-
-O mapeamento atual de Theme é propositalmente pequeno porque a Main View ainda não possui controles visuais adicionais que exijam tokens do Theme:
+O constructor cria Theme/Language, configura e constrói a Composition e depois aplica as duas responsabilidades de apresentação. `TPageMain.ApplyTheme` delega o Theme ativo para a Composition:
 
 ```pascal
 procedure TPageMain.ApplyTheme;
 begin
-  FTheme.BackgroundGradient(Fill);
+  FComposition.ApplyTheme(FTheme);
 end;
 ```
 
-A troca em runtime já está preparada por:
+`TPageMainComposition.DoApplyTheme` mapeia tokens semânticos para background da Form, card, textos, badges e ações. `TPageCompositionBase` aplica o mesmo Theme aos controles comuns de janela e mantém o Theme aplicado mais recentemente para que o hover acompanhe trocas runtime.
 
-```pascal
-procedure TPageMain.ChangeTheme(const AValue: TDockHubThemeType);
-begin
-  if FTheme.Theme = AValue then
-    Exit;
+A troca runtime continua explícita através de `TPageMain.ChangeTheme`: a instância de Theme muda de estado e a árvore visual existente é atualizada por `ApplyTheme`; os controles não são reconstruídos.
 
-  FTheme.Theme(AValue);
-  ApplyTheme;
-end;
-```
+`ApplyTheme` só é aceito depois que a Composition conclui `Build` com sucesso. Essa regra de lifecycle pertence a `TPageCompositionBase`, e não ao subsistema Theme.
 
-Nenhum seletor visual de tema chama atualmente `ChangeTheme`. O método existe, mas um controle de seleção para o usuário não é documentado como implementado.
+Nenhum seletor visual de Theme chama atualmente `ChangeTheme`. O método existe, mas um controle de seleção para o usuário não é documentado como implementado.
 
-## 13. Aplicação do Theme em futuros controles da View
+## 13. Aplicação do Theme nos controles da View
 
-Conforme a View receber controles, seu método `ApplyTheme` deve mapear cada componente para o token semântico existente que represente sua responsabilidade visual. Exemplos:
+A Composition específica da Page mapeia cada componente para o token semântico existente que representa sua responsabilidade visual. Exemplos atuais da Main:
 
 ```text
 fundo da Form          → BackgroundGradient / Background
@@ -370,7 +353,7 @@ A cobertura atual do Theme inclui:
 
 Os testes de Theme utilizam a implementação real `TDockHubTheme` através de uma referência `IDockHubTheme`. Os valores esperados das paletas ficam centralizados em records/functions exclusivos dos testes, em vez de serem repetidos em cada assert.
 
-Atualmente **não existe teste automatizado de integração da `TPageMain`**. O sucesso do fixture de Theme comprova, portanto, o comportamento do contrato/implementação exercitado pelos testes, e não a renderização visual da Main View.
+O fonte atual possui uma fixture FMX de integração de `TPageMainComposition`, além da fixture de Theme. O último XML de execução fornecido é anterior a essa fixture de Page Composition; portanto, a evidência histórica de execução comprova apenas os testes presentes naquela execução antiga e não valida o fonte atual de integração da Main.
 
 Consulte [Testes Automatizados](../../../tests/README.pt-BR.md) para o inventário completo e a referência da última execução.
 
@@ -449,4 +432,4 @@ Ignorados        : 0
 
 O resultado XML não contém um campo de contagem de leaks; portanto este documento não deduz um resultado de leak a partir desse artefato.
 
-Dentro dos 34 testes, `TDockHubThemeTests` contém 17 testes de Theme executados com sucesso. Não existe fixture de integração da `TPageMain` neste momento.
+Dentro daquela execução histórica de 34 testes, `TDockHubThemeTests` contém 17 testes de Theme executados com sucesso. O fonte atual também possui fixtures de contrato/integração de Page Composition, mas elas não aparecem naquele XML histórico.

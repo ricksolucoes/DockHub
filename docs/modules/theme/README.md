@@ -272,51 +272,34 @@ BadgeText(False)       → BadgeDangerText
 
 ## 12. Main View integration
 
-`TPageMain` currently owns Theme and Language contracts independently:
+`TPageMain` currently owns Theme and Language contracts independently and keeps the page-specific composition contract:
 
 ```pascal
 FLanguage: IDockHubLanguage;
 FTheme: IDockHubTheme;
+FComposition: IPageCompositionMain;
 ```
 
-The constructor creates both services and applies both presentation concerns:
-
-```pascal
-FLanguage := TDockHubLanguage.New;
-FTheme    := TDockHubTheme.New;
-
-ConfigureForm;
-ApplyLanguage;
-ApplyTheme;
-```
-
-The current Theme mapping is intentionally small because the Main View currently has no additional visual controls requiring Theme tokens:
+The constructor creates Theme/Language, configures and builds the Composition, then applies both presentation concerns. `TPageMain.ApplyTheme` delegates the active Theme to the Composition:
 
 ```pascal
 procedure TPageMain.ApplyTheme;
 begin
-  FTheme.BackgroundGradient(Fill);
+  FComposition.ApplyTheme(FTheme);
 end;
 ```
 
-Runtime switching is prepared through:
+`TPageMainComposition.DoApplyTheme` maps semantic tokens to the Form background, card, text, badges and action controls. `TPageCompositionBase` applies the same Theme to the common window controls and keeps the most recently applied Theme so hover behavior follows runtime changes.
 
-```pascal
-procedure TPageMain.ChangeTheme(const AValue: TDockHubThemeType);
-begin
-  if FTheme.Theme = AValue then
-    Exit;
+Runtime switching remains explicit through `TPageMain.ChangeTheme`: the Theme instance changes state and the existing visual tree is updated through `ApplyTheme`; controls are not rebuilt.
 
-  FTheme.Theme(AValue);
-  ApplyTheme;
-end;
-```
+`ApplyTheme` is accepted only after the Composition has completed `Build` successfully. This lifecycle rule belongs to `TPageCompositionBase`, not to the Theme subsystem.
 
-No visual theme selector currently invokes `ChangeTheme`. The method exists, but a user-facing selection control is not documented as implemented.
+No visual Theme selector currently invokes `ChangeTheme`. The method exists, but a user-facing selection control is not documented as implemented.
 
-## 13. Applying Theme to future View controls
+## 13. Applying Theme to View controls
 
-As a View gains controls, its `ApplyTheme` method should map each component to the existing semantic token that represents its visual responsibility. Examples include:
+Page-specific Composition maps each component to the existing semantic token that represents its visual responsibility. Current Main examples include:
 
 ```text
 form background       → BackgroundGradient / Background
@@ -370,7 +353,7 @@ Theme coverage currently includes:
 
 The Theme tests use the real `TDockHubTheme` implementation through an `IDockHubTheme` reference. Expected palette values are centralized in test-only records/functions rather than duplicated across individual assertions.
 
-There is currently **no automated `TPageMain` integration test**. The successful Theme fixture therefore proves the Theme contract/implementation behavior exercised by those tests, not the visual rendering of the Main View.
+The source now contains an FMX `TPageMainComposition` integration fixture in addition to the Theme fixture. The latest supplied execution XML predates that Page Composition fixture, so historical execution evidence still proves only the tests present in that older run; it does not validate the current Main integration source.
 
 See [Automated Tests](../../../tests/README.md) for the complete inventory and latest execution reference.
 
@@ -449,4 +432,4 @@ Ignored     : 0
 
 The XML result does not contain a leak-count field, so this document does not infer a leak result from that artifact.
 
-Within the 34 tests, `TDockHubThemeTests` contains 17 successful Theme tests. There is no `TPageMain` integration fixture at this time.
+Within that historical 34-test execution, `TDockHubThemeTests` contains 17 successful Theme tests. The current source also contains Page Composition contract/integration fixtures, but they are not present in that historical XML.

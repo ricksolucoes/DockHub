@@ -13,8 +13,11 @@ uses
   DockHub.Core.Language.Contracts in 'src\core\language\contracts\DockHub.Core.Language.Contracts.pas',
   DockHub.Core.Language.Translations.PtBR in 'src\core\language\Translations\DockHub.Core.Language.Translations.PtBR.pas',
   DockHub.Core.Language.Translations.EnUS in 'src\core\language\Translations\DockHub.Core.Language.Translations.EnUS.pas',
-  DockHub.View.Page.Main in 'src\view\Page\Main\DockHub.View.Page.Main.pas' {PageMain},
-  DockHub.View.Page.Main.Composition in 'src\view\Page\Main\Composition\DockHub.View.Page.Main.Composition.pas';
+  DockHub.View.Page.Main in 'src\view\Page\DockHub.View.Page.Main.pas' {PageMain},
+  DockHub.View.Page.Impl.Main.Composition in 'src\view\Page\Impl\Main\DockHub.View.Page.Impl.Main.Composition.pas',
+  DockHub.View.Page.Contracts in 'src\view\Page\Contracts\DockHub.View.Page.Contracts.pas',
+  DockHub.View.Page.Composition.Impl.Base in 'src\view\Page\Impl\DockHub.View.Page.Composition.Impl.Base.pas',
+  DockHub.View.Page.Types in 'src\view\Page\Types\DockHub.View.Page.Types.pas';
 
 {$R *.res}
 

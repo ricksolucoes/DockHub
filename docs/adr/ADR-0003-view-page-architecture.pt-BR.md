@@ -2,9 +2,13 @@
 
 [English — Official](./ADR-0003-view-page-architecture.md)
 
-- **Status:** Aceito
+- **Status:** Substituído
 - **Escopo:** `DockHub.View.Page`
 - **Tipo de decisão:** Organização estrutural da View / composição visual runtime
+
+> **Substituído por:** [ADR-0004 — Arquitetura de Composição das Pages da View](./ADR-0004-view-page-composition-architecture.pt-BR.md)
+>
+> Este ADR é preservado como decisão histórica que antecedeu a arquitetura atual de composition baseada em `Types / Contracts / Impl`.
 
 ## Contexto
 
@@ -238,20 +242,20 @@ A referência de integração deve ser revalidada quando a revisão da dependên
 
 ## Estado inicial desta decisão
 
-A estrutura física de `Page/Main/Composition` e a primeira unit `DockHub.View.Page.Main.Composition` foram criadas.
+A estrutura física de `Page/Main/Composition` está implementada e a `Main` já utiliza `TPageMainComposition` em runtime.
 
-A integração funcional entre essa Composition e `TPageMain` ainda não é considerada implementada por esta decisão.
+A implementação atual confirma:
 
-Consequentemente, este ADR não afirma a existência de:
-
-- método `Build` específico no DockHub;
-- interface de Composition;
-- record de controles;
-- callbacks já conectados;
-- construção efetiva de controles pela nova unit;
-- mecanismo de navegação.
-
-Esses elementos devem ser documentados somente depois de existirem no código.
+- boundary físico da Main;
+- namespace `DockHub.View.Page.Main`;
+- namespace `DockHub.View.Page.Main.Composition`;
+- `TPageMain` responsável por ciclo de vida, Language, Theme e semântica das ações da janela;
+- `TPageMainComposition` responsável por toda a criação visual runtime da Main;
+- RickUIBuilder utilizado pela Composition para os controles suportados pela biblioteca;
+- card estrutural criado pela Composition através de FMX;
+- `ApplyLanguage` e `ApplyTheme` delegados à Composition para os controles internos;
+- callbacks explícitos de minimizar e fechar;
+- ações administrativas ainda não implementadas mantidas desabilitadas.
 
 ## Consequências
 
@@ -309,7 +313,7 @@ Reavaliar este ADR quando ocorrer um ou mais dos seguintes pontos:
 
 Esta decisão foi validada estruturalmente contra as regras atuais de organização, SRP, Separation of Concerns, KISS, YAGNI, direção de dependências e crescimento documentado do DockHub.
 
-Nenhuma compilação ou execução de testes é reivindicada por este ADR. A criação/alteração de código runtime deverá passar pelos quality gates normais quando for implementada.
+A integração runtime `Main`/`Main.Composition` descrita por este ADR está implementada. Este ADR, isoladamente, não reivindica compilação nem execução de testes; o estado atual de validação está documentado em [tests/README.pt-BR.md](../../tests/README.pt-BR.md).
 
 ## Documentação relacionada
 

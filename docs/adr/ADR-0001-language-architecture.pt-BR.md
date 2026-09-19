@@ -101,7 +101,7 @@ As units de idioma recebem um callback de registro em vez de acesso direto ao di
 
 ### 10. Atualização da View
 
-A UI atual utiliza `ApplyLanguage` explicitamente em cada View. `TPageMain` aplica o Caption chamando `Translate`.
+A UI atual utiliza um fluxo explícito de `ApplyLanguage` coordenado por cada View. `TPageMain` mantém o estado ativo de `IDockHubLanguage` e delega o mapeamento de apresentação para `IPageCompositionMain.ApplyLanguage`; `TPageMainComposition` resolve as chaves da Main e as aplica ao caption da Form e aos controles runtime.
 
 Notificação automática por Observer/evento foi propositalmente adiada até que múltiplas janelas ou componentes independentes justifiquem essa necessidade.
 
@@ -162,4 +162,4 @@ Reavaliar quando ocorrer um ou mais dos seguintes pontos:
 
 ## Validação
 
-A suíte DUnitX atual foi executada com 17 testes aprovados, 0 falhas, 0 erros e 0 leaks. Os testes atuais cobrem diretamente helpers, idioma default, troca em runtime, Caption da Main em `PtBR` e `EnUS` e exceções de chave ausente. A cobertura direta dos branches de fallback/cache permanece pendente até existir uma chave de produção adequada ou um seam específico de teste no futuro.
+A última execução DUnitX fornecida contém 17 testes de Language aprovados dentro da execução histórica de 34 testes datada de 2026-09-13. A fixture atual de Language continua declarando 17 testes, mas suas assertions das traduções da Main foram ampliadas depois daquele XML; portanto, a execução permanece como evidência histórica e não como prova do fonte atual. A cobertura direta dos branches de fallback/cache permanece pendente até existir uma chave de produção adequada ou um seam específico de teste no futuro.
