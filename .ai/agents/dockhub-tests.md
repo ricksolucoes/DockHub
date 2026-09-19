@@ -368,35 +368,93 @@ Leia o runner atual antes de modificá-lo.
 
 ## 22. Runner
 
-Pode conter:
+O padrão atual do DockHub possui um entry point FMX deliberado:
 
-- console logger;
-- XML logger;
-- RTTI;
-- `FailsOnNoAsserts`;
-- `ExitBehavior`;
-- comportamento de CI;
-- integração condicional com TestInsight.
+```text
+execução normal
+→ `DockHub.Tests.dpr`
+→ `RunDockHubTests`
+→ runner FMX local `DockHub.Tests.Runner.FMX`
+→ interface criada em runtime, sem `.fmx`
+→ cada `RunSuite` registra logger NUnit XML antes de `Execute`
+```
 
-Não remova comportamento existente apenas para simplificar.
+O `DockHub.Tests.dpr` corrente não possui branches ativos `TESTINSIGHT` ou `CI`. Implementações anteriores desses modos podem existir em histórico/backup, mas histórico não é fonte da verdade para o comportamento atual. Não descreva TestInsight, console CI ou propagação de `ExitCode` como funcionalidades ativas sem confirmar sua presença no código corrente.
+
+O projeto `DockHub.Tests.dproj` é uma aplicação FMX (`AppType=Application`). O runner local existe por uma restrição confirmada no ambiente atual: `DUNitX.Loggers.GUIX` lançou `EReadError` ao desserializar `GUIXTestRunner.FormFactor.Devices` (`Invalid property value`). Por isso, não reintroduza o GUIX baseado em recurso `.fmx` sem validar explicitamente a versão do Delphi/DUnitX em uso.
+
+A interface do runner local possui dois contratos visuais distintos e complementares:
+
+```text
+seleção pré-execução
+→ árvore fixture/teste com checkboxes
+→ pesquisa por fixture/teste
+→ Todos / Nenhum / Inverter
+→ contador selecionados/total
+→ Executar selecionados / Executar todos
+→ duplo clique executa somente um teste
+
+resultado pós-execução
+→ resumo por status
+→ agrupamento por fixture
+→ status textual
+→ cor semântica
+→ indicador lateral
+→ filtros rápidos
+→ painel de detalhes
+```
+
+A seleção de execução e os filtros de resultado não são o mesmo estado. Alterar `Todos/Falhas/Erros/Leaks/Ignorados` deve mudar somente a visualização da última execução; nunca deve alterar silenciosamente quais testes estão marcados para a próxima execução.
+
+A seleção focada deve reutilizar o modelo runtime do DUnitX (`ITestRunner.BuildFixtures`, `ITestFixture`, `ITest.Enabled`). Não implemente um mecanismo paralelo de descoberta de fixtures ou testes. `Executar todos` deve executar a suíte completa sem destruir o subconjunto corrente; `Executar selecionados` deve executar somente os testes marcados; duplo clique em um teste deve executar somente aquele teste e preservar a seleção existente.
+
+A cor nunca deve ser o único meio de comunicar o resultado. `Pass`, `Failure`, `Error`, `Ignored`, `MemoryLeak` e `Warning` devem continuar distinguíveis por texto mesmo sem percepção de cor. As paletas `Dark` e `Light` usadas pelo runner são privadas da infraestrutura de testes: não introduza dependência de `IDockHubTheme` ou de outra implementação de Theme da produção, pois o runner precisa continuar funcional justamente quando esse módulo estiver sob teste ou com falha.
+
+O tema interativo possui persistência própria e não é configuração de negócio do DockHub. Persista somente o identificador `Dark`/`Light` em `DockHub.Tests.ini`, no mesmo diretório do executável de testes, obtido por `TPath.GetDirectoryName(ParamStr(0))`, seção `[Appearance]`, chave `Theme`. `Dark` é o fallback obrigatório quando o arquivo/chave não existir, o valor for inválido, o path não puder ser determinado ou ocorrer erro de leitura. Erro de escrita da preferência nunca deve impedir a troca do tema na sessão nem a execução dos testes. Não serialize cores individuais e não faça a inicialização do runner depender do sucesso da persistência.
+
+Ao alterar o runner:
+
+1. leia `tests/DockHub.Tests.dpr`, `.dproj` e `tests/Runner/DockHub.Tests.Runner.FMX.pas`;
+2. inspecione a implementação de DUnitX realmente disponível no ambiente quando a decisão depender da API do framework;
+3. preserve o entry point FMX code-only atual, salvo autorização explícita para alterar a estratégia;
+4. preserve a geração de NUnit XML em `RunSuite` enquanto ela fizer parte do comportamento corrente;
+5. preserve a separação entre seleção pré-execução e filtros pós-execução;
+6. preserve a seleção atual ao executar `Executar todos` ou um teste isolado por duplo clique;
+7. use os contratos de seleção do próprio DUnitX em vez de criar um catálogo paralelo de testes;
+8. preserve os temas privados `Dark`/`Light`, com `Dark` como fallback obrigatório quando não houver preferência válida;
+9. preserve a persistência de aparência como best-effort: falha de leitura/escrita não pode bloquear a GUI nem contaminar a execução da suíte;
+10. ao trocar de tema em runtime, atualize controles já existentes sem alterar seleção pré-execução, filtro pós-execução ou resultados armazenados;
+11. não reintroduza TestInsight/CI por suposição ou com base em arquivos de histórico; qualquer novo modo precisa ser requisito explícito e validado no código corrente.
+
+Todas as fixtures atuais são registradas explicitamente com `TDUnitX.RegisterTestFixture`. Mantenha esse registro ao adicionar fixtures, salvo mudança deliberada e revalidada da estratégia.
+
+Não copie APIs de exemplos externos sem verificar a versão real de DUnitX usada pelo projeto.
 
 ## 23. TestInsight
 
-Código condicional para TestInsight comprova apenas suporte condicional no fonte.
+No snapshot atual, `DockHub.Tests.dpr` não contém branch `TESTINSIGHT`.
 
-Não comprova instalação, ativação ou execução real.
+Histórico ou backup que contenha essa integração não comprova suporte atual. Se TestInsight voltar a ser requisito, trate a reintrodução como alteração explícita de runner e valide compilação/execução reais.
 
 ## 24. CI e ExitCode
 
-Nunca neutralize erro de processo para “deixar pipeline verde”.
+No snapshot atual não existe branch dedicado `CI` no `DockHub.Tests.dpr`, nem há evidência no entry point corrente de propagação específica de `ExitCode` para automação.
 
-Falha de teste deve continuar propagando status de falha apropriado.
+Não afirme suporte CI/ExitCode com base em versões históricas. Se automação headless voltar a ser requisito, implemente e valide esse fluxo separadamente, preservando o runner interativo conforme o escopo autorizado.
 
 ## 25. XML de execução
 
-Quando houver resultado XML, leia os campos reais.
+O runner FMX corrente registra `TDUnitXXMLNUnitFileLogger` dentro de `RunSuite`, usando `TDUnitX.Options.XMLOutputFile`, antes de executar os testes.
 
-Possíveis campos:
+Consequências:
+
+- execução completa gera XML da suíte executada;
+- execução seletiva gera XML do subconjunto efetivamente executado;
+- uma execução posterior pode substituir o artefato anterior;
+- `dunitx-results.xml` é evidência regenerável, não documentação versionada;
+- o repositório atual já ignora o diretório `app/` onde o executável e o XML padrão são produzidos no fluxo Debug fornecido.
+
+Quando houver resultado XML, leia os campos reais. Possíveis campos incluem:
 
 ```text
 total
@@ -413,7 +471,9 @@ result
 success
 ```
 
-Cruze nomes de fixtures e casos com o código atual.
+Cruze nomes de fixtures e casos com o código atual. Não use um XML antigo como evidência de uma execução nova apenas porque o arquivo ainda existe localmente.
+
+Para documentação, registre os números confirmados e a data/hora da execução quando relevante; mantenha o XML como artefato local/regenerável, salvo requisito explícito em contrário.
 
 ## 26. Evidência
 

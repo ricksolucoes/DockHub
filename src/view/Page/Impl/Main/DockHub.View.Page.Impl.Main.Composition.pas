@@ -73,6 +73,8 @@ uses
   FMX.Types,
   FMX.Graphics,
 
+  System.SysUtils,
+
   DockHub.Core.Language.Keys.View.Main,
 
   Rick.UIBuilder;
@@ -172,7 +174,7 @@ begin
     .Build(FCard);
 
   FSubtitleLabel := TRickUIBuilder.Label_
-    .Text('')
+    .Text(EmptyStr)
     .Position(_CONTENT_MARGIN, 48)
     .Size(220, 24)
     .FontSize(16)
@@ -187,35 +189,35 @@ end;
 procedure TPageMainComposition.BuildRuntimeStatus;
 begin
   FServiceLabel := TRickUIBuilder.Label_
-    .Text('')
+    .Text(EmptyStr)
     .Position(_CONTENT_MARGIN, 112)
     .Size(173, 26)
     .FontSize(15)
     .Build(FCard);
 
   FApiLabel := TRickUIBuilder.Label_
-    .Text('')
+    .Text(EmptyStr)
     .Position(_CONTENT_MARGIN, 151)
     .Size(173, 26)
     .FontSize(15)
     .Build(FCard);
 
   FPortLabel := TRickUIBuilder.Label_
-    .Text('')
+    .Text(EmptyStr)
     .Position(_CONTENT_MARGIN, 186)
     .Size(173, 26)
     .FontSize(15)
     .Build(FCard);
 
   FEnvironmentLabel := TRickUIBuilder.Label_
-    .Text('')
+    .Text(EmptyStr)
     .Position(_CONTENT_MARGIN, 219)
     .Size(173, 26)
     .FontSize(15)
     .Build(FCard);
 
   FServiceBadge := TRickUIBuilder.Badge
-    .Text('')
+    .Text(EmptyStr)
     .Position(_VALUE_LEFT, 113)
     .Size(_VALUE_WIDTH, 27)
     .Pill(True)
@@ -223,7 +225,7 @@ begin
     .Build(FCard);
 
   FApiBadge := TRickUIBuilder.Badge
-    .Text('')
+    .Text(EmptyStr)
     .Position(_VALUE_LEFT, 152)
     .Size(_VALUE_WIDTH, 27)
     .Pill(True)
@@ -261,7 +263,7 @@ end;
 procedure TPageMainComposition.BuildServiceActions;
 begin
   FInstallButton := TRickUIBuilder.Button
-    .Caption('')
+    .Caption(EmptyStr)
     .Position(_CONTENT_MARGIN, 290)
     .Size(_ACTION_BUTTON_WIDTH, _ACTION_BUTTON_HEIGHT)
     .CornerRadius(16)
@@ -272,7 +274,7 @@ begin
   FInstallCaption := FindButtonCaption(FInstallButton);
 
   FUninstallButton := TRickUIBuilder.Button
-    .Caption('')
+    .Caption(EmptyStr)
     .Position(_ACTION_RIGHT_LEFT, 290)
     .Size(_ACTION_BUTTON_WIDTH, _ACTION_BUTTON_HEIGHT)
     .CornerRadius(16)
@@ -283,7 +285,7 @@ begin
   FUninstallCaption := FindButtonCaption(FUninstallButton);
 
   FStartButton := TRickUIBuilder.Button
-    .Caption('')
+    .Caption(EmptyStr)
     .Position(_CONTENT_MARGIN, 348)
     .Size(_ACTION_BUTTON_WIDTH, _ACTION_BUTTON_HEIGHT)
     .CornerRadius(16)
@@ -294,7 +296,7 @@ begin
   FStartCaption := FindButtonCaption(FStartButton);
 
   FStopButton := TRickUIBuilder.Button
-    .Caption('')
+    .Caption(EmptyStr)
     .Position(_ACTION_RIGHT_LEFT, 348)
     .Size(_ACTION_BUTTON_WIDTH, _ACTION_BUTTON_HEIGHT)
     .CornerRadius(16)
@@ -308,7 +310,7 @@ end;
 procedure TPageMainComposition.BuildResourceActions;
 begin
   FConfigButton := TRickUIBuilder.Button
-    .Caption('')
+    .Caption(EmptyStr)
     .Position(_CONTENT_MARGIN, 409)
     .Size(_ACTION_BUTTON_WIDTH, 36)
     .CornerRadius(16)
@@ -320,7 +322,7 @@ begin
   FConfigCaption := FindButtonCaption(FConfigButton);
 
   FLogsButton := TRickUIBuilder.Button
-    .Caption('')
+    .Caption(EmptyStr)
     .Position(_ACTION_RIGHT_LEFT, 409)
     .Size(_ACTION_BUTTON_WIDTH, 36)
     .CornerRadius(16)

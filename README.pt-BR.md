@@ -604,7 +604,7 @@ Serviços de aplicação e regras de negócio serão introduzidos progressivamen
 ### Qualidade
 
 * [x] Testes unitários/contrato — existe cobertura DUnitX para `Core.Language`, `View.Theme` e para o contrato de lifecycle de `TPageCompositionBase`.
-* [x] Testes de integração — existe fixture FMX para `Main.Composition`; as fixtures atuais de Page Composition ainda precisam de nova execução real no RAD Studio para registrar resultados atuais.
+* [x] Testes de integração — a fixture FMX de `Main.Composition` está incluída na execução DUnitX atual de 58 casos, todos reportados como `Success` no XML NUnit fornecido.
 * [ ] Testes da API.
 * [ ] Documentação da API.
 * [ ] Health checks.
@@ -653,7 +653,7 @@ Detalhes específicos das integrações não devem contaminar desnecessariamente
 
 ## 🧪 Estratégia de Testes
 
-O DockHub possui um projeto DUnitX com testes de `Core.Language`, `View.Theme`, do contrato de lifecycle de `TPageCompositionBase` e uma fixture de integração FMX para `Main.Composition`. A execução atual fornecida registra **58 encontrados / 58 aprovados / 0 ignorados / 0 leaks / 0 falhas / 0 erros**. Um relatório Method Toxicity do RAD Studio para `DockHub.Tests.dproj` apresenta maior Toxicity reportada/exibida de **0,400**, abaixo do threshold **1** do projeto. Detalhes e limites da evidência estão documentados em `docs/testing/README.pt-BR.md`.
+O DockHub possui um projeto DUnitX com testes de `Core.Language`, `View.Theme`, do contrato de lifecycle de `TPageCompositionBase` e uma fixture de integração FMX para `Main.Composition`. A execução NUnit XML fornecida, datada de **2026-09-19**, registra **58 total / 0 falhas / 0 erros / 0 ignorados**, com os 58 casos marcados como `Success`. O relatório Method Toxicity do RAD Studio fornecido para `DockHub.Tests.dproj` apresenta maior Toxicity reportada/exibida de **0,508**, abaixo do threshold **1** do projeto. O XML NUnit não expõe uma contagem separada de memory leaks do DUnitX. Detalhes e limites da evidência estão documentados em `docs/testing/README.pt-BR.md`.
 
 Detalhes atuais: [Testes Automatizados](./docs/testing/README.pt-BR.md).
 

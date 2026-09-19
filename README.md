@@ -649,7 +649,7 @@ Integration-specific implementation details should not unnecessarily leak into a
 
 ## 🧪 Testing Strategy
 
-DockHub has a DUnitX project with tests for `Core.Language`, `View.Theme`, the `TPageCompositionBase` lifecycle contract, and an FMX integration fixture for `Main.Composition`. The supplied current execution reports **58 found / 58 passed / 0 ignored / 0 leaked / 0 failed / 0 errored**. A RAD Studio Method Toxicity report for `DockHub.Tests.dproj` shows a highest reported/displayed Toxicity of **0.400**, below the project threshold of **1**. Details and evidence limits are documented in `docs/testing/README.md`.
+DockHub has a DUnitX project with tests for `Core.Language`, `View.Theme`, the `TPageCompositionBase` lifecycle contract, and an FMX integration fixture for `Main.Composition`. The supplied NUnit XML execution dated **2026-09-19** reports **58 total / 0 failures / 0 errors / 0 ignored**, with all 58 test cases marked `Success`. The supplied RAD Studio Method Toxicity report for `DockHub.Tests.dproj` shows a highest reported/displayed Toxicity of **0.508**, below the project threshold of **1**. The NUnit XML does not expose a separate DUnitX memory-leak count. Details and evidence limits are documented in `docs/testing/README.md`.
 
 Current details: [Automated Tests](./docs/testing/README.md).
 

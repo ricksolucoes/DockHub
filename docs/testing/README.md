@@ -15,6 +15,8 @@ tests/
 │   ├── DockHub.Tests.View.Theme.pas
 │   ├── DockHub.Tests.View.Page.Composition.Base.pas
 │   └── DockHub.Tests.View.Page.Main.Composition.pas
+├── Runner/
+│   └── DockHub.Tests.Runner.FMX.pas
 ├── DockHub.Tests.dpr
 └── DockHub.Tests.dproj
 ```
@@ -37,7 +39,25 @@ The current suite was executed in RAD Studio/DUnitX with the evidence supplied f
 
 ## Framework and runner
 
-The runner uses DUnitX. Without `TESTINSIGHT`, the project runs as a console application and registers console plus NUnit-compatible XML logging. With `TESTINSIGHT`, it uses `TestInsight.DUnitX`.
+The test project uses DUnitX with DockHub's own FMX GUI runner (`DockHub.Tests.Runner.FMX`), created entirely in code with no `.fmx` resource. The current `DockHub.Tests.dpr` calls `RunDockHubTests` directly; this snapshot has no active `TESTINSIGHT` or `CI` branches in the project entry point.
+
+The project no longer uses `DUNitX.Loggers.GUIX`. In the current Delphi environment, that runner's embedded FMX resource raised `EReadError` while loading `GUIXTestRunner.FormFactor.Devices`, with `Invalid property value`. The local runner avoids that dependency by creating the full interface at runtime through `CreateNew`.
+
+The project remains an FMX application (`AppType=Application`). `RunDockHubTests` calls `TDUnitX.CheckCommandLine`, initializes the application and opens `TDockHubTestsRunnerForm`.
+
+Every effective full-suite or subset execution passes through `RunSuite`. At that point the runner registers `TDUnitXXMLNUnitFileLogger` with `TDUnitX.Options.XMLOutputFile` before `Execute`. Therefore the GUI flow itself generates NUnit XML for the execution that actually ran; selective execution produces XML for the selected subset.
+
+`dunitx-results.xml` is a **regenerable execution artifact**, not project documentation. It should be used as evidence for updating documented numbers, but it should not be versioned by default. In the current repository the `app/` output directory is already covered by `.gitignore`. When no alternate XML destination is supplied to DUnitX, the supplied execution shows the file being generated next to the test executable under `App\Debug`.
+
+The interactive runner has two complementary surfaces: **test selection before execution** and **result diagnosis after execution**. The selection pane exposes the DUnitX fixture/test hierarchy with checkboxes, fixture/test search, `All` / `None` / `Invert`, selected-test count, **Run selected** and **Run all**, plus single-test execution by double-click without changing the current selection. Fixture rows show `selected/total`, keeping partial selection visible even with the FMX TreeView's binary checkbox.
+
+The result surface remains independent from execution selection: summary cards expose counters from the latest execution, tests are grouped by fixture, each result combines textual status with semantic color and a side indicator, quick filters isolate failures/errors/leaks/ignored cases, and selecting a row opens message/expected/actual/stack-trace details when available. The runner owns a small private palette and does not depend on production `IDockHubTheme`, so a Theme-module failure cannot prevent the test UI itself from rendering.
+
+The runner provides **Dark** and **Light** themes, selectable from the toolbar and applied at runtime without rebuilding the suite or changing test selection. The preference is persisted only as the `Dark`/`Light` identifier in `DockHub.Tests.ini`, in the **same directory as the test executable**, obtained through `TPath.GetDirectoryName(ParamStr(0))`, section `[Appearance]`, key `Theme`. **Dark** is the safe default: it is used when the file does not exist, the key is missing, the stored value is invalid, or the preference cannot be read. A persistence-write failure does not prevent the GUI from operating; a later start falls back to Dark if no valid preference is available. Individual palette colors are not serialized.
+
+Selection uses DUnitX's own runtime model. The runner builds its catalog with `ITestRunner.BuildFixtures`, preserves user choices in discovered `ITest.Enabled` flags, and applies the selected tests' full names to the execution runner before `Execute`. `Run all` temporarily ignores the subset without modifying it; `Run selected` executes only checked tests; double-click runs only that test while preserving the existing selection.
+
+All current fixtures explicitly call `TDUnitX.RegisterTestFixture`. Explicit fixture registration is the current DockHub convention and should be preserved so the current runner sees the same suite on every execution.
 
 ## Search paths
 
@@ -124,34 +144,44 @@ The fixture validates observable FMX behavior and does not expose private Main C
 
 ## Latest executed result
 
-The supplied DUnitX execution for the current 58-test suite reports:
+The supplied `dunitx-results.xml` for the current runner records a real execution at **2026-09-19 10:52:19** with:
 
 ```text
-Tests Found   : 58
-Tests Ignored : 0
-Tests Passed  : 58
-Tests Leaked  : 0
-Tests Failed  : 0
-Tests Errored : 0
+total        : 58
+errors       : 0
+failures     : 0
+ignored      : 0
+inconclusive : 0
+not-run      : 0
+skipped      : 0
+invalid      : 0
+assembly     : Success
 ```
 
-For this snapshot, the source inventory and the executed runner result both contain 58 tests.
+All **58 `test-case`** elements in the XML are marked as executed with `result="Success"` / `success="True"`. For this snapshot, the source inventory and the XML execution both contain 58 tests.
 
-This result proves the runner-reported execution status above. It does not, by itself, prove code coverage, thread safety or behavior outside the executed cases.
+This XML proves the cases and results it contains. By itself it does not prove code coverage, thread safety, behavior outside the executed cases, or a separate memory-leak count because the supplied NUnit format has no dedicated leak field.
+
+The XML is evidence for one execution and may be replaced by the next run; the confirmed numbers are therefore documented here while `dunitx-results.xml` remains out of version control by default.
+
+### Build evidence
+
+The supplied RAD Studio capture records a real compilation of `DockHub.Tests.dproj` in **Debug / Win32** with result **Success**.
+
+The same compilation also reports:
+
+```text
+DockHub.View.Page.Composition.Impl.Base.pas(1): Line endings are LF, but RAD Studio requires CRLF. Consider converting or check your source control settings.
+```
+
+Therefore real compilation is confirmed for that configuration, but a **warning/message-free build is not confirmed**.
 
 ## Method Toxicity — test project
 
-A RAD Studio Method Toxicity report was supplied for `DockHub.Tests.dproj`. The highest **reported/displayed Toxicity value** in that evidence is:
+A real RAD Studio Method Toxicity report was supplied for `DockHub.Tests.dproj`. The highest **reported/displayed Toxicity value** in the current capture, sorted by Toxicity, is:
 
 ```text
-0.400
-```
-
-Examples at that value include:
-
-```text
-TDockHubPageCompositionBaseTests.FindLabelByText
-TDockHubPageMainCompositionTests.FindLabelByText
+0.508
 ```
 
 Project threshold for `Toxicity`:
@@ -160,11 +190,9 @@ Project threshold for `Toxicity`:
 1
 ```
 
-Therefore the highest reported value in the supplied evidence is below the project threshold.
+Therefore the highest displayed value in the supplied evidence is below the project threshold.
 
-The screenshot was ordered by Toxicity; it is not used to claim project-wide maxima for `Length`, `Parameters`, `If Depth` or `Cyclomatic Complexity` beyond what is actually visible.
-
-The Theme test refactor also groups palette assertions by cohesive areas and keeps `AssertThemePalette` as the orchestrator, reducing method toxicity without changing the tested Theme behavior.
+The capture is used only for values actually visible in it. It is not used to claim project-wide maxima for `Length`, `Parameters`, `If Depth` or `Cyclomatic Complexity` beyond what the image proves, nor to reconstruct the internal `Toxicity` formula manually.
 
 ## Running the current suite
 
@@ -172,8 +200,13 @@ The Theme test refactor also groups palette assertions by cohesive areas and kee
 2. Select the `DockHub.Tests` project.
 3. Select the desired configuration/platform.
 4. Compile the test project.
-5. Run DUnitX or TestInsight.
-6. Treat the actual runner/XML result as the execution authority.
+5. Run the project normally to open `DockHub.Tests.Runner.FMX`. On first run, or whenever no valid theme preference exists, the runner starts in **Dark**.
+6. Use the toolbar **Theme** selector to switch between **Dark** and **Light**. A valid choice is restored on the next start through `DockHub.Tests.ini`, stored next to the test executable.
+7. Use the left selection tree to check/uncheck an entire fixture or individual tests. Use the search field to locate fixtures/tests; `All`, `None` and `Invert` operate on the complete catalog, not only on currently visible search results.
+8. Use **Run selected** to execute the checked subset, **Run all** to execute the complete suite without losing the current subset, or double-click a test to execute only that test while preserving the current selection.
+9. Use the summary cards, fixture groups and quick result filters to navigate the result set. Select a result row to inspect status, message, comparable expected/actual values when available, and stack trace.
+10. After each execution, use the generated NUnit XML as regenerable evidence for that run when results must be recorded or integrated with external tooling.
+11. Do not version `dunitx-results.xml` as documentation. Update documented numbers only from an identifiable real execution.
 
 For focused diagnosis, run the Page Composition contract fixture before the Main integration fixture, then run the complete suite.
 
@@ -198,6 +231,17 @@ When behavior changes:
 - distinguish contract/unit tests from FMX integration tests;
 - do not change production design merely to make a test easier;
 - update `DockHub.Tests.dpr` and `.dproj` when adding a fixture;
+- explicitly register each fixture with `TDUnitX.RegisterTestFixture` unless the current runner strategy is deliberately changed and revalidated;
+- preserve the current code-only FMX entry point and per-execution NUnit XML generation; do not document TestInsight/CI as active unless they exist in the current `DockHub.Tests.dpr`;
+- preserve semantic result communication with both text and color; color alone must never be the only state indicator;
+- preserve the separation between pre-execution selection and post-execution result filters; changing a result filter must never silently change which tests will execute;
+- keep `Run all` independent from the current subset, keep `Run selected` driven by checked tests, and preserve the user's selection when a single test is executed by double-click;
+- implement focused execution through DUnitX `BuildFixtures` / `ITest.Enabled` rather than a parallel test-discovery mechanism;
+- keep the interactive runner independent from production Theme contracts; its private `Dark`/`Light` palettes are infrastructure-only and must not make the test runner depend on the module it may need to test;
+- preserve `Dark` as the fallback when the appearance preference is missing, invalid or unreadable; persist only the theme identifier in `DockHub.Tests.ini`, next to the test executable, never individual color tokens;
+- preference read/write failures must never prevent the runner from starting or executing tests;
+- do not reintroduce `DUNitX.Loggers.GUIX` without revalidating its FMX resource in the actual Delphi version; the current runner is code-only specifically to avoid `.fmx` streaming incompatibility;
 - do not report a source test count as an executed/passed count;
-- update execution evidence only from a real runner result; do not infer pass status from source test counts;
+- update execution evidence only from a real runner/XML result; do not infer pass status from source test counts;
+- treat `dunitx-results.xml` as a regenerable execution artifact, not versioned documentation;
 - apply Method Toxicity Metrics to test code as well as production code.

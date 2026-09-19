@@ -5,12 +5,7 @@ interface
 {$SCOPEDENUMS ON}
 
 type
-  TPageCompositionState = (
-    Configuring,
-    Building,
-    Built,
-    Failed
-  );
+  TPageCompositionState = (Configuring, Building, Built, Failed);
 
 implementation
 
