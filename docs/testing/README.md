@@ -35,7 +35,7 @@ TDockHubPageMainCompositionTests     :  9
 Total                                : 59
 ```
 
-The current source inventory contains **59 declared tests**. The latest real execution evidence remains the previously supplied **58-test** XML run; the new window-control geometry regression test does not yet have real execution evidence.
+The current source inventory contains **59 declared tests**. The latest supplied NUnit XML records a real execution of all **59 tests**, including the window-control geometry regression test, with all test cases reported as successful.
 
 ## Framework and runner
 
@@ -145,10 +145,10 @@ The fixture validates observable FMX behavior and does not expose private Main C
 
 ## Latest executed result
 
-The supplied `dunitx-results.xml` for the current runner records a real execution at **2026-09-19 10:52:19** with:
+The supplied `dunitx-results.xml` for the current runner records a real execution at **2026-09-19 12:14:29** with:
 
 ```text
-total        : 58
+total        : 59
 errors       : 0
 failures     : 0
 ignored      : 0
@@ -159,7 +159,7 @@ invalid      : 0
 assembly     : Success
 ```
 
-All **58 `test-case`** elements in the XML are marked as executed with `result="Success"` / `success="True"`. The current source inventory contains **59 tests**; therefore this run remains the latest real execution evidence, but it does not include the new `WindowButtons_AreVisibleAndInsideClientBounds` regression test.
+All **59 `test-case`** elements in the XML are marked as executed with `result="Success"` / `success="True"`. The execution includes `WindowButtons_AreVisibleAndInsideClientBounds`, also reported as executed with `result="Success"` / `success="True"`. The source inventory and the latest real execution evidence therefore both contain **59 tests**.
 
 This XML proves the cases and results it contains. By itself it does not prove code coverage, thread safety, behavior outside the executed cases, or a separate memory-leak count because the supplied NUnit format has no dedicated leak field.
 
@@ -167,7 +167,7 @@ The XML is evidence for one execution and may be replaced by the next run; the c
 
 ### Build evidence
 
-The supplied RAD Studio capture records a real compilation of `DockHub.Tests.dproj` in **Debug / Win32** with result **Success**.
+The previously supplied RAD Studio capture records a real compilation of `DockHub.Tests.dproj` in **Debug / Win32** with result **Success**. The newer NUnit XML proves that an executable containing the new 59th test was actually run from `App\Debug`, but the XML does not provide compiler diagnostics and therefore does not replace the separate build log/capture.
 
 The same compilation also reports:
 
@@ -179,7 +179,7 @@ Therefore real compilation is confirmed for that configuration, but a **warning/
 
 ## Method Toxicity — test project
 
-A real RAD Studio Method Toxicity report was supplied for `DockHub.Tests.dproj`. The highest **reported/displayed Toxicity value** in the current capture, sorted by Toxicity, is:
+A real RAD Studio Method Toxicity report was previously supplied for `DockHub.Tests.dproj`. The highest **reported/displayed Toxicity value** in that evidence, sorted by Toxicity, is:
 
 ```text
 0.508
@@ -191,7 +191,7 @@ Project threshold for `Toxicity`:
 1
 ```
 
-Therefore the highest displayed value in the supplied evidence is below the project threshold.
+Therefore the highest displayed value in the supplied evidence is below the project threshold. Because no new Method Toxicity report was supplied after adding the 59th test, the real Toxicity measurement for the current 59-test source snapshot is **not confirmed**.
 
 The capture is used only for values actually visible in it. It is not used to claim project-wide maxima for `Length`, `Parameters`, `If Depth` or `Cyclomatic Complexity` beyond what the image proves, nor to reconstruct the internal `Toxicity` formula manually.
 

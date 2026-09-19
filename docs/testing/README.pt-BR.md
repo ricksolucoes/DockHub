@@ -35,7 +35,7 @@ TDockHubPageMainCompositionTests     :  9
 Total                                : 59
 ```
 
-O inventário atual possui **59 testes declarados**. A última execução real disponível permanece a execução de **58 testes** registrada no XML fornecido anteriormente; o novo teste de regressão de geometria dos controles de janela ainda não possui evidência real de execução.
+O inventário atual possui **59 testes declarados**. O XML NUnit mais recente fornecido registra uma execução real de todos os **59 testes**, incluindo o teste de regressão de geometria dos controles de janela, com todos os casos reportados como sucesso.
 
 ## Framework e runner
 
@@ -145,10 +145,10 @@ A fixture valida comportamento FMX observável e não expõe fields privados da 
 
 ## Último resultado executado
 
-O `dunitx-results.xml` fornecido para o runner atual registra uma execução real em **2026-09-19 10:52:19** com:
+O `dunitx-results.xml` fornecido para o runner atual registra uma execução real em **2026-09-19 12:14:29** com:
 
 ```text
-total        : 58
+total        : 59
 errors       : 0
 failures     : 0
 ignored      : 0
@@ -159,7 +159,7 @@ invalid      : 0
 assembly     : Success
 ```
 
-Os **58 `test-case`** presentes no XML estão marcados como executados com `result="Success"` / `success="True"`. O inventário atual do fonte possui **59 testes**; portanto, essa execução continua sendo a última evidência real disponível, mas não inclui o novo teste de regressão `WindowButtons_AreVisibleAndInsideClientBounds`.
+Os **59 `test-case`** presentes no XML estão marcados como executados com `result="Success"` / `success="True"`. A execução inclui `WindowButtons_AreVisibleAndInsideClientBounds`, também reportado como executado com `result="Success"` / `success="True"`. Portanto, o inventário do fonte e a evidência real de execução mais recente possuem **59 testes**.
 
 Esse XML comprova os casos e resultados que ele contém. Isoladamente, ele não comprova percentual de coverage, thread safety, comportamentos fora dos casos executados nem uma contagem separada de memory leaks, pois o formato NUnit fornecido não registra um campo específico de leaks.
 
@@ -167,7 +167,7 @@ O XML é evidência de uma execução e pode ser substituído pela execução se
 
 ### Evidência de build
 
-A captura do RAD Studio fornecida para este snapshot registra compilação real de `DockHub.Tests.dproj` em **Debug / Win32** com resultado **Success**.
+A captura do RAD Studio fornecida anteriormente registra compilação real de `DockHub.Tests.dproj` em **Debug / Win32** com resultado **Success**. O XML NUnit mais recente comprova que um executável contendo o novo 59º teste foi efetivamente executado a partir de `App\Debug`, mas o XML não contém diagnósticos do compilador e, portanto, não substitui o log/captura de build separado.
 
 A mesma compilação também registra a mensagem:
 
@@ -179,7 +179,7 @@ Portanto, a compilação real dessa configuração está confirmada pela evidên
 
 ## Method Toxicity — projeto de testes
 
-Foi fornecido um relatório real de Method Toxicity do RAD Studio para `DockHub.Tests.dproj`. O maior valor de **Toxicity reportado/exibido** na captura atual, ordenada por Toxicity, é:
+Foi fornecido anteriormente um relatório real de Method Toxicity do RAD Studio para `DockHub.Tests.dproj`. O maior valor de **Toxicity reportado/exibido** naquela evidência, ordenada por Toxicity, é:
 
 ```text
 0,508
@@ -191,7 +191,7 @@ Threshold do projeto para `Toxicity`:
 1
 ```
 
-Portanto, o maior valor exibido na evidência fornecida está abaixo do threshold do projeto.
+Portanto, o maior valor exibido na evidência fornecida está abaixo do threshold do projeto. Como não foi fornecido um novo relatório de Method Toxicity após a inclusão do 59º teste, a medição real de Toxicity para o snapshot atual com 59 testes está **Não confirmada**.
 
 A captura é utilizada somente para os valores efetivamente visíveis. Ela não é usada para afirmar máximos globais de `Length`, `Parameters`, `If Depth` ou `Cyclomatic Complexity` além do que pode ser comprovado na imagem, nem para reconstruir manualmente a fórmula de `Toxicity`.
 

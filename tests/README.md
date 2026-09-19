@@ -15,29 +15,31 @@ tests/
 │   ├── DockHub.Tests.View.Theme.pas
 │   ├── DockHub.Tests.View.Page.Composition.Base.pas
 │   └── DockHub.Tests.View.Page.Main.Composition.pas
+├── Runner/
+│   └── DockHub.Tests.Runner.FMX.pas
 ├── DockHub.Tests.dpr
 └── DockHub.Tests.dproj
 ```
 
 ## Source test inventory
 
-The current source declares **58 tests**:
+The current source declares **59 tests**:
 
 ```text
 TDockHubLanguageTypeTests            : 10
 TDockHubLanguageTests                :  7
 TDockHubThemeTests                   : 17
-TDockHubPageCompositionBaseTests     : 15
+TDockHubPageCompositionBaseTests     : 16
 TDockHubPageMainCompositionTests     :  9
                                         --
-Total                                : 58
+Total                                : 59
 ```
 
-This is a source-code inventory. It is **not** proof that all 58 tests compiled or executed successfully.
+The latest supplied NUnit XML matches this inventory: all **59 tests** were executed and reported as `Success`. Source counts and execution evidence are still documented separately so future source changes are not automatically treated as passed executions.
 
 ## Framework and runner
 
-The runner uses DUnitX. Without `TESTINSIGHT`, the project runs as a console application and registers console plus NUnit-compatible XML logging. With `TESTINSIGHT`, it uses `TestInsight.DUnitX`.
+The test project uses DUnitX with DockHub's code-only FMX runner (`DockHub.Tests.Runner.FMX`). The current `DockHub.Tests.dpr` calls `RunDockHubTests` directly. Each effective execution registers `TDUnitXXMLNUnitFileLogger`, so the GUI run generates NUnit XML for the suite or subset that actually executed. `dunitx-results.xml` is a regenerable execution artifact and is not project documentation.
 
 ## Search paths
 
@@ -78,7 +80,7 @@ This fixture is marked:
 
 It validates the public lifecycle/contract of `TPageCompositionBase` without exposing its private `FState` only for testing.
 
-The 15 source tests cover:
+The 16 source tests cover:
 
 - nil host Form rejection;
 - nil minimize callback rejection;
@@ -94,6 +96,7 @@ The 15 source tests cover:
 - idempotent second Build after `Built`;
 - Build failure becoming terminal and blocking retry;
 - common minimize/close callbacks;
+- window-control geometry regression coverage, including a `Width <> ClientWidth` scenario, visibility, client-area bounds, ordering and non-overlap;
 - common window hover using the most recently applied Theme.
 
 The fixture declares a test-only derived class that implements the abstract Template Method hooks. No production seam or public lifecycle-state accessor was added solely for test purposes.
@@ -124,19 +127,21 @@ The fixture validates observable FMX behavior and does not expose private Main C
 
 ## Latest available executed result
 
-The latest XML currently available at `tests/APP/Debug/dunitx-results.xml` is dated **2026-09-13** and reports:
+The supplied `dunitx-results.xml` records a real execution at **2026-09-19 12:14:29** with:
 
 ```text
-Total tests : 34
-Passed      : 34
-Ignored     : 0
-Failures    : 0
-Errors      : 0
+total        : 59
+errors       : 0
+failures     : 0
+ignored      : 0
+inconclusive : 0
+not-run      : 0
+skipped      : 0
+invalid      : 0
+assembly     : Success
 ```
 
-That XML predates both Page Composition fixtures and the expanded Main View translation assertions. It is historical evidence only.
-
-It does **not** validate the 58 tests currently declared in source and must not be presented as proof that the current test project passes.
+All **59 `test-case`** elements are marked as executed with `result="Success"` / `success="True"`. The run includes `WindowButtons_AreVisibleAndInsideClientBounds`, also reported as successful. This XML is evidence for that specific execution and may be replaced by a later run; it should remain out of version control by default.
 
 ## Running the current suite
 
@@ -144,8 +149,9 @@ It does **not** validate the 58 tests currently declared in source and must not 
 2. Select the `DockHub.Tests` project.
 3. Select the desired configuration/platform.
 4. Compile the test project.
-5. Run DUnitX or TestInsight.
-6. Treat the actual runner/XML result as the execution authority.
+5. Run the project normally to open `DockHub.Tests.Runner.FMX`.
+6. Execute the required subset or the complete suite.
+7. Treat the actual runner/NUnit XML result as the execution authority.
 
 For focused diagnosis, run the Page Composition contract fixture before the Main integration fixture, then run the complete suite.
 
@@ -171,4 +177,5 @@ When behavior changes:
 - do not change production design merely to make a test easier;
 - update `DockHub.Tests.dpr` and `.dproj` when adding a fixture;
 - do not report a source test count as an executed/passed count;
-- do not replace historical XML evidence until a new real execution exists.
+- update documented execution evidence only from a new real runner/XML result;
+- treat `dunitx-results.xml` as a regenerable execution artifact, not versioned documentation.

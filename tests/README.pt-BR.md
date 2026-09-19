@@ -15,29 +15,31 @@ tests/
 │   ├── DockHub.Tests.View.Theme.pas
 │   ├── DockHub.Tests.View.Page.Composition.Base.pas
 │   └── DockHub.Tests.View.Page.Main.Composition.pas
+├── Runner/
+│   └── DockHub.Tests.Runner.FMX.pas
 ├── DockHub.Tests.dpr
 └── DockHub.Tests.dproj
 ```
 
 ## Inventário de testes no fonte
 
-O código-fonte atual declara **58 testes**:
+O código-fonte atual declara **59 testes**:
 
 ```text
 TDockHubLanguageTypeTests            : 10
 TDockHubLanguageTests                :  7
 TDockHubThemeTests                   : 17
-TDockHubPageCompositionBaseTests     : 15
+TDockHubPageCompositionBaseTests     : 16
 TDockHubPageMainCompositionTests     :  9
                                         --
-Total                                : 58
+Total                                : 59
 ```
 
-Esse total é um inventário do código-fonte. Ele **não** prova que os 58 testes compilaram ou foram executados com sucesso.
+O XML NUnit mais recente fornecido corresponde a esse inventário: todos os **59 testes** foram executados e reportados como `Success`. A contagem no fonte e a evidência de execução continuam documentadas separadamente para que futuras alterações no fonte não sejam tratadas automaticamente como execuções aprovadas.
 
 ## Framework e runner
 
-O runner utiliza DUnitX. Sem `TESTINSIGHT`, o projeto executa como console e registra log no console e XML compatível com NUnit. Com `TESTINSIGHT`, utiliza `TestInsight.DUnitX`.
+O projeto de testes utiliza DUnitX com o runner FMX code-only do DockHub (`DockHub.Tests.Runner.FMX`). O `DockHub.Tests.dpr` atual chama `RunDockHubTests` diretamente. Cada execução efetiva registra `TDUnitXXMLNUnitFileLogger`, portanto a execução gráfica gera XML NUnit para a suíte ou subconjunto realmente executado. `dunitx-results.xml` é um artefato regenerável de execução e não documentação do projeto.
 
 ## Search paths
 
@@ -78,7 +80,7 @@ A fixture é marcada com:
 
 Ela valida o lifecycle/contrato público de `TPageCompositionBase` sem expor seu `FState` privado apenas para teste.
 
-Os 15 testes declarados cobrem:
+Os 16 testes declarados cobrem:
 
 - rejeição de Form host `nil`;
 - rejeição de callback de minimizar `nil`;
@@ -94,6 +96,7 @@ Os 15 testes declarados cobrem:
 - segundo Build idempotente após `Built`;
 - falha de Build tornando a instância terminal e bloqueando retry;
 - callbacks comuns de minimizar/fechar;
+- regressão de geometria dos controles de janela, incluindo cenário `Width <> ClientWidth`, visibilidade, bounds da área cliente, ordem e ausência de sobreposição;
 - hover comum de janela utilizando o Theme aplicado mais recentemente.
 
 A fixture declara uma classe derivada exclusiva dos testes para implementar os hooks abstratos de Template Method. Nenhum seam de produção ou accessor público do estado de lifecycle foi criado apenas para teste.
@@ -124,19 +127,21 @@ A fixture valida comportamento FMX observável e não expõe fields privados da 
 
 ## Último resultado executado disponível
 
-O XML mais recente atualmente disponível em `tests/APP/Debug/dunitx-results.xml` é de **2026-09-13** e registra:
+O `dunitx-results.xml` fornecido registra uma execução real em **2026-09-19 12:14:29** com:
 
 ```text
-Total de testes : 34
-Aprovados        : 34
-Ignorados        : 0
-Falhas           : 0
-Erros            : 0
+total        : 59
+errors       : 0
+failures     : 0
+ignored      : 0
+inconclusive : 0
+not-run      : 0
+skipped      : 0
+invalid      : 0
+assembly     : Success
 ```
 
-Esse XML é anterior às duas fixtures de Page Composition e às assertions ampliadas das traduções da Main. Ele é somente evidência histórica.
-
-Ele **não** valida os 58 testes atualmente declarados no fonte e não deve ser apresentado como prova de que o projeto de testes atual passa.
+Os **59 `test-case`** estão marcados como executados com `result="Success"` / `success="True"`. A execução inclui `WindowButtons_AreVisibleAndInsideClientBounds`, também reportado como sucesso. Esse XML é evidência daquela execução específica e pode ser substituído por uma execução posterior; ele deve permanecer fora do versionamento por padrão.
 
 ## Executando a suíte atual
 
@@ -144,8 +149,9 @@ Ele **não** valida os 58 testes atualmente declarados no fonte e não deve ser 
 2. Selecionar o projeto `DockHub.Tests`.
 3. Selecionar configuração/plataforma desejada.
 4. Compilar o projeto de testes.
-5. Executar DUnitX ou TestInsight.
-6. Tratar o resultado real do runner/XML como autoridade da execução.
+5. Executar o projeto normalmente para abrir `DockHub.Tests.Runner.FMX`.
+6. Executar o subconjunto necessário ou a suíte completa.
+7. Tratar o resultado real do runner/XML NUnit como autoridade da execução.
 
 Para diagnóstico focado, executar primeiro a fixture de contrato de Page Composition, depois a fixture de integração da Main e então a suíte completa.
 
@@ -171,4 +177,5 @@ Quando o comportamento mudar:
 - não alterar o design de produção apenas para facilitar um teste;
 - atualizar `DockHub.Tests.dpr` e `.dproj` ao adicionar fixture;
 - não apresentar quantidade de testes no fonte como quantidade executada/aprovada;
-- não substituir evidência histórica de XML sem nova execução real.
+- atualizar evidência documentada somente a partir de um novo resultado real do runner/XML;
+- tratar `dunitx-results.xml` como artefato regenerável de execução, não como documentação versionada.

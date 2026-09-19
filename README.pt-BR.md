@@ -520,7 +520,7 @@ O código atual já possui alguns componentes de fundação implementados, além
 - **subsistema de Theme da View** com `Blue`, `Teal`, `Light` e `Dark`, tokens semânticos de cor e integração do background da Main View;
 - **arquitetura de composition das Pages** organizada em `src/view/Page` com `Types`, `Contracts`, uma `TPageCompositionBase` abstrata e implementações específicas como `DockHub.View.Page.Impl.Main.Composition`;
 - **projeto de testes automatizados DUnitX** incluído no project group;
-- **58 testes DUnitX executados e aprovados**: 10 para tipos de Language, 7 para `Core.Language`, 17 para `View.Theme`, 15 de contrato/lifecycle de `TPageCompositionBase` e 9 de integração FMX de `Main.Composition`; a evidência do runner registra 0 ignorados, 0 leaks, 0 falhas e 0 erros.
+- **59 testes DUnitX executados com sucesso**: 10 para tipos de Language, 7 para `Core.Language`, 17 para `View.Theme`, 16 de contrato/lifecycle de `TPageCompositionBase` e 9 de integração FMX de `Main.Composition`; o XML NUnit fornecido registra 0 ignorados, 0 falhas e 0 erros, com os 59 casos marcados como `Success`.
 
 Documentação detalhada:
 
@@ -604,7 +604,7 @@ Serviços de aplicação e regras de negócio serão introduzidos progressivamen
 ### Qualidade
 
 * [x] Testes unitários/contrato — existe cobertura DUnitX para `Core.Language`, `View.Theme` e para o contrato de lifecycle de `TPageCompositionBase`.
-* [x] Testes de integração — a fixture FMX de `Main.Composition` está incluída na execução DUnitX atual de 58 casos, todos reportados como `Success` no XML NUnit fornecido.
+* [x] Testes de integração — a fixture FMX de `Main.Composition` está incluída na execução DUnitX atual de 59 casos, todos reportados como `Success` no XML NUnit fornecido.
 * [ ] Testes da API.
 * [ ] Documentação da API.
 * [ ] Health checks.
@@ -653,7 +653,7 @@ Detalhes específicos das integrações não devem contaminar desnecessariamente
 
 ## 🧪 Estratégia de Testes
 
-O DockHub possui um projeto DUnitX com testes de `Core.Language`, `View.Theme`, do contrato de lifecycle de `TPageCompositionBase` e uma fixture de integração FMX para `Main.Composition`. A execução NUnit XML fornecida, datada de **2026-09-19**, registra **58 total / 0 falhas / 0 erros / 0 ignorados**, com os 58 casos marcados como `Success`. O relatório Method Toxicity do RAD Studio fornecido para `DockHub.Tests.dproj` apresenta maior Toxicity reportada/exibida de **0,508**, abaixo do threshold **1** do projeto. O XML NUnit não expõe uma contagem separada de memory leaks do DUnitX. Detalhes e limites da evidência estão documentados em `docs/testing/README.pt-BR.md`.
+O DockHub possui um projeto DUnitX com testes de `Core.Language`, `View.Theme`, do contrato de lifecycle de `TPageCompositionBase` e uma fixture de integração FMX para `Main.Composition`. A execução NUnit XML fornecida, datada de **2026-09-19 12:14:29**, registra **59 total / 0 falhas / 0 erros / 0 ignorados**, com os 59 casos marcados como `Success`, incluindo `WindowButtons_AreVisibleAndInsideClientBounds`. O relatório Method Toxicity do RAD Studio fornecido anteriormente para `DockHub.Tests.dproj` apresenta maior Toxicity reportada/exibida de **0,508**, abaixo do threshold **1** do projeto; como não foi fornecido novo relatório após a inclusão do 59º teste, a medição real de Toxicity para o snapshot atual do fonte está **Não confirmada**. O XML NUnit não expõe uma contagem separada de memory leaks do DUnitX. Detalhes e limites da evidência estão documentados em `docs/testing/README.pt-BR.md`.
 
 Detalhes atuais: [Testes Automatizados](./docs/testing/README.pt-BR.md).
 
