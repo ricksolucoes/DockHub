@@ -674,7 +674,7 @@ Tests Errored : 0
 
 That executed result predates the current expansion of Main View texts; it remains historical evidence rather than validation of this change.
 
-See [tests/README.md](../../../tests/README.md) for the complete test project documentation.
+See [Automated Tests](../../testing/README.md) for the complete test project documentation.
 
 ### Implemented behavior not yet directly covered by a dedicated test
 

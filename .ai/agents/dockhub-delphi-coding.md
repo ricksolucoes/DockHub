@@ -306,180 +306,24 @@ responsabilidade
 
 Não crie namespaces artificiais apenas para aumentar profundidade.
 
-### 7.1 Estrutura de `View.Page` e composição runtime
+### 7.1 `View.Page`
 
-Antes de qualquer decisão estrutural em `View.Page`, examine a estrutura atual do domínio e os padrões equivalentes já existentes no projeto. Um trecho isolado de código não autoriza criar nova organização física, novo namespace, tipo aninhado ou abstração estrutural.
-
-No desenho atual confirmado para `View.Page`, preserve a separação por papel:
+`View.Page` possui Agent de domínio próprio:
 
 ```text
-src/view/Page/
-├── Contracts/
-│   └── DockHub.View.Page.Contracts.pas
-├── Impl/
-│   ├── DockHub.View.Page.Composition.Impl.Base.pas
-│   └── <Page>/
-│       └── DockHub.View.Page.Impl.<Page>.Composition.pas
-├── Types/
-│   └── DockHub.View.Page.Types.pas
-├── DockHub.View.Page.<Page>.pas
-└── DockHub.View.Page.<Page>.fmx          # quando aplicável
+dockhub-view-page
 ```
 
-Responsabilidades confirmadas:
+Antes de qualquer decisão estrutural nessa área:
 
-```text
-Types
-→ enums e tipos compartilhados do domínio View.Page
-→ enums com {$SCOPEDENUMS ON} quando aplicável
-→ acesso qualificado aos membros do enum
+1. inspecione o snapshot atual;
+2. confirme paths, units, contratos e tipos existentes;
+3. aplique as regras específicas do `dockhub-view-page`;
+4. use `create-view-page` quando a tarefa for criar uma nova Page.
 
-Contracts
-→ interfaces e contratos públicos do domínio View.Page
+Este Agent transversal preserva apenas as regras Delphi gerais e a obrigação de **não deduzir estrutura a partir de trecho isolado**.
 
-Composition.Impl.Base
-→ comportamento comum das compositions
-→ template abstrato compartilhado pelas Pages
-
-Impl.<Page>.Composition
-→ construção e apresentação específicas de cada Page
-
-DockHub.View.Page.<Page>
-→ ciclo de vida da Form/View
-→ estado e colaboradores da página
-→ coordenação com a composition
-→ semântica das interações
-```
-
-Para enums pertencentes ao domínio `View.Page`, não declare o tipo dentro de classes de implementação apenas por ele ter um consumidor imediato. Primeiro verifique `DockHub.View.Page.Types.pas`. Quando o tipo representar estado ou contrato estrutural do domínio, mantenha-o nessa unit e preserve o padrão scoped já adotado pelo projeto.
-
-Exemplo esperado:
-
-```pascal
-{$SCOPEDENUMS ON}
-
-type
-  TPageCompositionState = (
-    Configuring,
-    Building,
-    Built,
-    Failed
-  );
-```
-
-Uso:
-
-```pascal
-TPageCompositionState.Configuring
-TPageCompositionState.Built
-```
-
-Lifecycle atualmente implementado para `TPageCompositionBase`:
-
-```text
-Configuring
-    │
-    └── Build
-          ↓
-       Building
-       ↙      ↘
-    Built    Failed
-```
-
-Regras obrigatórias do contrato atual:
-
-- `Form`, `OnMinimize` e `OnClose` só podem ser configurados em `Configuring`;
-- `Build` exige Form e os callbacks obrigatórios antes de iniciar;
-- Build bem-sucedido termina em `Built`;
-- exception durante Build leva a `Failed` e é relançada;
-- segundo Build em `Built` é idempotente;
-- Build em `Building` ou `Failed` é inválido;
-- `ApplyLanguage` e `ApplyTheme` só são válidos em `Built`;
-- Language/Theme `nil` são inválidos;
-- instância em `Failed` não deve ser reutilizada.
-
-Não exponha `FState` ou outro detalhe privado apenas para facilitar testes. Valide o lifecycle pelo comportamento público.
-
-Lifetime atual da Composition:
-
-```text
-Page mantém IPageComposition / IPageCompositionMain
-→ reference counting mantém a Composition viva
-→ controles FMX podem chamar handlers da Composition
-```
-
-A Page deve manter essa interface referenciada enquanto controles criados pela Composition puderem disparar handlers contra a instância. Não zere a interface antecipadamente durante a vida desses controles. O lifetime dos controles continua sendo definido pela hierarquia Owner/Parent do FMX.
-
-`Composition` não deve assumir automaticamente:
-
-- regra de negócio;
-- acesso a banco ou REST;
-- propriedade global de Theme ou Language;
-- decisão de navegação entre Pages;
-- criação direta de outras Pages como efeito de um clique;
-- abstrações compartilhadas antes de existir reutilização real.
-
-A associação de eventos pode ocorrer durante a composition, mas o significado da ação deve permanecer no contrato/colaborador adequado da Page. Interfaces específicas, como `IPageCompositionMain`, podem existir quando a própria Page possui ações conhecidas ou previstas que precisam de contrato próprio; não elimine esse contrato apenas por ele ainda possuir poucas operações. No estado atual, `IPageCompositionMain` é intencionalmente preservada como ponto de extensão das ações já conhecidas da Main (serviço/configuração/logs), mas métodos concretos só devem ser adicionados quando o comportamento real dessas ações estiver definido.
-
-Se uma Page crescer, subdivida sua implementation somente quando existirem responsabilidades reais e coesas. Não crie antecipadamente novas units apenas por expectativa de crescimento.
-
-Regra de auditoria estrutural obrigatória:
-
-```text
-antes de criar ou mover Types / Contracts / Impl
-→ inspecionar o domínio atual
-→ localizar padrões equivalentes no projeto
-→ confirmar namespace e pasta existentes
-→ somente então decidir a estrutura
-```
-
-Não deduza estrutura a partir de um recorte parcial quando o projeto completo ou uma referência estrutural estiver disponível.
-
-A decisão arquitetural correspondente deve permanecer coerente com a implementação e com a documentação da camada View.
-
-### 7.2 RickUIBuilder como dependência de composição visual
-
-Antes de explicar, revisar ou implementar construção de UI runtime que utilize RickUIBuilder, consulte obrigatoriamente:
-
-```text
-docs/dependencies/rickuibuilder/README.md
-```
-
-Essa referência registra o snapshot upstream efetivamente analisado, o funcionamento da facade, Factory, Fluent Builders, `TRickUIBuilder.On(...)`, ownership/lifetime, eventos, handles, limitações relevantes e integração com Theme/Language do DockHub.
-
-Não confunda:
-
-```text
-DockHub.View.Page.Impl.<Page>.Composition
-→ implementação page-specific da composition no DockHub
-
-Rick.UIBuilder.Composition / TRickUIBuilder.On(AParent)
-→ uma das formas de uso da biblioteca RickUIBuilder
-```
-
-Uma `DockHub.View.Page.Impl.<Page>.Composition` pode usar Factory, Fluent Builders, `TRickUIBuilder.On(...)` ou uma combinação tecnicamente justificada. A escolha deve partir da necessidade concreta de cada controle, especialmente:
-
-- configuração adicional necessária;
-- necessidade de `OnClick` / `OnHover`;
-- necessidade de manter referência após a criação;
-- participação posterior em `ApplyLanguage`;
-- participação posterior em `ApplyTheme`;
-- atualização de estado runtime.
-
-Ao consumir RickUIBuilder:
-
-1. confirme a versão/revisão da dependência utilizada pelo projeto;
-2. não recrie localmente lógica que a API pública já fornece sem justificativa técnica;
-3. não trate os valores `Default` do RickUIBuilder como identidade visual do DockHub;
-4. Theme deve fornecer os valores semânticos usados pela View;
-5. Language deve resolver os textos destinados ao usuário antes de aplicá-los aos controles;
-6. preserve as regras de Owner/Parent documentadas pela biblioteca;
-7. considere que `Button.HoverState` mantém as cores recebidas no momento do `Build` quando houver troca de Theme em runtime;
-8. não invente handles ou métodos que não existam na API pública do snapshot confirmado.
-
-Se uma decisão depender de comportamento não coberto pela referência do DockHub, reinspecione o código upstream antes de concluir.
-
----
+A arquitetura detalhada, lifecycle, lifetime por interface, contratos específicos de Page e integração Theme/Language/RickUIBuilder pertencem ao `dockhub-view-page`.
 
 ## 8. Convenções de prefixos Delphi
 
@@ -1176,569 +1020,162 @@ Extração de método deve melhorar semântica, não apenas reduzir contagem de 
 
 ---
 
-## 39. Method Toxicity
+## 39. Method Toxicity Metrics
 
-### 39.1 Definição
+### 39.1 Autoridade da métrica
 
-No DockHub, **Method Toxicity** é uma heurística de revisão para identificar métodos cuja combinação de complexidade, tamanho, acoplamento, responsabilidades e efeitos colaterais aumenta o custo de:
+No DockHub, Method Toxicity Metrics é um critério permanente de qualidade para código Delphi.
 
-- compreensão;
-- teste;
-- manutenção;
-- evolução;
-- depuração.
-
-Method Toxicity **não é tratada como uma métrica universal ou fórmula científica padronizada**.
-
-Ela é uma disciplina interna de revisão.
-
-O agente deve justificar qualquer classificação com indicadores concretos.
-
-### 39.2 Objetivo
-
-O objetivo não é produzir métodos artificialmente pequenos.
-
-O objetivo é evitar métodos que exijam carga cognitiva excessiva.
-
-Um método longo e linear pode ser aceitável.
-
-Um método curto com:
-
-- quatro estados implícitos;
-- callbacks;
-- globals;
-- branches complexos;
-- side effects;
-
-pode ser altamente tóxico.
-
-### 39.3 Indicadores
-
-Avalie em conjunto:
+Quando o RAD Studio ou um CSV exportado estiver disponível, utilize os valores reais fornecidos pela ferramenta:
 
 ```text
-Executable Size
+Length
+Parameters
+If Depth
 Cyclomatic Complexity
-Nesting Depth
-Parameter Count
-Local Variable Count
-Responsibilities
-Coupling
-Side Effects
-Boolean Blindness
-Conditional Complexity
-Abstraction Level
-Exception Complexity
-Hidden Control Flow
-Duplication
-Testability
+Toxicity
 ```
 
-Nenhum indicador isolado reprova automaticamente um método.
+Não substitua essas métricas por score próprio, fórmula manual ou classificação inventada.
 
-### 39.4 Executable Size
+### 39.2 Thresholds
 
-Observe linhas executáveis e quantidade de passos conceituais.
+Use primeiro os thresholds configurados no projeto/ambiente. Quando não houver limites mais restritivos confirmados, a baseline adotada é:
 
-Heurística:
+| Metric | Threshold |
+| --- | ---: |
+| `Length` | 20 |
+| `Parameters` | 6 |
+| `If Depth` | 5 |
+| `Cyclomatic Complexity` | 6 |
+| `Toxicity` | 1 |
 
-| Faixa | Interpretação |
-|---|---|
-| até ~30 linhas | normalmente baixa pressão por tamanho |
-| ~30–40 | atenção contextual |
-| ~40–70 | revisar coesão e responsabilidades |
-| ~70+ | alto risco de toxicidade |
+Código novo não deve exceder esses limites sem justificativa técnica explícita e verificável.
 
-Esses valores não são limites rígidos.
-
-Um `case` declarativo de 60 linhas pode ser mais simples que 20 linhas com múltiplos side effects.
-
-### 39.5 Complexidade ciclomática
-
-Considere caminhos criados por:
-
-- `if`;
-- `else`;
-- `case`;
-- loops;
-- tratamentos de erro;
-- expressões booleanas complexas.
-
-Quanto mais caminhos independentes, maior o custo de entendimento e teste.
-
-Não invente um número exato de complexidade se ele não foi calculado por ferramenta.
-
-Em revisão manual, descreva:
+Para código existente alterado:
 
 ```text
-branches observados
-paths relevantes
-nesting
+não introduzir nova toxicidade
+não agravar toxicidade existente
 ```
 
-### 39.6 Nesting Depth
+### 39.3 Quando a ferramenta está disponível
 
-Heurística:
+Registre a origem da medição e os valores reais.
+
+Exemplo de formato:
 
 ```text
-0–2 níveis
-→ geralmente simples
+Method:
+- ...
 
-3 níveis
-→ atenção
+Source:
+- RAD Studio Method Toxicity / CSV
 
-4+ níveis
-→ alto risco
+Length:
+- ...
+
+Parameters:
+- ...
+
+If Depth:
+- ...
+
+Cyclomatic Complexity:
+- ...
+
+Toxicity:
+- ...
+
+Threshold status:
+- PASS / FAIL
 ```
 
-Quando adequado, use:
+Nunca reproduza manualmente a fórmula interna de `Toxicity`.
 
-- guard clauses;
-- early exit;
-- extração de intenção;
-- métodos auxiliares coesos.
+### 39.4 Quando a ferramenta não está disponível
 
-Não aplique early exit mecanicamente.
+Faça avaliação estática diretamente no código quando tecnicamente possível.
 
-### 39.7 Parameter Count
-
-Parâmetros demais podem indicar:
-
-- responsabilidade excessiva;
-- boolean blindness;
-- ausência de tipo de domínio;
-- configuração dispersa.
-
-Heurística:
-
-| Parâmetros | Avaliação |
-|---:|---|
-| 0–3 | normalmente simples |
-| 4 | atenção |
-| 5–6 | revisar design |
-| 7+ | alto risco |
-
-Não crie Parameter Object apenas para satisfazer número.
-
-Use record/configuration type quando houver agrupamento semântico real.
-
-### 39.8 Variáveis locais
-
-Muitas variáveis locais podem indicar muitos passos ou responsabilidades.
-
-Não defina um limite absoluto.
-
-Avalie:
+Diferencie explicitamente:
 
 ```text
-as variáveis representam uma única operação coerente?
+Length
+→ avaliação estática
+
+Parameters
+→ confirmado pela assinatura
+
+If Depth
+→ avaliação estática
+
+Cyclomatic Complexity
+→ avaliação estática quando possível
+
+Toxicity
+→ Não confirmado
 ```
 
-ou:
+Não declare aprovação da ferramenta sem execução real.
+
+### 39.5 Revisão qualitativa complementar
+
+Métricas não substituem design review.
+
+Mesmo dentro dos thresholds, avalie:
 
 ```text
-o método está acumulando fases diferentes?
+responsabilidade
+coesão
+acoplamento
+side effects
+boolean blindness
+exception flow
+hidden control flow
+nível de abstração
+duplicação
+testabilidade
 ```
 
-### 39.9 Multiple Responsibilities
+Esses indicadores servem para explicar risco arquitetural/cognitivo, mas **não substituem os thresholds oficiais** e não devem ser apresentados como um segundo score de Toxicity.
 
-Indicador de alta relevância.
+### 39.6 Refatoração
 
-Um método que:
+Não fragmente artificialmente um método apenas para reduzir métrica.
+
+Refatoração deve melhorar responsabilidade, legibilidade ou testabilidade de forma real.
+
+Ao encontrar violação:
 
 ```text
-valida
-+
-carrega
-+
-converte
-+
-persiste
-+
-atualiza UI
-+
-registra log
+nova violação causada pela tarefa
+→ corrigir antes de aprovar
+
+violação legada fora do escopo
+→ não agravar
+→ registrar limitação
+
+refatoração necessária para executar a tarefa com segurança
+→ propor a menor mudança tecnicamente justificada
 ```
 
-provavelmente possui toxicidade elevada.
+### 39.7 Código de teste
 
-Pergunta:
+Código dentro de `tests/` também é Delphi e está sujeito aos mesmos critérios de Method Toxicity Metrics.
 
-```text
-Este método tem mais de um motivo relevante para mudar?
-```
+Não aceite método de teste/helper excessivamente tóxico apenas porque não pertence à produção.
 
-Se sim, avaliar extração ou separação de responsabilidades.
+Ao reduzir toxicidade de testes, preserve intenção e prefira agrupamento por responsabilidade real em vez de extrações cosméticas.
 
-### 39.10 Coupling / Dependencies
-
-Conte quantos colaboradores e subsistemas o método precisa conhecer.
-
-Exemplo de alto risco:
-
-```text
-database
-+
-filesystem
-+
-REST
-+
-configuration
-+
-language
-+
-UI
-```
-
-Diferencie:
-
-```text
-Method Toxicity
-```
-
-de:
-
-```text
-Layering Violation
-```
-
-Os dois podem coexistir.
-
-### 39.11 Side Effects
-
-Analise quantos estados externos o método modifica.
-
-Exemplos:
-
-- múltiplos fields;
-- global;
-- filesystem;
-- banco;
-- UI;
-- cache;
-- configuração.
-
-Prefira, quando adequado:
-
-```text
-calcular
-↓
-validar
-↓
-commit
-```
-
-Esse fluxo reduz estado parcial.
-
-### 39.12 Boolean Blindness
-
-Chamadas como:
-
-```pascal
-Execute(True, False, True);
-```
-
-são difíceis de interpretar.
-
-Quando houver semântica real, considere:
-
-- enum;
-- option record;
-- named configuration;
-- métodos com intenção explícita.
-
-Não crie um tipo novo se a chamada já for clara e estável.
-
-### 39.13 Long Boolean Expressions
-
-Expressões longas aumentam carga cognitiva.
-
-Exemplo conceitual:
-
-```pascal
-if A and B and ((C and D) or (E and not F)) then
-```
-
-Quando houver conceito de domínio claro, extraia intenção:
-
-```pascal
-if IsValidRequest(...) then
-```
-
-O método extraído deve possuir significado real, não apenas esconder expressão arbitrariamente.
-
-### 39.14 Mixed Abstraction Levels
-
-Evite misturar no mesmo método:
-
-```text
-orquestração de alto nível
-+
-detalhe de protocolo
-+
-criação de infraestrutura
-+
-manipulação de UI
-```
-
-Um método deve tentar trabalhar em nível de abstração coerente.
-
-### 39.15 Exception Toxicity
-
-Analise blocos `try/except` quanto a:
-
-- captura genérica de `Exception`;
-- erro silenciosamente ignorado;
-- transformação sem preservar contexto;
-- alteração parcial de estado;
-- lógica extensa dentro de `except`;
-- tratamento em camada errada.
-
-Pergunta:
-
-```text
-Esta camada realmente sabe tratar esta exception?
-```
-
-Quando não souber, propagação pode ser mais correta.
-
-### 39.16 Hidden Control Flow
-
-Aumentam toxicidade:
-
-- estado global;
-- callbacks pouco visíveis;
-- initialization/finalization com side effect;
-- dependência de ordem;
-- eventos implícitos;
-- mutation fora do método.
-
-O comportamento importante deve ser rastreável.
-
-### 39.17 Excessive Comments
-
-Comentários não são toxicidade por si só.
-
-Porém, um método com:
-
-```text
-// Step 1
-// Step 2
-// Step 3
-// Step 4
-// Step 5
-```
-
-pode indicar etapas conceituais que merecem métodos nomeados.
-
-Não extraia apenas para eliminar comentários.
-
-### 39.18 Duplication
-
-Duplicação real dentro de um método ou entre branches pode aumentar toxicidade.
-
-Aplique DRY somente quando a semântica for realmente comum.
-
-Não una comportamentos distintos apenas porque o texto do código parece semelhante.
-
-### 39.19 Testability
-
-Dificuldade extrema de teste é indicador relevante.
-
-Sinais:
-
-- dezenas de combinações de branch;
-- necessidade de muitos colaboradores;
-- estado global;
-- setup enorme;
-- dependências externas misturadas.
-
-Mas:
-
-```text
-dificuldade de testar
-≠
-autorização automática para redesenhar produção
-```
-
-### 39.20 Classificação
+### 39.8 Skill operacional
 
 Use:
 
 ```text
-LOW
-MODERATE
-HIGH
-CRITICAL
+review-method-toxicity
 ```
 
-#### LOW
-
-Fluxo simples, responsabilidade clara e baixo custo cognitivo.
-
-#### MODERATE
-
-Há sinais de crescimento, mas o método continua compreensível.
-
-#### HIGH
-
-Múltiplos indicadores afetam manutenção ou teste.
-
-#### CRITICAL
-
-O método apresenta risco estrutural significativo, estado difícil de raciocinar, alta chance de regressão ou impossibilidade prática de evolução segura.
-
-### 39.21 Não usar fórmula rígida
-
-Não calcule:
-
-```text
-Toxicity = LOC * Branches * Params
-```
-
-como se fosse uma métrica científica.
-
-Prefira:
-
-```text
-classificação
-+
-indicadores observados
-+
-impacto
-+
-recomendação
-```
-
-### 39.22 Heurísticas orientativas
-
-Use apenas como alerta:
-
-| Indicador | Atenção | Alto risco |
-|---|---:|---:|
-| Linhas executáveis | ~30–40 | ~70+ |
-| Nesting | 3 | 4+ |
-| Parâmetros | 4 | 6+ |
-| Branches | ~5 | ~10+ |
-| Responsabilidades | 2 | 3+ |
-
-Esses valores **não são critérios automáticos de reprovação**.
-
-Contexto prevalece.
-
-### 39.23 Toxicity Debt
-
-Classifique dívida pré-existente como:
-
-```text
-NONE
-LOW
-MEDIUM
-HIGH
-```
-
-Se a dívida não impedir a tarefa atual:
-
-```text
-registrar
-não expandir escopo
-```
-
-Exemplo de relatório:
-
-```text
-Toxicity Debt: MEDIUM
-
-O método existente possui complexidade acima do desejável,
-mas a alteração solicitada não depende de sua refatoração.
-
-A dívida foi registrada e não foi alterada fora do escopo.
-```
-
-### 39.24 Regra de refatoração
-
-Ao detectar toxicidade:
-
-```text
-toxicidade detectada
-        ↓
-impede a tarefa atual?
-        |
-        ├─ NÃO
-        │   ↓
-        │ registrar
-        │ preservar escopo
-        |
-        └─ SIM
-            ↓
-          propor menor refactor
-            ↓
-          avaliar impacto
-            ↓
-          pedir aprovação quando necessário
-```
-
-Nunca faça uma refatoração ampla apenas porque o método “poderia ficar melhor”.
-
-### 39.25 Method Toxicity e SRP
-
-Não são a mesma coisa.
-
-```text
-SRP
-→ responsabilidade estrutural da unit/classe/método
-
-Method Toxicity
-→ custo cognitivo e operacional do método
-```
-
-Um método pode ser tóxico dentro de uma classe arquiteturalmente correta.
-
-### 39.26 Method Toxicity e KISS
-
-Também detecte complexidade causada por excesso de abstração.
-
-Uma solução com:
-
-```text
-Interface
-Factory
-Builder
-Strategy
-Provider
-Resolver
-Adapter
-```
-
-para uma operação simples pode apresentar toxicidade arquitetural mesmo que cada método seja pequeno.
-
-Baixa contagem de linhas não garante simplicidade.
-
-### 39.27 Saída obrigatória no modo REVIEW
-
-Para métodos relevantes, use:
-
-```text
-Method Toxicity:
-- LOW / MODERATE / HIGH / CRITICAL
-
-Indicators:
-- ...
-
-Impact:
-- ...
-
-Toxicity Debt:
-- NONE / LOW / MEDIUM / HIGH
-
-Refactor required for current task:
-- YES / NO
-
-Recommendation:
-- ...
-```
-
-Não classifique sem justificativa.
+para executar o procedimento repetível e registrar medição real ou avaliação estática conforme a disponibilidade da ferramenta.
 
 ---
 

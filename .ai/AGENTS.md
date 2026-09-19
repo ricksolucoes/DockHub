@@ -34,6 +34,7 @@ A estrutura atual é:
 │   ├── dockhub-delphi-coding.md
 │   ├── dockhub-language-translator.md
 │   ├── dockhub-theme.md
+│   ├── dockhub-view-page.md
 │   ├── dockhub-tests.md
 │   └── dockhub-documentation.md
 ├── skills/
@@ -41,15 +42,22 @@ A estrutura atual é:
 │   ├── implementation/
 │   ├── validation/
 │   ├── testing/
-│   └── documentation/
+│   ├── documentation/
+│   └── domains/
+│       └── view-page/
 └── templates/
     ├── AGENT.template.md
     ├── skill/
     │   └── SKILL.template.md
     └── delphi/
-        └── interface-implementation/
-            ├── CONTRACT.template.pas
-            ├── IMPLEMENTATION.template.pas
+        ├── interface-implementation/
+        │   ├── CONTRACT.template.pas
+        │   ├── IMPLEMENTATION.template.pas
+        │   └── README.md
+        └── view-page/
+            ├── PAGE.template.pas
+            ├── PAGE.template.fmx
+            ├── COMPOSITION.template.pas
             └── README.md
 ```
 
@@ -369,6 +377,42 @@ Responsabilidade principal:
 Ele define **como codificar**, enquanto os agentes de domínio definem regras específicas de cada subsistema.
 
 
+
+### 4.6 `dockhub-view-page`
+
+Arquivo:
+
+```text
+.ai/agents/dockhub-view-page.md
+```
+
+Metadata:
+
+```yaml
+---
+name: dockhub-view-page
+description: Specialized AI agent for creating, reviewing, and evolving DockHub View.Page implementations while preserving the current Page/Composition architecture, lifecycle, interface lifetime, Theme/Language delegation, RickUIBuilder integration, tests, and documentation discipline.
+scope: DockHub View.Page / Runtime Composition / Page Lifecycle
+language: pt-BR
+category: domain
+status: ACTIVE
+---
+```
+
+Responsabilidade principal:
+
+- estrutura atual de `View.Page`;
+- lifecycle de `TPageCompositionBase`;
+- lifetime por interface/reference counting;
+- contratos específicos por Page quando realmente justificados;
+- separação Page × Composition;
+- integração da Composition com Theme, Language e RickUIBuilder;
+- workflow de criação de novas Pages.
+
+Não substitui `dockhub-delphi-coding`, `dockhub-tests` ou `dockhub-documentation`.
+
+---
+
 ## 5. Fonte da verdade
 
 O **código atual do repositório** é sempre a fonte normativa da implementação.
@@ -492,6 +536,29 @@ Compilação/testes não executados neste ambiente.
 
 Toda alteração deve verificar impacto em documentação.
 
+### Localização obrigatória
+
+A documentação do projeto deve existir dentro de `docs/`.
+
+Exceções explícitas:
+
+```text
+README.md
+README.pt-BR.md
+```
+
+na raiz do repositório, por serem os READMEs principais do projeto; e:
+
+```text
+.ai/templates/**/README.md
+```
+
+quando o README for estritamente operacional e existir para explicar o uso de um template aos Agents/Skills que o consomem. Essa exceção não transforma o README local de template em documentação geral do projeto.
+
+Arquivos normativos/operacionais da infraestrutura `.ai` (`AGENTS.md`, `SKILLS.md`, `TEMPLATES.md`, definições de Agents e `SKILL.md`) permanecem em `.ai` porque fazem parte do mecanismo de execução da IA, não da documentação técnica do projeto.
+
+Não criar documentação em `tests/`, `src/`, `modules/` ou outros diretórios apenas por proximidade com o código documentado.
+
 A documentação deve distinguir claramente:
 
 ```text
@@ -562,6 +629,20 @@ dockhub-delphi-coding
 dockhub-theme
         ↓
 implementação
+        ↓
+dockhub-tests
+        ↓
+dockhub-documentation
+```
+
+No caso atual de View.Page:
+
+```text
+dockhub-delphi-coding
+        +
+dockhub-view-page
+        ↓
+create-view-page quando houver nova Page
         ↓
 dockhub-tests
         ↓
@@ -908,8 +989,9 @@ Agentes oficialmente registrados:
 1. dockhub-delphi-coding
 2. dockhub-language-translator
 3. dockhub-theme
-4. dockhub-tests
-5. dockhub-documentation
+4. dockhub-view-page
+5. dockhub-tests
+6. dockhub-documentation
 ```
 
 Qualquer novo agente deve ser adicionado a esta lista e às seções de registro correspondentes antes de ser considerado parte oficial da estrutura de agentes do DockHub.

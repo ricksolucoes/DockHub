@@ -516,7 +516,7 @@ The current codebase already includes a small set of implemented foundation comp
 - **View Theme subsystem** with `Blue`, `Teal`, `Light` and `Dark`, semantic color tokens and Main View background integration;
 - **View Page composition architecture** organized under `src/view/Page` with `Types`, `Contracts`, an abstract `TPageCompositionBase`, and page-specific implementations such as `DockHub.View.Page.Impl.Main.Composition`;
 - **DUnitX automated test project** included in the project group;
-- **58 DUnitX tests declared by the current source**: 10 for Language types, 7 for `Core.Language`, 17 for `View.Theme`, 15 contract/lifecycle tests for `TPageCompositionBase`, and 9 FMX integration tests for `Main.Composition`; the latest supplied XML predates these Page Composition fixtures and reports 34 passed tests.
+- **58 DUnitX tests executed and passed**: 10 for Language types, 7 for `Core.Language`, 17 for `View.Theme`, 15 contract/lifecycle tests for `TPageCompositionBase`, and 9 FMX integration tests for `Main.Composition`; runner evidence reports 0 ignored, 0 leaked, 0 failed and 0 errored tests.
 
 Detailed documentation:
 
@@ -600,7 +600,7 @@ Business services and business rules will be progressively introduced as the pro
 ### Quality
 
 * [x] Unit/contract tests — DUnitX coverage exists for `Core.Language`, `View.Theme`, and the `TPageCompositionBase` lifecycle contract.
-* [x] Integration tests — an FMX fixture exists for `Main.Composition`; the current Page Composition fixtures still require a new real RAD Studio execution to record current results.
+* [x] Integration tests — the FMX fixture for `Main.Composition` is included in the current 58/58 successful DUnitX execution.
 * [ ] API tests.
 * [ ] API documentation.
 * [ ] Health checks.
@@ -649,9 +649,9 @@ Integration-specific implementation details should not unnecessarily leak into a
 
 ## 🧪 Testing Strategy
 
-DockHub has a DUnitX project with tests for `Core.Language`, `View.Theme`, the `TPageCompositionBase` lifecycle contract, and an FMX integration fixture for `Main.Composition`. The latest available executed result predates the Page Composition fixtures; details and limitations are documented in `tests/README.md`.
+DockHub has a DUnitX project with tests for `Core.Language`, `View.Theme`, the `TPageCompositionBase` lifecycle contract, and an FMX integration fixture for `Main.Composition`. The supplied current execution reports **58 found / 58 passed / 0 ignored / 0 leaked / 0 failed / 0 errored**. A RAD Studio Method Toxicity report for `DockHub.Tests.dproj` shows a highest reported/displayed Toxicity of **0.400**, below the project threshold of **1**. Details and evidence limits are documented in `docs/testing/README.md`.
 
-Current details: [Automated Tests](./tests/README.md).
+Current details: [Automated Tests](./docs/testing/README.md).
 
 ### Unit Tests
 
@@ -711,7 +711,8 @@ Current documentation:
 * [RickUIBuilder — DockHub Integration Reference](./docs/dependencies/rickuibuilder/README.md)
 * [Visual Identity](./docs/modules/theme/VISUAL-IDENTITY.md)
 * [ADR-0001 — Language Architecture](./docs/adr/ADR-0001-language-architecture.md)
-* [Automated Tests](./tests/README.md)
+* [Automated Tests](./docs/testing/README.md)
+* [AI Development System](./docs/ai/README.md)
 
 ---
 
@@ -719,7 +720,7 @@ Current documentation:
 
 DockHub is currently in its initial development phase.
 
-Build, database setup, deployment, and REST execution instructions will be expanded as those components are implemented. The current DUnitX test project is documented in [tests/README.md](./tests/README.md).
+Build, database setup, deployment, and REST execution instructions will be expanded as those components are implemented. The current DUnitX test project is documented in [Automated Tests](./docs/testing/README.md).
 
 Current target environment:
 

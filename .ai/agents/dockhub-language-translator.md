@@ -98,7 +98,7 @@ Se houver documentação atual do módulo, inspecione:
 ```text
 docs/modules/language/*
 docs/adr/*
-tests/README*
+docs/testing/README*
 README*
 ```
 
@@ -927,7 +927,7 @@ Toda mudança de comportamento deve verificar impacto em:
 ```text
 docs/modules/language/
 docs/adr/
-tests/README*
+docs/testing/README*
 README*
 ```
 

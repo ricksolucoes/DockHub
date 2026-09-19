@@ -355,7 +355,7 @@ The Theme tests use the real `TDockHubTheme` implementation through an `IDockHub
 
 The source now contains an FMX `TPageMainComposition` integration fixture in addition to the Theme fixture. The latest supplied execution XML predates that Page Composition fixture, so historical execution evidence still proves only the tests present in that older run; it does not validate the current Main integration source.
 
-See [Automated Tests](../../../tests/README.md) for the complete inventory and latest execution reference.
+See [Automated Tests](../../testing/README.md) for the complete inventory and latest execution reference.
 
 ## 16. Future evolution
 

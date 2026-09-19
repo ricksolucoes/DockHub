@@ -313,7 +313,7 @@ Re-evaluate this ADR when one or more of the following occurs:
 
 This decision was structurally reviewed against the current DockHub rules for organization, SRP, Separation of Concerns, KISS, YAGNI, dependency direction and documented growth.
 
-The runtime `Main`/`Main.Composition` integration described by this ADR is now implemented. This ADR does not, by itself, claim compilation or test execution; the current validation status is documented in [tests/README.md](../../tests/README.md).
+The runtime `Main`/`Main.Composition` integration described by this ADR is now implemented. This ADR does not, by itself, claim compilation or test execution; the current validation status is documented in [Automated Tests](../testing/README.md).
 
 ## Related documentation
 

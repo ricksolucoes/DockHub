@@ -313,13 +313,39 @@ Tipos compartilhados de `View.Page` pertencem a `DockHub.View.Page.Types` quando
 
 Não crie camadas adicionais de abstração antes de existir responsabilidade realmente reutilizável.
 
-## 14. Navegação
+## 14. Criação de uma nova Page
+
+A arquitetura acima possui agora um workflow operacional de IA para futuras Pages:
+
+```text
+Arquitetura normativa
+→ este documento + ADR-0004
+
+Autoridade de domínio
+→ .ai/agents/dockhub-view-page.md
+
+Procedimento reutilizável
+→ create-view-page
+
+Scaffolding
+→ .ai/templates/delphi/view-page/
+```
+
+O workflow deve inspecionar o repositório atual antes de materializar arquivos.
+
+Um template **materializa arquitetura confirmada; ele não define arquitetura**.
+
+Ele também não cria automaticamente interface específica da Page, nova unit de `Types`, tokens Theme ou testes. Essas decisões continuam dependentes de necessidade comprovada.
+
+---
+
+## 15. Navegação
 
 O código atual não define um mecanismo geral de navegação.
 
 Não introduza `Navigator`, `Router`, `PageManager`, singleton ou Service Locator apenas porque poderão existir outras Pages. Navegação exige decisão separada quando houver caso de uso concreto.
 
-## 15. Testes
+## 16. Testes
 
 O fonte contém:
 
@@ -329,9 +355,9 @@ O fonte contém:
 
 A fixture da base valida o lifecycle público sem expor `FState` apenas para teste. A fixture da Main inspeciona comportamento FMX observável sem adicionar accessors de produção para controles privados.
 
-A evidência de execução é documentada separadamente em [Testes Automatizados](../../../tests/README.pt-BR.md). Inventário de testes no fonte não deve ser apresentado como prova de execução.
+A evidência de execução é documentada separadamente em [Testes Automatizados](../../testing/README.pt-BR.md). Inventário de testes no fonte não deve ser apresentado como prova de execução.
 
-## 16. Quality gate estrutural
+## 17. Quality gate estrutural
 
 Ao evoluir `View.Page`, verificar:
 
@@ -351,12 +377,12 @@ Ao evoluir `View.Page`, verificar:
 [ ] testes cobrem lifecycle/error paths alterados
 ```
 
-## 17. Documentação relacionada
+## 18. Documentação relacionada
 
 - [ADR-0004 — Arquitetura de Composição das Pages da View](../../adr/ADR-0004-view-page-composition-architecture.pt-BR.md)
 - [ADR-0003 — arquitetura de Pages substituída](../../adr/ADR-0003-view-page-architecture.pt-BR.md)
 - [RickUIBuilder — Referência de Integração do DockHub](../../dependencies/rickuibuilder/README.pt-BR.md)
 - [Módulo de Theme](../theme/README.pt-BR.md)
 - [Módulo de Language](../language/README.pt-BR.md)
-- [Testes Automatizados](../../../tests/README.pt-BR.md)
+- [Testes Automatizados](../../testing/README.pt-BR.md)
 - [Documentação do DockHub](../../README.pt-BR.md)

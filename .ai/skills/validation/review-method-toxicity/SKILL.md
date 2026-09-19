@@ -1,6 +1,6 @@
 ---
 name: review-method-toxicity
-description: Reusable DockHub workflow for evaluating Method Toxicity in Delphi methods using the criteria defined by the dockhub-delphi-coding agent.
+description: Reusable DockHub workflow for validating Delphi Method Toxicity Metrics using real RAD Studio/CSV measurements when available and explicit static evaluation otherwise.
 scope: DockHub Method Quality Validation
 language: pt-BR
 category: validation
@@ -11,29 +11,24 @@ status: ACTIVE
 
 ## 1. Purpose
 
-Aplicar de forma repetível a análise de Method Toxicity definida pelo:
+Executar de forma repetível a validação de Method Toxicity Metrics definida pelo `dockhub-delphi-coding` e pela governança do projeto.
 
-```text
-dockhub-delphi-coding
-```
-
-Esta Skill operacionaliza a revisão.
-
-A teoria e a autoridade do padrão permanecem no Agent.
+A Skill não inventa fórmula nem score alternativo.
 
 ---
 
 ## 2. When to use
 
-Use em:
+Use para código Delphi:
 
-- método novo relevante;
-- método alterado;
-- code review;
-- refatoração;
-- bug em fluxo complexo;
-- método difícil de testar;
-- método com crescimento contínuo.
+```text
+novo
+alterado
+refatorado
+reorganizado quando corpos de métodos forem afetados
+produção
+testes
+```
 
 ---
 
@@ -41,10 +36,12 @@ Use em:
 
 Não use para:
 
-- exigir refatoração cosmética;
-- impor número rígido de linhas;
-- gerar score matemático inventado;
-- expandir escopo automaticamente.
+```text
+inventar Toxicity sem RAD Studio/CSV
+refatorar cosmeticamente
+fragmentar métodos apenas para reduzir número
+expandir escopo de código legado sem autorização
+```
 
 ---
 
@@ -54,6 +51,8 @@ Não use para:
 Current State Inspection
 Target methods
 Task scope
+Project/environment thresholds when available
+RAD Studio Method Toxicity report or CSV when available
 ```
 
 ---
@@ -68,202 +67,146 @@ inspect-current-state
 
 ## 6. Procedure
 
-Para cada método relevante:
+### Step 1 — Confirmar escopo
 
-### Step 1 — Identificar responsabilidade
+Liste os métodos Delphi novos/alterados relevantes, inclusive em `tests/`.
 
-Resuma o método em uma frase.
+### Step 2 — Confirmar thresholds
 
-Se precisar de várias frases independentes, registre possível responsabilidade múltipla.
+Prioridade:
 
-### Step 2 — Avaliar tamanho executável
+```text
+1. thresholds configurados no projeto/ambiente
+2. política explícita da tarefa
+3. baseline DockHub
+```
 
-Observe linhas executáveis e quantidade de etapas.
+Baseline quando não houver limite mais restritivo:
 
-Use thresholds apenas como alerta.
+```text
+Length                  20
+Parameters               6
+If Depth                 5
+Cyclomatic Complexity    6
+Toxicity                  1
+```
 
-### Step 3 — Avaliar branches
+### Step 3 — Verificar ferramenta real
+
+Pergunte:
+
+```text
+Existe relatório Method Toxicity do RAD Studio ou CSV aplicável ao snapshot?
+```
+
+#### Se SIM
+
+Use os valores reais:
+
+```text
+Length
+Parameters
+If Depth
+Cyclomatic Complexity
+Toxicity
+```
+
+Registre a origem da medição.
+
+Não recalcule `Toxicity` manualmente.
+
+#### Se NÃO
+
+Faça avaliação estática diretamente no código quando possível.
 
 Registre:
 
-- `if`;
-- `else`;
-- `case`;
-- loops;
-- paths de exception.
-
-Não invente complexidade ciclomática exata sem ferramenta.
-
-### Step 4 — Avaliar nesting
-
-Classifique:
-
 ```text
-0–2
-→ baixo risco contextual
-
-3
-→ atenção
-
-4+
-→ alto risco contextual
+Length: avaliação estática
+Parameters: confirmado pela assinatura
+If Depth: avaliação estática
+Cyclomatic Complexity: avaliação estática quando possível
+Toxicity: Não confirmado
 ```
 
-### Step 5 — Avaliar parâmetros
+Nunca diga que a ferramenta aprovou.
 
-Verifique:
+### Step 4 — Comparar com thresholds
 
-- quantidade;
-- boolean blindness;
-- agrupamento semântico;
-- coerência com contrato.
-
-### Step 6 — Avaliar locais
-
-Muitas variáveis podem indicar múltiplas fases.
-
-Registre contexto, não apenas número.
-
-### Step 7 — Avaliar responsabilidades
-
-Procure combinação de:
+Para código novo:
 
 ```text
-validate
-load
-convert
-persist
-update UI
-log
-commit state
+não exceder thresholds sem justificativa explícita
 ```
 
-### Step 8 — Avaliar acoplamento
-
-Liste colaboradores e subsistemas tocados.
-
-### Step 9 — Avaliar side effects
-
-Liste estado externo modificado.
-
-### Step 10 — Avaliar condições complexas
-
-Procure expressões booleanas difíceis de interpretar.
-
-### Step 11 — Avaliar nível de abstração
-
-Detecte mistura de:
+Para código existente alterado:
 
 ```text
-high-level orchestration
-low-level infrastructure
-UI
-protocol details
+não introduzir nova violação
+não agravar violação preexistente
 ```
 
-### Step 12 — Avaliar exception flow
+### Step 5 — Revisão qualitativa complementar
 
-Procure:
-
-- captura genérica;
-- swallow;
-- estado parcial;
-- lógica extensa em `except`;
-- tratamento em camada inadequada.
-
-### Step 13 — Avaliar hidden control flow
-
-Procure:
-
-- global state;
-- callbacks;
-- events;
-- initialization side effects;
-- dependência de ordem.
-
-### Step 14 — Avaliar duplicação
-
-Considere apenas duplicação conceitual relevante.
-
-### Step 15 — Avaliar testabilidade
-
-Pergunte se o método exige:
-
-- setup excessivo;
-- dezenas de combinações;
-- muitos colaboradores;
-- estado externo não controlável.
-
-### Step 16 — Classificar
-
-Use:
+Avalie, sem transformar em score alternativo:
 
 ```text
-LOW
-MODERATE
-HIGH
-CRITICAL
+responsabilidade
+coesão
+acoplamento
+side effects
+exception flow
+hidden control flow
+nível de abstração
+duplicação
+testabilidade
 ```
 
-### Step 17 — Classificar dívida
+Uma métrica baixa não autoriza design ruim.
 
-Use:
+### Step 6 — Determinar necessidade de correção
 
 ```text
-NONE
-LOW
-MEDIUM
-HIGH
+violação nova causada pela alteração
+→ corrigir
+
+violação legada fora do escopo e não agravada
+→ registrar
+
+refactor necessário para segurança da tarefa
+→ propor menor mudança coerente
 ```
 
-### Step 18 — Determinar necessidade de refactor
+### Step 7 — Reavaliar depois do refactor
 
-Pergunta:
-
-```text
-A toxicidade impede a tarefa atual ou torna a alteração insegura?
-```
-
-Se não:
-
-```text
-registrar dívida
-não refatorar fora de escopo
-```
+Se método foi alterado para reduzir toxicidade, execute novamente a medição real quando possível ou repita a avaliação estática.
 
 ---
 
-## 7. Heuristics
+## 7. Stop Conditions
 
-Use apenas como alerta:
-
-| Indicator | Attention | High risk |
-|---|---:|---:|
-| Executable lines | ~30–40 | ~70+ |
-| Nesting | 3 | 4+ |
-| Parameters | 4 | 6+ |
-| Branches | ~5 | ~10+ |
-| Responsibilities | 2 | 3+ |
-
-Contexto prevalece.
-
----
-
-## 8. Stop Conditions
-
-Interrompa quando:
+Pare quando:
 
 ```text
 método não estiver disponível integralmente
-dependências essenciais não forem conhecidas
-comportamento depender de geração de código não disponível
+snapshot da métrica não puder ser relacionado ao código analisado
+threshold específico do projeto estiver ambíguo e puder alterar aprovação
+uma refatoração necessária exceder o escopo autorizado
 ```
 
-Não classifique com falsa precisão.
+Ao parar:
+
+```text
+não inventar
+não extrapolar evidência
+reportar
+```
 
 ---
 
-## 9. Output format
+## 8. Output format
+
+### Com métrica real
 
 ```text
 Method Toxicity Review
@@ -271,83 +214,115 @@ Method Toxicity Review
 Method:
 - ...
 
-Responsibility:
+Source:
+- RAD Studio / CSV / ...
+
+Length:
 - ...
 
-Method Toxicity:
-- LOW / MODERATE / HIGH / CRITICAL
-
-Indicators:
-- executable size:
-- branches:
-- nesting:
-- parameters:
-- locals:
-- responsibilities:
-- coupling:
-- side effects:
-- boolean blindness:
-- abstraction level:
-- exception flow:
-- hidden control flow:
-- duplication:
-- testability:
-
-Impact:
+Parameters:
 - ...
 
-Toxicity Debt:
-- NONE / LOW / MEDIUM / HIGH
+If Depth:
+- ...
 
-Refactor required for current task:
-- YES / NO
+Cyclomatic Complexity:
+- ...
 
-Recommendation:
+Toxicity:
+- ...
+
+Threshold status:
+- PASS / FAIL
+
+Qualitative findings:
+- ...
+
+Action:
+- none / correction / scoped refactor
+```
+
+### Sem ferramenta
+
+```text
+Method Toxicity Review
+
+Method:
+- ...
+
+Measurement:
+- static evaluation
+
+Length:
+- ...
+
+Parameters:
+- ...
+
+If Depth:
+- ...
+
+Cyclomatic Complexity:
+- ...
+
+Toxicity:
+- Não confirmado
+
+Qualitative findings:
+- ...
+
+Action:
 - ...
 ```
 
 ---
 
-## 10. Quality Gate
+## 9. Quality Gate
 
 ```text
-[ ] responsabilidade foi resumida
-[ ] tamanho foi avaliado
-[ ] branches foram avaliados
-[ ] nesting foi avaliado
-[ ] parâmetros foram avaliados
-[ ] locals foram avaliados
-[ ] responsabilidades foram avaliadas
-[ ] acoplamento foi avaliado
-[ ] side effects foram avaliados
-[ ] condições foram avaliadas
-[ ] abstração foi avaliada
-[ ] exceptions foram avaliadas
-[ ] hidden flow foi avaliado
-[ ] duplicação foi avaliada
-[ ] testabilidade foi avaliada
-[ ] classificação foi justificada
-[ ] dívida foi registrada
+[ ] métodos afetados foram identificados
+[ ] thresholds aplicáveis foram confirmados
+[ ] disponibilidade de RAD Studio/CSV foi verificada
+[ ] valores reais foram usados quando disponíveis
+[ ] Toxicity não foi calculada manualmente
+[ ] ausência de ferramenta foi declarada quando aplicável
+[ ] Length foi avaliado
+[ ] Parameters foi avaliado
+[ ] If Depth foi avaliado
+[ ] Cyclomatic Complexity foi avaliado
+[ ] Toxicity real foi usada somente quando medida
+[ ] código de teste foi incluído quando alterado
+[ ] nova toxicidade não foi introduzida
+[ ] toxicidade existente não foi agravada
+[ ] refactor não fragmentou artificialmente o código
+[ ] revisão qualitativa não foi confundida com score de Toxicity
 [ ] escopo foi respeitado
 ```
 
 ---
 
-## 11. Relationship with Agents
+## 10. Relationship with Agents
 
-A interpretação dos resultados pertence ao:
+A interpretação arquitetural pertence ao:
 
 ```text
 dockhub-delphi-coding
 ```
 
-e, quando aplicável, ao Agent de domínio.
+e ao Agent de domínio aplicável.
+
+Para testes, coopera com:
+
+```text
+dockhub-tests
+```
 
 ---
 
-## 12. Final rule
+## 11. Final rule
 
 ```text
-MEASURE COGNITIVE RISK
-NOT LINE COUNT ALONE
+REAL METRICS WHEN AVAILABLE
+STATIC EVALUATION OTHERWISE
+NEVER INVENT TOXICITY
 ```

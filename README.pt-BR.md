@@ -520,7 +520,7 @@ O código atual já possui alguns componentes de fundação implementados, além
 - **subsistema de Theme da View** com `Blue`, `Teal`, `Light` e `Dark`, tokens semânticos de cor e integração do background da Main View;
 - **arquitetura de composition das Pages** organizada em `src/view/Page` com `Types`, `Contracts`, uma `TPageCompositionBase` abstrata e implementações específicas como `DockHub.View.Page.Impl.Main.Composition`;
 - **projeto de testes automatizados DUnitX** incluído no project group;
-- **58 testes DUnitX declarados no código atual**: 10 para tipos de Language, 7 para `Core.Language`, 17 para `View.Theme`, 15 de contrato/lifecycle de `TPageCompositionBase` e 9 de integração FMX de `Main.Composition`; o último XML fornecido é anterior às fixtures de Page Composition e registra 34 testes aprovados.
+- **58 testes DUnitX executados e aprovados**: 10 para tipos de Language, 7 para `Core.Language`, 17 para `View.Theme`, 15 de contrato/lifecycle de `TPageCompositionBase` e 9 de integração FMX de `Main.Composition`; a evidência do runner registra 0 ignorados, 0 leaks, 0 falhas e 0 erros.
 
 Documentação detalhada:
 
@@ -653,9 +653,9 @@ Detalhes específicos das integrações não devem contaminar desnecessariamente
 
 ## 🧪 Estratégia de Testes
 
-O DockHub possui um projeto DUnitX com testes de `Core.Language`, `View.Theme`, do contrato de lifecycle de `TPageCompositionBase` e uma fixture de integração FMX para `Main.Composition`. O resultado executado mais recente disponível é anterior às fixtures de Page Composition; detalhes e limitações estão documentados em `tests/README.pt-BR.md`.
+O DockHub possui um projeto DUnitX com testes de `Core.Language`, `View.Theme`, do contrato de lifecycle de `TPageCompositionBase` e uma fixture de integração FMX para `Main.Composition`. A execução atual fornecida registra **58 encontrados / 58 aprovados / 0 ignorados / 0 leaks / 0 falhas / 0 erros**. Um relatório Method Toxicity do RAD Studio para `DockHub.Tests.dproj` apresenta maior Toxicity reportada/exibida de **0,400**, abaixo do threshold **1** do projeto. Detalhes e limites da evidência estão documentados em `docs/testing/README.pt-BR.md`.
 
-Detalhes atuais: [Testes Automatizados](./tests/README.pt-BR.md).
+Detalhes atuais: [Testes Automatizados](./docs/testing/README.pt-BR.md).
 
 ### Testes Unitários
 
@@ -715,7 +715,8 @@ Documentação atual:
 * [RickUIBuilder — Referência de Integração do DockHub](./docs/dependencies/rickuibuilder/README.pt-BR.md)
 * [Identidade Visual](./docs/modules/theme/VISUAL-IDENTITY.pt-BR.md)
 * [ADR-0001 — Arquitetura de Idiomas](./docs/adr/ADR-0001-language-architecture.pt-BR.md)
-* [Testes Automatizados](./tests/README.pt-BR.md)
+* [Testes Automatizados](./docs/testing/README.pt-BR.md)
+* [Sistema de Desenvolvimento por IA](./docs/ai/README.md)
 
 ---
 
@@ -723,7 +724,7 @@ Documentação atual:
 
 O DockHub ainda está em sua fase inicial de desenvolvimento.
 
-As instruções de compilação, banco de dados, execução REST e implantação serão ampliadas conforme esses componentes forem implementados. O projeto atual de testes DUnitX está documentado em [tests/README.pt-BR.md](./tests/README.pt-BR.md).
+As instruções de compilação, banco de dados, execução REST e implantação serão ampliadas conforme esses componentes forem implementados. O projeto atual de testes DUnitX está documentado em [Testes Automatizados](./docs/testing/README.pt-BR.md).
 
 Ambiente alvo atual:
 

@@ -313,13 +313,39 @@ Shared `View.Page` types belong in `DockHub.View.Page.Types` when they represent
 
 Do not create additional abstraction layers until a real reusable responsibility exists.
 
-## 14. Navigation
+## 14. Creating a new Page
+
+The architecture above has an operational AI workflow for future Pages:
+
+```text
+Normative architecture
+→ this document + ADR-0004
+
+Domain authority
+→ .ai/agents/dockhub-view-page.md
+
+Reusable procedure
+→ create-view-page
+
+Scaffolding
+→ .ai/templates/delphi/view-page/
+```
+
+The workflow must inspect the current repository before materializing files.
+
+A template **materializes confirmed architecture; it does not define architecture**.
+
+It also does not automatically create a page-specific interface, a new `Types` unit, Theme tokens or tests. Those decisions remain evidence-driven.
+
+---
+
+## 15. Navigation
 
 A general navigation mechanism is not defined by the current source.
 
 Do not introduce `Navigator`, `Router`, `PageManager`, singleton or Service Locator merely because more Pages may exist in the future. Navigation requires a separate decision when a concrete use case exists.
 
-## 15. Tests
+## 16. Tests
 
 The source contains:
 
@@ -329,9 +355,9 @@ The source contains:
 
 The base fixture validates the public lifecycle rather than exposing `FState` for testing. The Main fixture inspects observable FMX behavior rather than adding production accessors for private controls.
 
-Execution evidence is documented separately in [Automated Tests](../../../tests/README.md). Source test inventory must not be presented as proof of execution.
+Execution evidence is documented separately in [Automated Tests](../../testing/README.md). Source test inventory must not be presented as proof of execution.
 
-## 16. Structural quality gate
+## 17. Structural quality gate
 
 When evolving `View.Page`, verify:
 
@@ -351,12 +377,12 @@ When evolving `View.Page`, verify:
 [ ] tests cover changed lifecycle/error paths
 ```
 
-## 17. Related documentation
+## 18. Related documentation
 
 - [ADR-0004 — View Page Composition Architecture](../../adr/ADR-0004-view-page-composition-architecture.md)
 - [ADR-0003 — superseded View Page architecture](../../adr/ADR-0003-view-page-architecture.md)
 - [RickUIBuilder — DockHub Integration Reference](../../dependencies/rickuibuilder/README.md)
 - [Theme Module](../theme/README.md)
 - [Language Module](../language/README.md)
-- [Automated Tests](../../../tests/README.md)
+- [Automated Tests](../../testing/README.md)
 - [DockHub Documentation](../../README.md)

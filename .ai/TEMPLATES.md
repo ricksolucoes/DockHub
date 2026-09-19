@@ -50,9 +50,14 @@ Template nunca pode sobrescrever padrão vigente do domínio.
 ├── skill/
 │   └── SKILL.template.md
 └── delphi/
-    └── interface-implementation/
-        ├── CONTRACT.template.pas
-        ├── IMPLEMENTATION.template.pas
+    ├── interface-implementation/
+    │   ├── CONTRACT.template.pas
+    │   ├── IMPLEMENTATION.template.pas
+    │   └── README.md
+    └── view-page/
+        ├── PAGE.template.pas
+        ├── PAGE.template.fmx
+        ├── COMPOSITION.template.pas
         └── README.md
 ```
 
@@ -156,6 +161,50 @@ Propósito:
 
 ---
 
+
+### 5.4 Delphi View.Page Template
+
+```text
+Name:
+delphi-view-page
+
+Path:
+.ai/templates/delphi/view-page/
+
+Type:
+delphi-code
+
+Status:
+ACTIVE
+```
+
+Arquivos:
+
+```text
+PAGE.template.pas
+PAGE.template.fmx
+COMPOSITION.template.pas
+README.md
+```
+
+Agent responsável:
+
+```text
+dockhub-view-page
+```
+
+Skill consumidora:
+
+```text
+create-view-page
+```
+
+Propósito:
+
+> Materializar a estrutura repetível de uma Page FMX e sua Composition depois que a Skill confirmar a arquitetura vigente, sem criar automaticamente Types, Contracts específicos, tokens Theme ou comportamento de domínio.
+
+---
+
 ## 6. Regra de registro
 
 Um template reutilizável deve ser registrado aqui quando:
@@ -172,6 +221,18 @@ Arquivos de exemplo local não precisam automaticamente de registro central.
 ---
 
 ## 7. Template local README
+
+O `README.md` local de um template é uma **exceção explícita** à regra geral que mantém a documentação do projeto dentro de `docs/`.
+
+Essa exceção existe somente porque o arquivo fica junto ao template e facilita o direcionamento operacional de Agents/Skills quando há muitos recursos de IA. Seu conteúdo deve limitar-se ao uso do próprio template.
+
+Permitido:
+
+```text
+.ai/templates/**/README.md
+```
+
+Não usar essa exceção para documentação de módulos, testes, arquitetura geral, roadmap ou funcionalidades do produto. Esses conteúdos pertencem a `docs/` (ou aos READMEs principais na raiz, quando aplicável).
 
 Templates de código devem possuir README local explicando:
 

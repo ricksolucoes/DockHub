@@ -281,4 +281,4 @@ Esses pontos só devem ser reavaliados diante de requisitos concretos.
 - [Arquitetura de Language](./ADR-0001-language-architecture.pt-BR.md)
 - [Arquitetura de Theme](./ADR-0002-theme-architecture.pt-BR.md)
 - [ADR-0003 substituído](./ADR-0003-view-page-architecture.pt-BR.md)
-- [Testes Automatizados](../../tests/README.pt-BR.md)
+- [Testes Automatizados](../testing/README.pt-BR.md)

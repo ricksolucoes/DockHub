@@ -293,12 +293,13 @@ Investigue antes de editar.
 8. definir ação
 9. definir resultado observável
 10. implementar
-11. compilar quando possível
-12. executar teste isolado
-13. executar fixture
-14. executar suíte
-15. registrar resultado
-16. identificar documentação afetada
+11. revisar Method Toxicity do código de teste alterado
+12. compilar quando possível
+13. executar teste isolado
+14. executar fixture
+15. executar suíte
+16. registrar resultado
+17. identificar documentação afetada
 ```
 
 ## 18. Workflow — regressão
@@ -557,6 +558,23 @@ fixture
 suíte completa
 ```
 
+
+## 39.1 Method Toxicity em testes
+
+Código de teste é código Delphi e está sujeito aos mesmos critérios de Method Toxicity Metrics aplicáveis à produção.
+
+Ao criar ou alterar fixture/helper:
+
+```text
+review-method-toxicity
+```
+
+Quando RAD Studio/CSV estiver disponível, use as métricas reais. Sem ferramenta, faça avaliação estática e não invente `Toxicity`.
+
+Reduzir toxicidade não significa fragmentar assertions arbitrariamente. Prefira separação por responsabilidade coesa, mantendo métodos orquestradores quando isso melhora a leitura do cenário.
+
+---
+
 ## 40. Quality Gate
 
 Antes de concluir:
@@ -583,6 +601,7 @@ Antes de concluir:
 [ ] teste isolado foi executado quando disponível
 [ ] fixture foi executada quando disponível
 [ ] suíte foi executada quando disponível
+[ ] Method Toxicity do código de teste novo/alterado foi revisada
 [ ] resultado real foi registrado
 [ ] coverage não foi inferida
 [ ] leak status não foi inferido

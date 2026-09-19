@@ -674,7 +674,7 @@ Tests Errored : 0
 
 Esse resultado executado é anterior à ampliação atual dos textos da Main; ele permanece como evidência histórica, não como validação desta alteração.
 
-Consulte [tests/README.pt-BR.md](../../../tests/README.pt-BR.md) para a documentação completa do projeto de testes.
+Consulte [Testes Automatizados](../../testing/README.pt-BR.md) para a documentação completa do projeto de testes.
 
 ### Comportamentos implementados ainda sem teste dedicado
 

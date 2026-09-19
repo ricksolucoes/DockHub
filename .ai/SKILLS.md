@@ -73,6 +73,7 @@ Uma Skill nunca pode usar seu procedimento para contornar uma regra de nível su
 │   ├── dockhub-delphi-coding.md
 │   ├── dockhub-language-translator.md
 │   ├── dockhub-theme.md
+│   ├── dockhub-view-page.md
 │   ├── dockhub-tests.md
 │   └── dockhub-documentation.md
 │
@@ -99,18 +100,28 @@ Uma Skill nunca pode usar seu procedimento para contornar uma regra de nível su
 │   │   └── evaluate-test-impact/
 │   │       └── SKILL.md
 │   │
-│   └── documentation/
-│       └── evaluate-documentation-impact/
-│           └── SKILL.md
+│   ├── documentation/
+│   │   └── evaluate-documentation-impact/
+│   │       └── SKILL.md
+│   │
+│   └── domains/
+│       └── view-page/
+│           └── create-view-page/
+│               └── SKILL.md
 │
 └── templates/
     ├── AGENT.template.md
     ├── skill/
     │   └── SKILL.template.md
     └── delphi/
-        └── interface-implementation/
-            ├── CONTRACT.template.pas
-            ├── IMPLEMENTATION.template.pas
+        ├── interface-implementation/
+        │   ├── CONTRACT.template.pas
+        │   ├── IMPLEMENTATION.template.pas
+        │   └── README.md
+        └── view-page/
+            ├── PAGE.template.pas
+            ├── PAGE.template.fmx
+            ├── COMPOSITION.template.pas
             └── README.md
 ```
 
@@ -224,7 +235,9 @@ Procedimentos relacionados à análise de impacto documental.
 
 Não substituem `dockhub-documentation`.
 
-Categorias de domínio podem ser introduzidas futuramente somente quando existirem Skills reais que justifiquem essa organização.
+Agrupamentos de domínio podem ser usados somente quando existirem Skills reais que justifiquem essa organização.
+
+O diretório `skills/domains/` existe porque `View.Page` já possui uma Skill especializada real. Esse diretório organiza escopo e não cria nova categoria de front matter: `create-view-page` mantém `category: implementation`.
 
 ---
 
@@ -336,6 +349,15 @@ create-interface-implementation
     ├── inspect-current-state
     ├── validate-architecture
     ├── review-code-consistency
+    ├── evaluate-test-impact
+    └── evaluate-documentation-impact
+
+
+create-view-page
+    ├── inspect-current-state
+    ├── validate-architecture
+    ├── review-code-consistency
+    ├── review-method-toxicity
     ├── evaluate-test-impact
     └── evaluate-documentation-impact
 ```
@@ -551,6 +573,8 @@ Principais consumidores:
 dockhub-delphi-coding
 dockhub-language-translator
 dockhub-theme
+dockhub-view-page
+dockhub-tests
 review-code-consistency
 ```
 
@@ -620,6 +644,53 @@ implement-change
 
 ---
 
+
+### 11.9 `create-view-page`
+
+```text
+Category:
+implementation
+
+Path:
+.ai/skills/domains/view-page/create-view-page/SKILL.md
+
+Status:
+ACTIVE
+
+Dependencies:
+inspect-current-state
+validate-architecture
+review-code-consistency
+review-method-toxicity
+evaluate-test-impact
+evaluate-documentation-impact
+```
+
+Propósito:
+
+> Criar uma nova `View.Page` a partir da arquitetura atual confirmada, avaliando Types, contratos específicos, Language, Theme, RickUIBuilder, projeto Delphi, testes, Method Toxicity e documentação antes de materializar os templates oficiais.
+
+Agent responsável:
+
+```text
+dockhub-view-page
+```
+
+Template:
+
+```text
+.ai/templates/delphi/view-page/
+```
+
+Principais consumidores:
+
+```text
+dockhub-view-page
+dockhub-delphi-coding
+```
+
+---
+
 ## 12. Generic Skill versus Domain Skill
 
 ### Generic Skill
@@ -638,19 +709,19 @@ evaluate-test-impact
 
 Procedimento recorrente específico de um domínio.
 
-Estrutura futura permitida:
+Estrutura atual permitida:
 
 ```text
 .ai/skills/domains/<domain>/<skill-name>/SKILL.md
 ```
 
-Exemplo conceitual futuro:
+Exemplo atual:
 
 ```text
-.ai/skills/domains/language/add-translation-key/SKILL.md
+.ai/skills/domains/view-page/create-view-page/SKILL.md
 ```
 
-Esse diretório não deve ser criado antes de existir uma Skill de domínio real.
+Novos diretórios de domínio só devem ser criados quando existir Skill real que justifique a organização.
 
 ---
 
@@ -887,16 +958,16 @@ Em caso de divergência, os arquivos normativos prevalecem.
 
 ## 24. Crescimento futuro
 
-Quando a quantidade de Skills justificar, o projeto pode introduzir:
+O diretório `domains/` já existe porque `View.Page` possui uma Skill de domínio real.
+
+Outras expansões possíveis permanecem condicionais:
 
 ```text
-domains/
+novos domains/
 references/
 examples/
 scripts/
 ```
-
-dentro da infraestrutura de Skills.
 
 Essas estruturas não devem ser criadas antecipadamente.
 

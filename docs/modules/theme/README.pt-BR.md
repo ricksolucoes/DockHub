@@ -355,7 +355,7 @@ Os testes de Theme utilizam a implementação real `TDockHubTheme` através de u
 
 O fonte atual possui uma fixture FMX de integração de `TPageMainComposition`, além da fixture de Theme. O último XML de execução fornecido é anterior a essa fixture de Page Composition; portanto, a evidência histórica de execução comprova apenas os testes presentes naquela execução antiga e não valida o fonte atual de integração da Main.
 
-Consulte [Testes Automatizados](../../../tests/README.pt-BR.md) para o inventário completo e a referência da última execução.
+Consulte [Testes Automatizados](../../testing/README.pt-BR.md) para o inventário completo e a referência da última execução.
 
 ## 16. Evoluções futuras
 

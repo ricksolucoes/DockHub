@@ -1,6 +1,6 @@
 # DockHub AI Development System
 
-Este documento explica como funciona a infraestrutura de **Agents e Skills** utilizada para manter consistência no desenvolvimento do DockHub.
+Este documento explica como funciona a infraestrutura de **Agents, Skills e Templates** utilizada para manter consistência no desenvolvimento do DockHub.
 
 > Este README é explicativo.  
 > Os arquivos normativos são `.ai/AGENTS.md`, `.ai/SKILLS.md`, os Agents registrados e as Skills registradas.
@@ -20,7 +20,7 @@ Este documento explica como funciona a infraestrutura de **Agents e Skills** uti
 - Method Toxicity;
 - manutenção.
 
-O sistema de IA separa essas responsabilidades em dois conceitos:
+O sistema de IA separa essas responsabilidades em três conceitos:
 
 ```text
 Agent
@@ -28,9 +28,27 @@ Agent
 
 Skill
 → procedimento reutilizável
+
+Template
+→ estrutura materializada por procedimento autorizado
 ```
 
 Isso evita que cada nova tarefa reconstrua o processo do zero.
+
+### 1.1 Localização da documentação
+
+A documentação técnica e arquitetural do DockHub deve permanecer dentro de `docs/`.
+
+Existem somente duas exceções documentais:
+
+1. `README.md` e `README.pt-BR.md` na raiz, como apresentação principal do projeto;
+2. `README.md` local dentro de `.ai/templates/**/`, exclusivamente para orientar Agents/Skills sobre o funcionamento do template ao qual o arquivo pertence.
+
+O README local de template é uma exceção operacional para facilitar descoberta e uso correto quando a infraestrutura possui muitos Agents, Skills e Templates. Ele não deve acumular documentação de módulo, testes, arquitetura geral ou roadmap.
+
+Os demais arquivos Markdown em `.ai` são artefatos normativos/operacionais da infraestrutura de IA, não documentação técnica do projeto.
+
+Documentação de testes, por exemplo, pertence a `docs/testing/`, e não ao diretório `tests/`.
 
 ---
 
@@ -46,6 +64,7 @@ Isso evita que cada nova tarefa reconstrua o processo do zero.
 │   ├── dockhub-delphi-coding.md
 │   ├── dockhub-language-translator.md
 │   ├── dockhub-theme.md
+│   ├── dockhub-view-page.md
 │   ├── dockhub-tests.md
 │   └── dockhub-documentation.md
 │
@@ -72,23 +91,35 @@ Isso evita que cada nova tarefa reconstrua o processo do zero.
 │   │   └── evaluate-test-impact/
 │   │       └── SKILL.md
 │   │
-│   └── documentation/
-│       └── evaluate-documentation-impact/
-│           └── SKILL.md
+│   ├── documentation/
+│   │   └── evaluate-documentation-impact/
+│   │       └── SKILL.md
+│   └── domains/
+│       └── view-page/
+│           └── create-view-page/
+│               └── SKILL.md
 │
 └── templates/
     ├── AGENT.template.md
     ├── skill/
     │   └── SKILL.template.md
     └── delphi/
-        └── interface-implementation/
-            ├── CONTRACT.template.pas
-            ├── IMPLEMENTATION.template.pas
+        ├── interface-implementation/
+        │   ├── CONTRACT.template.pas
+        │   ├── IMPLEMENTATION.template.pas
+        │   └── README.md
+        └── view-page/
+            ├── PAGE.template.pas
+            ├── PAGE.template.fmx
+            ├── COMPOSITION.template.pas
             └── README.md
 
 docs/
 └── ai/
-    └── README.md
+    ├── README.md
+    └── plans/
+        ├── interface-implementation.md
+        └── view-page-creation.md
 ```
 
 ---
@@ -131,16 +162,16 @@ Uma pasta em `.ai/skills/` não é Skill oficial enquanto não estiver registrad
 
 ---
 
-## 5. Agent versus Skill
+## 5. Agent versus Skill versus Template
 
-| Pergunta | Agent | Skill |
-|---|---|---|
-| Define responsabilidade? | Sim | Não |
-| Pode possuir regra de domínio? | Sim | Não como autoridade |
-| Decide arquitetura dentro do seu escopo? | Pode avaliar/propor conforme governança | Não |
-| Executa procedimento recorrente? | Pode coordenar | Sim |
-| É reutilizável por vários domínios? | Às vezes | Frequentemente |
-| Tem registro central? | `AGENTS.md` | `SKILLS.md` |
+| Pergunta | Agent | Skill | Template |
+|---|---|---|---|
+| Define responsabilidade? | Sim | Não | Não |
+| Pode possuir regra de domínio? | Sim | Não como autoridade | Não |
+| Decide arquitetura dentro do seu escopo? | Pode avaliar/propor conforme governança | Não | Não |
+| Executa procedimento recorrente? | Pode coordenar | Sim | Não |
+| Materializa estrutura repetível? | Pode orientar | Pode aplicar | Sim |
+| Tem registro central? | `AGENTS.md` | `SKILLS.md` | `TEMPLATES.md` |
 
 Regra prática:
 
@@ -150,6 +181,9 @@ Se a necessidade é "quem deve decidir?"
 
 Se a necessidade é "qual sequência devemos repetir?"
 → Skill
+
+Se a necessidade é "qual estrutura repetível deve ser materializada?"
+→ Template
 ```
 
 ---
@@ -185,6 +219,7 @@ Atualmente existem:
 dockhub-delphi-coding
 dockhub-language-translator
 dockhub-theme
+dockhub-view-page
 dockhub-tests
 dockhub-documentation
 ```
@@ -222,6 +257,18 @@ Define regras específicas do domínio Theme, incluindo:
 
 O Agent distingue invariantes arquiteturais do estado atual: quantidade de tokens, Themes disponíveis e paths precisam ser confirmados no código antes de cada alteração.
 
+### `dockhub-view-page`
+
+Define regras específicas do domínio `View.Page`, incluindo:
+
+- `Types / Contracts / Impl`;
+- lifecycle de `TPageCompositionBase`;
+- lifetime por interface/reference counting;
+- contratos específicos por Page quando justificados;
+- separação Page × Composition;
+- integração Theme/Language/RickUIBuilder;
+- criação de novas Pages sem dedução estrutural.
+
 ### `dockhub-tests`
 
 Define criação, revisão, execução e evidência de testes.
@@ -240,6 +287,14 @@ dockhub-tests
 dockhub-documentation
 
 dockhub-delphi-coding + dockhub-theme
+        ↓
+dockhub-tests
+        ↓
+dockhub-documentation
+
+dockhub-delphi-coding + dockhub-view-page
+        ↓
+create-view-page quando houver nova Page
         ↓
 dockhub-tests
         ↓
@@ -273,17 +328,26 @@ review-code-consistency
 review-method-toxicity
 evaluate-test-impact
 evaluate-documentation-impact
+create-view-page
 ```
 
 ---
 
 ## 9. Por que cada Skill possui uma pasta
 
-Formato:
+Formato genérico:
 
 ```text
 .ai/skills/<category>/<skill-name>/SKILL.md
 ```
+
+Para Skills de domínio, a organização também pode usar:
+
+```text
+.ai/skills/domains/<domain>/<skill-name>/SKILL.md
+```
+
+A pasta de domínio organiza escopo; o `category` do front matter continua usando uma categoria oficial.
 
 Hoje uma Skill pode precisar apenas de `SKILL.md`.
 
@@ -734,21 +798,17 @@ Isso é permitido desde que:
 
 ---
 
-## 23. Skills de domínio futuras
+## 23. Skills de domínio
 
-Quando necessário, pode ser introduzida:
-
-```text
-.ai/skills/domains/
-```
-
-Exemplo futuro:
+O diretório de domínio já existe porque há um procedimento recorrente real de `View.Page`:
 
 ```text
-.ai/skills/domains/language/add-translation-key/SKILL.md
+.ai/skills/domains/view-page/create-view-page/SKILL.md
 ```
 
-Não crie `domains/` antes de existir uma Skill real.
+O path de domínio organiza escopo. O `category` da Skill continua utilizando uma categoria oficial definida em `.ai/SKILLS.md`.
+
+Novos domínios só devem ser adicionados quando existir Skill real que justifique essa estrutura.
 
 ---
 
@@ -1076,3 +1136,100 @@ docs/ai/plans/interface-implementation.md
 ```
 
 Esse documento registra inclusive por que nenhum novo Agent foi criado e por que `Types` continua opcional.
+
+---
+
+## 36. View.Page — Agent, Skill e Template
+
+A criação de Pages possui agora três recursos complementares:
+
+```text
+dockhub-view-page
+        ↓
+create-view-page
+        ↓
+delphi/view-page
+```
+
+### Agent
+
+```text
+.ai/agents/dockhub-view-page.md
+```
+
+É a autoridade específica do domínio de Pages.
+
+### Skill
+
+```text
+.ai/skills/domains/view-page/create-view-page/SKILL.md
+```
+
+Padroniza o procedimento recorrente de inspeção, decisão e criação.
+
+### Template
+
+```text
+.ai/templates/delphi/view-page/
+```
+
+Materializa Page, FMX e Composition somente depois de a Skill confirmar a arquitetura atual.
+
+Regra:
+
+```text
+Agent = autoridade
+Skill = procedimento
+Template = estrutura
+```
+
+---
+
+## 37. Por que não existe template de Types, Contracts ou Tests por Page
+
+Esses artefatos não são universalmente necessários.
+
+```text
+Types
+→ somente quando existir tipo estrutural/compartilhado real
+
+Contract específico
+→ somente quando a Page possuir ações/contrato próprio real
+
+Tests
+→ devem representar comportamento real da Page, não um esqueleto genérico
+```
+
+Criá-los automaticamente transformaria o padrão em cerimônia.
+
+---
+
+## 38. Method Toxicity em produção e testes
+
+`review-method-toxicity` agora trabalha com a mesma regra para qualquer código Delphi:
+
+```text
+RAD Studio/CSV disponível
+→ usar métricas reais
+
+sem ferramenta
+→ avaliação estática
+→ Toxicity: Não confirmado
+```
+
+O código em `tests/` também deve respeitar Method Toxicity Metrics.
+
+Heurísticas qualitativas continuam úteis para revisão de design, mas não substituem `Length`, `Parameters`, `If Depth`, `Cyclomatic Complexity` ou `Toxicity` medidos pela ferramenta.
+
+---
+
+## 39. Plano formal de criação de Pages
+
+A decisão está registrada em:
+
+```text
+docs/ai/plans/view-page-creation.md
+```
+
+Esse documento descreve o que foi criado, o que foi propositalmente evitado, Stop Conditions e Quality Gate.
+

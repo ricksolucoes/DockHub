@@ -1,0 +1,10 @@
+object {{PAGE_VARIABLE}}: {{PAGE_CLASS}}
+  Left = 0
+  Top = 0
+  ClientHeight = {{DESIGN_CLIENT_HEIGHT}}
+  ClientWidth = {{DESIGN_CLIENT_WIDTH}}
+  FormFactor.Width = {{FORM_FACTOR_WIDTH}}
+  FormFactor.Height = {{FORM_FACTOR_HEIGHT}}
+  FormFactor.Devices = [Desktop]
+  DesignerMasterStyle = 0
+end

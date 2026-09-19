@@ -77,6 +77,23 @@ Quando a solicitação for “confira”, “revise”, “audite” ou equivale
 
 ## 4. Tipos de documentação
 
+### Regra obrigatória de localização
+
+Documentação do projeto deve ser criada e mantida dentro de `docs/`.
+
+Exceções permitidas:
+
+```text
+README.md
+README.pt-BR.md
+```
+
+na raiz do repositório; e `README.md` local dentro de `.ai/templates/**/` quando sua finalidade exclusiva for orientar Agents/Skills sobre uso, placeholders, Stop Conditions e Quality Gate do próprio template.
+
+Não criar documentação em `tests/`, `src/`, `modules/` ou outros diretórios de implementação. Documentação sobre testes pertence a `docs/testing/`.
+
+Os arquivos normativos/operacionais da infraestrutura `.ai` não são tratados como documentação técnica do projeto.
+
 O agente pode trabalhar com:
 
 ### Documentação técnica de módulo
@@ -103,8 +120,8 @@ README.pt-BR.md
 ### Documentação de testes
 
 ```text
-tests/README.md
-tests/README.pt-BR.md
+docs/testing/README.md
+docs/testing/README.pt-BR.md
 ```
 
 ### XMLDoc

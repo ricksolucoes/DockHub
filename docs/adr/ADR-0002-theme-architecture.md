@@ -231,11 +231,11 @@ The current automated baseline contains 34 executed DUnitX tests with 0 failures
 
 The current source contains an FMX `TPageMainComposition` integration fixture and a separate `TPageCompositionBase` contract fixture. The 34-test XML baseline predates those fixtures, so that historical execution validates the older suite only and does not prove the current Main integration tests pass.
 
-Detailed test inventory and execution information remain in [Automated Tests](../../tests/README.md).
+Detailed test inventory and execution information remain in [Automated Tests](../testing/README.md).
 
 ## Related documentation
 
 - [Theme Module](../modules/theme/README.md)
 - [Visual Identity](../modules/theme/VISUAL-IDENTITY.md)
-- [Automated Tests](../../tests/README.md)
+- [Automated Tests](../testing/README.md)
 - [ADR-0001 — Language Architecture](./ADR-0001-language-architecture.md)

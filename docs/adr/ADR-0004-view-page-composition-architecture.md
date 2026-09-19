@@ -281,4 +281,4 @@ These may be reconsidered only if concrete requirements justify them.
 - [Language Architecture](./ADR-0001-language-architecture.md)
 - [Theme Architecture](./ADR-0002-theme-architecture.md)
 - [Superseded ADR-0003](./ADR-0003-view-page-architecture.md)
-- [Automated Tests](../../tests/README.md)
+- [Automated Tests](../testing/README.md)
