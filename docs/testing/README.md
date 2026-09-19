@@ -23,19 +23,19 @@ tests/
 
 ## Source test inventory
 
-The current source declares **58 tests**:
+The current source declares **59 tests**:
 
 ```text
 TDockHubLanguageTypeTests            : 10
 TDockHubLanguageTests                :  7
 TDockHubThemeTests                   : 17
-TDockHubPageCompositionBaseTests     : 15
+TDockHubPageCompositionBaseTests     : 16
 TDockHubPageMainCompositionTests     :  9
                                         --
-Total                                : 58
+Total                                : 59
 ```
 
-The current suite was executed in RAD Studio/DUnitX with the evidence supplied for this snapshot: **58 found, 58 passed, 0 ignored, 0 leaked, 0 failed and 0 errored**.
+The current source inventory contains **59 declared tests**. The latest real execution evidence remains the previously supplied **58-test** XML run; the new window-control geometry regression test does not yet have real execution evidence.
 
 ## Framework and runner
 
@@ -98,7 +98,7 @@ This fixture is marked:
 
 It validates the public lifecycle/contract of `TPageCompositionBase` without exposing its private `FState` only for testing.
 
-The 15 source tests cover:
+The 16 source tests cover:
 
 - nil host Form rejection;
 - nil minimize callback rejection;
@@ -114,6 +114,7 @@ The 15 source tests cover:
 - idempotent second Build after `Built`;
 - Build failure becoming terminal and blocking retry;
 - common minimize/close callbacks;
+- regression coverage for window-control geometry, requiring a `Width <> ClientWidth` scenario and validating visibility, client-area bounds, ordering, and non-overlap;
 - common window hover using the most recently applied Theme.
 
 The fixture declares a test-only derived class that implements the abstract Template Method hooks. No production seam or public lifecycle-state accessor was added solely for test purposes.
@@ -158,7 +159,7 @@ invalid      : 0
 assembly     : Success
 ```
 
-All **58 `test-case`** elements in the XML are marked as executed with `result="Success"` / `success="True"`. For this snapshot, the source inventory and the XML execution both contain 58 tests.
+All **58 `test-case`** elements in the XML are marked as executed with `result="Success"` / `success="True"`. The current source inventory contains **59 tests**; therefore this run remains the latest real execution evidence, but it does not include the new `WindowButtons_AreVisibleAndInsideClientBounds` regression test.
 
 This XML proves the cases and results it contains. By itself it does not prove code coverage, thread safety, behavior outside the executed cases, or a separate memory-leak count because the supplied NUnit format has no dedicated leak field.
 

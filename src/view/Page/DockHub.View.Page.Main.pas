@@ -98,9 +98,9 @@ end;
 
 procedure TPageMain.ConfigureForm;
 begin
+  BorderStyle := TFmxFormBorderStyle.None;
   Width := _FORM_WIDTH;
   Height := _FORM_HEIGHT;
-  BorderStyle := TFmxFormBorderStyle.None;
   Position := TFormPosition.ScreenCenter;
 end;
 

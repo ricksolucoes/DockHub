@@ -237,40 +237,42 @@ begin
 end;
 
 procedure TPageCompositionBase.BuildWindowControls;
-var
-  LMinimizeLeft: Single;
-  LCloseLeft: Single;
 begin
-  LMinimizeLeft := FForm.Width
-    - _WINDOW_BUTTON_MARGIN
-    - (_WINDOW_BUTTON_WIDTH * 2)
-    - _WINDOW_BUTTON_GAP;
-
-  LCloseLeft := FForm.Width
-    - _WINDOW_BUTTON_MARGIN
-    - _WINDOW_BUTTON_WIDTH;
-
   FMinimizeButton := TRickUIBuilder.Button
     .Caption(#$2212)
-    .Position(LMinimizeLeft, _WINDOW_BUTTON_MARGIN)
+    .Position(
+      FForm.ClientWidth
+        - _WINDOW_BUTTON_MARGIN
+        - (_WINDOW_BUTTON_WIDTH * 2)
+        - _WINDOW_BUTTON_GAP,
+      _WINDOW_BUTTON_MARGIN
+    )
     .Size(_WINDOW_BUTTON_WIDTH, _WINDOW_BUTTON_HEIGHT)
-    .Anchors([TAnchorKind.akTop, TAnchorKind.akRight])
     .CornerRadius(8)
     .OnClick(FOnMinimize)
     .OnHover(WindowButtonMouseEnter, WindowButtonMouseLeave)
     .Build(FForm);
+
   FMinimizeCaption := FindButtonCaption(FMinimizeButton);
 
   FCloseButton := TRickUIBuilder.Button
     .Caption(#$00D7)
-    .Position(LCloseLeft, _WINDOW_BUTTON_MARGIN)
+    .Position(
+      FForm.ClientWidth
+        - _WINDOW_BUTTON_MARGIN
+        - _WINDOW_BUTTON_WIDTH,
+      _WINDOW_BUTTON_MARGIN
+    )
     .Size(_WINDOW_BUTTON_WIDTH, _WINDOW_BUTTON_HEIGHT)
-    .Anchors([TAnchorKind.akTop, TAnchorKind.akRight])
     .CornerRadius(8)
     .OnClick(FOnClose)
     .OnHover(WindowButtonMouseEnter, WindowButtonMouseLeave)
     .Build(FForm);
+
   FCloseCaption := FindButtonCaption(FCloseButton);
+
+  FMinimizeButton.BringToFront;
+  FCloseButton.BringToFront;
 end;
 
 procedure TPageCompositionBase.ApplyWindowTheme;

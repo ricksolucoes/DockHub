@@ -23,19 +23,19 @@ tests/
 
 ## Inventário de testes no fonte
 
-O código-fonte atual declara **58 testes**:
+O código-fonte atual declara **59 testes**:
 
 ```text
 TDockHubLanguageTypeTests            : 10
 TDockHubLanguageTests                :  7
 TDockHubThemeTests                   : 17
-TDockHubPageCompositionBaseTests     : 15
+TDockHubPageCompositionBaseTests     : 16
 TDockHubPageMainCompositionTests     :  9
                                         --
-Total                                : 58
+Total                                : 59
 ```
 
-A suíte atual foi executada no RAD Studio/DUnitX conforme a evidência fornecida para este snapshot: **58 encontrados, 58 aprovados, 0 ignorados, 0 leaks, 0 falhas e 0 erros**.
+O inventário atual possui **59 testes declarados**. A última execução real disponível permanece a execução de **58 testes** registrada no XML fornecido anteriormente; o novo teste de regressão de geometria dos controles de janela ainda não possui evidência real de execução.
 
 ## Framework e runner
 
@@ -98,7 +98,7 @@ A fixture é marcada com:
 
 Ela valida o lifecycle/contrato público de `TPageCompositionBase` sem expor seu `FState` privado apenas para teste.
 
-Os 15 testes declarados cobrem:
+Os 16 testes declarados cobrem:
 
 - rejeição de Form host `nil`;
 - rejeição de callback de minimizar `nil`;
@@ -114,6 +114,7 @@ Os 15 testes declarados cobrem:
 - segundo Build idempotente após `Built`;
 - falha de Build tornando a instância terminal e bloqueando retry;
 - callbacks comuns de minimizar/fechar;
+- regressão de geometria dos controles de janela, exigindo cenário com `Width <> ClientWidth` e validando visibilidade, bounds da área cliente, ordem e ausência de sobreposição;
 - hover comum de janela utilizando o Theme aplicado mais recentemente.
 
 A fixture declara uma classe derivada exclusiva dos testes para implementar os hooks abstratos de Template Method. Nenhum seam de produção ou accessor público do estado de lifecycle foi criado apenas para teste.
@@ -158,7 +159,7 @@ invalid      : 0
 assembly     : Success
 ```
 
-Os **58 `test-case`** presentes no XML estão marcados como executados com `result="Success"` / `success="True"`. Neste snapshot, o inventário no fonte e a execução registrada no XML possuem 58 testes.
+Os **58 `test-case`** presentes no XML estão marcados como executados com `result="Success"` / `success="True"`. O inventário atual do fonte possui **59 testes**; portanto, essa execução continua sendo a última evidência real disponível, mas não inclui o novo teste de regressão `WindowButtons_AreVisibleAndInsideClientBounds`.
 
 Esse XML comprova os casos e resultados que ele contém. Isoladamente, ele não comprova percentual de coverage, thread safety, comportamentos fora dos casos executados nem uma contagem separada de memory leaks, pois o formato NUnit fornecido não registra um campo específico de leaks.
 

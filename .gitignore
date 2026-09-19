@@ -80,8 +80,7 @@ __recovery/
 
 # Boss dependency manager vendor folder https://github.com/HashLoad/boss
 modules/
-app/
-temp/
+App/Debug/
 
 # Abre uma exceção para a pasta modules
 !/docs/modules/

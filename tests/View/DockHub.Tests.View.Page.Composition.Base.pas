@@ -55,6 +55,8 @@ type
     procedure HandleClose(Sender: TObject);
     procedure ConfigureValidComposition;
     procedure BuildValidComposition;
+    procedure ConfigureHostWithDistinctClientArea;
+    procedure AssertButtonInsideClientBounds(const AButton: TRectangle);
 
     function FindLabelByText(AParent: TFmxObject;
       const AText: string): TLabel;
@@ -107,6 +109,9 @@ type
 
     [Test]
     procedure WindowButtons_InvokeConfiguredCallbacks;
+
+    [Test]
+    procedure WindowButtons_AreVisibleAndInsideClientBounds;
 
     [Test]
     procedure WindowHover_UsesCurrentThemeAfterRuntimeChange;
@@ -191,6 +196,41 @@ procedure TDockHubPageCompositionBaseTests.BuildValidComposition;
 begin
   ConfigureValidComposition;
   FComposition.Build;
+end;
+
+procedure TDockHubPageCompositionBaseTests.ConfigureHostWithDistinctClientArea;
+const
+  _TEST_CLIENT_WIDTH = 700;
+  _TEST_CLIENT_HEIGHT = 500;
+begin
+  FHostForm.BorderStyle := TFmxFormBorderStyle.Sizeable;
+  FHostForm.ClientWidth := _TEST_CLIENT_WIDTH;
+  FHostForm.ClientHeight := _TEST_CLIENT_HEIGHT;
+
+  if FHostForm.Width = FHostForm.ClientWidth then
+  begin
+    FHostForm.BorderStyle := TFmxFormBorderStyle.Single;
+    FHostForm.ClientWidth := _TEST_CLIENT_WIDTH;
+    FHostForm.ClientHeight := _TEST_CLIENT_HEIGHT;
+  end;
+
+  Assert.IsTrue(
+    FHostForm.Width > FHostForm.ClientWidth,
+    'Test scenario must make Width greater than ClientWidth.'
+  );
+end;
+
+procedure TDockHubPageCompositionBaseTests.AssertButtonInsideClientBounds(
+  const AButton: TRectangle);
+begin
+  Assert.IsTrue(AButton.Position.X >= 0);
+  Assert.IsTrue(AButton.Position.Y >= 0);
+  Assert.IsTrue(
+    AButton.Position.X + AButton.Width <= FHostForm.ClientWidth
+  );
+  Assert.IsTrue(
+    AButton.Position.Y + AButton.Height <= FHostForm.ClientHeight
+  );
 end;
 
 function TDockHubPageCompositionBaseTests.FindLabelByText(
@@ -443,6 +483,35 @@ begin
   Assert.AreEqual(1, FCloseCount);
 end;
 
+procedure TDockHubPageCompositionBaseTests.WindowButtons_AreVisibleAndInsideClientBounds;
+var
+  LMinimizeButton: TRectangle;
+  LCloseButton: TRectangle;
+begin
+  ConfigureHostWithDistinctClientArea;
+  BuildValidComposition;
+
+  LMinimizeButton := FindButtonByCaption(#$2212);
+  LCloseButton := FindButtonByCaption(#$00D7);
+
+  Assert.IsNotNull(LMinimizeButton);
+  Assert.IsNotNull(LCloseButton);
+  Assert.IsTrue(LMinimizeButton.Visible);
+  Assert.IsTrue(LCloseButton.Visible);
+  Assert.IsTrue(
+    FHostForm.Width - FHostForm.ClientWidth >
+    FHostForm.ClientWidth - (LCloseButton.Position.X + LCloseButton.Width),
+    'Test scenario must detect Width-based right positioning.'
+  );
+  AssertButtonInsideClientBounds(LMinimizeButton);
+  AssertButtonInsideClientBounds(LCloseButton);
+  Assert.IsTrue(LMinimizeButton.Position.X < LCloseButton.Position.X);
+  Assert.IsTrue(
+    LMinimizeButton.Position.X + LMinimizeButton.Width <=
+    LCloseButton.Position.X
+  );
+end;
+
 procedure TDockHubPageCompositionBaseTests.WindowHover_UsesCurrentThemeAfterRuntimeChange;
 var
   LMinimizeButton: TRectangle;
@@ -470,3 +539,4 @@ initialization
   TDUnitX.RegisterTestFixture(TDockHubPageCompositionBaseTests);
 
 end.
+
