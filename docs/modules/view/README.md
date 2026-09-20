@@ -92,7 +92,7 @@ It owns behavior that is shared by Page compositions:
 - common window-control construction;
 - common window-control Theme mapping;
 - current Theme reference used by hover behavior;
-- `FindButtonCaption`, which isolates the current RickUIBuilder Button-caption limitation;
+- retained `IRickUIBuilderButtonHandle` references for common window controls, avoiding knowledge of Button internals;
 - `ApplyButtonTheme`;
 - Template Method hooks for Page-specific build, Theme and Language behavior.
 
@@ -288,7 +288,7 @@ Rick.UIBuilder.Composition / TRickUIBuilder.On(AParent)
 
 Main currently uses RickUIBuilder fluent builders for controls that require retained references after construction. The structural card is created directly with FMX because the analyzed RickUIBuilder snapshot has no generic card/container builder.
 
-`FindButtonCaption` is centralized in `TPageCompositionBase` because the analyzed RickUIBuilder Button API returns the `TRectangle` container but does not expose a public caption handle.
+RickUIBuilder `0.2.0` exposes `IRickUIBuilderButtonHandle` through `BuildHandle(AParent)`. Page compositions retain this public handle when they need both `Container` and `TextLabel` after construction; production code no longer searches the Button visual tree for its caption.
 
 See [RickUIBuilder — DockHub Integration Reference](../../dependencies/rickuibuilder/README.md).
 

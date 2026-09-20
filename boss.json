@@ -8,7 +8,7 @@
 	"projects": [],
 	"dependencies": {
 		"github.com/ricksolucoes/RickDialogPro": "^0.1.2",
-		"github.com/ricksolucoes/RickUIBuilder": "^0.1.0",
+		"github.com/ricksolucoes/RickUIBuilder": "^0.2.0",
 		"github.com/ricksolucoes/RickWinService": "^0.1.0",
 		"github.com/ricksolucoes/horse": "^3.3.9"
 	}

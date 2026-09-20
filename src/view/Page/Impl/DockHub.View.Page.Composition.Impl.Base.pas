@@ -1,4 +1,4 @@
-unit DockHub.View.Page.Composition.Impl.Base;
+﻿unit DockHub.View.Page.Composition.Impl.Base;
 
 interface
 
@@ -9,11 +9,11 @@ uses
   FMX.Forms,
   FMX.Types,
   FMX.Objects,
-  FMX.StdCtrls,
 
   DockHub.Core.Language.Contracts,
   DockHub.View.Theme.Contracts,
 
+  Rick.UIBuilder.Interfaces,
   DockHub.View.Page.Types,
   DockHub.View.Page.Contracts;
 
@@ -24,10 +24,8 @@ type
     FOnMinimize: TNotifyEvent;
     FOnClose: TNotifyEvent;
 
-    FMinimizeButton: TRectangle;
-    FMinimizeCaption: TLabel;
-    FCloseButton: TRectangle;
-    FCloseCaption: TLabel;
+    FMinimizeButton: IRickUIBuilderButtonHandle;
+    FCloseButton: IRickUIBuilderButtonHandle;
 
     procedure CheckConfiguring;
     procedure CheckBuilt;
@@ -42,8 +40,7 @@ type
     FForm: TForm;
     FCurrentTheme: IDockHubTheme;
 
-    function FindButtonCaption(const AButton: TRectangle): TLabel;
-    procedure ApplyButtonTheme(AButton: TRectangle; ACaption: TLabel;
+    procedure ApplyButtonTheme(const AButton: IRickUIBuilderButtonHandle;
       AFillColor, ABorderColor, ATextColor: TAlphaColor);
 
     procedure DoBuild; virtual; abstract;
@@ -203,37 +200,23 @@ begin
   DoApplyLanguage(ALanguage);
 end;
 
-function TPageCompositionBase.FindButtonCaption(
-  const AButton: TRectangle): TLabel;
-var
-  I: Integer;
+procedure TPageCompositionBase.ApplyButtonTheme(
+  const AButton: IRickUIBuilderButtonHandle; AFillColor, ABorderColor,
+  ATextColor: TAlphaColor);
 begin
-  if Assigned(AButton) then
-    for I := 0 to AButton.ChildrenCount - 1 do
-      if AButton.Children[I] is TLabel then
-        Exit(TLabel(AButton.Children[I]));
-
-  raise EComponentError.Create(
-    'RickUIBuilder button caption label was not found.'
-  );
-end;
-
-procedure TPageCompositionBase.ApplyButtonTheme(AButton: TRectangle;
-  ACaption: TLabel; AFillColor, ABorderColor, ATextColor: TAlphaColor);
-begin
-  AButton.Fill.Kind := TBrushKind.Solid;
-  AButton.Fill.Color := AFillColor;
+  AButton.Container.Fill.Kind := TBrushKind.Solid;
+  AButton.Container.Fill.Color := AFillColor;
 
   if ABorderColor = FCurrentTheme.Transparent then
-    AButton.Stroke.Kind := TBrushKind.None
+    AButton.Container.Stroke.Kind := TBrushKind.None
   else
   begin
-    AButton.Stroke.Kind := TBrushKind.Solid;
-    AButton.Stroke.Color := ABorderColor;
-    AButton.Stroke.Thickness := 1;
+    AButton.Container.Stroke.Kind := TBrushKind.Solid;
+    AButton.Container.Stroke.Color := ABorderColor;
+    AButton.Container.Stroke.Thickness := 1;
   end;
 
-  ACaption.TextSettings.FontColor := ATextColor;
+  AButton.TextLabel.TextSettings.FontColor := ATextColor;
 end;
 
 procedure TPageCompositionBase.BuildWindowControls;
@@ -251,9 +234,7 @@ begin
     .CornerRadius(8)
     .OnClick(FOnMinimize)
     .OnHover(WindowButtonMouseEnter, WindowButtonMouseLeave)
-    .Build(FForm);
-
-  FMinimizeCaption := FindButtonCaption(FMinimizeButton);
+    .BuildHandle(FForm);
 
   FCloseButton := TRickUIBuilder.Button
     .Caption(#$00D7)
@@ -267,19 +248,16 @@ begin
     .CornerRadius(8)
     .OnClick(FOnClose)
     .OnHover(WindowButtonMouseEnter, WindowButtonMouseLeave)
-    .Build(FForm);
+    .BuildHandle(FForm);
 
-  FCloseCaption := FindButtonCaption(FCloseButton);
-
-  FMinimizeButton.BringToFront;
-  FCloseButton.BringToFront;
+  FMinimizeButton.Container.BringToFront;
+  FCloseButton.Container.BringToFront;
 end;
 
 procedure TPageCompositionBase.ApplyWindowTheme;
 begin
   ApplyButtonTheme(
     FMinimizeButton,
-    FMinimizeCaption,
     FCurrentTheme.Transparent,
     FCurrentTheme.Transparent,
     FCurrentTheme.TextSecondary
@@ -287,7 +265,6 @@ begin
 
   ApplyButtonTheme(
     FCloseButton,
-    FCloseCaption,
     FCurrentTheme.Transparent,
     FCurrentTheme.Transparent,
     FCurrentTheme.TextSecondary

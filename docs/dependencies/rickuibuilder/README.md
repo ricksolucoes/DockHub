@@ -10,16 +10,17 @@ It does not replace the upstream RickUIBuilder documentation. It records what Do
 
 ## 1. Analyzed snapshot
 
-The following upstream state was inspected on 2026-09-18:
+The DockHub snapshot supplied for this integration resolves RickUIBuilder `0.2.0` through Boss:
 
 ```text
 Repository: ricksolucoes/RickUIBuilder
-Branch: main
-boss.json version: 0.1.0
-Repository tree SHA: 75b52bfb7d017e4e9be525d03a575c484b7b166d
+Release/tag checked: 0.2.0
+boss.json constraint: ^0.2.0
+boss-lock resolved version: 0.2.0
+boss-lock module hash: 8ad018b949788045d8500ed5d1159b1b
 ```
 
-The analysis covered:
+The analysis covered the public API and implementation areas relevant to DockHub, including:
 
 ```text
 README.md
@@ -33,6 +34,7 @@ src/Rick.UIBuilder.Interfaces.pas
 src/Rick.UIBuilder.Factory.pas
 src/Rick.UIBuilder._Label.pas
 src/Rick.UIBuilder.Button.pas
+src/Rick.UIBuilder.Button.Handle.pas
 src/Rick.UIBuilder.Button.HoverState.pas
 src/Rick.UIBuilder.Badge.pas
 src/Rick.UIBuilder.Badge.Handle.pas
@@ -75,7 +77,7 @@ The library provides three complementary styles. They are not interchangeable al
 | Style | Entry point | Creation moment | Typical reason to use |
 | --- | --- | --- | --- |
 | Factory | `TRickUIBuilder.Factory` | immediate | direct creation from a configuration record |
-| Fluent Builders | `Label_`, `Button`, `Badge`, `Divider` | when `Build` is called | richer per-control configuration and returned control/handle |
+| Fluent Builders | `Label_`, `Button`, `Badge`, `Divider` | when `Build`/`BuildHandle` is called | richer per-control configuration and returned control/handle |
 | Composition | `TRickUIBuilder.On(AParent)` | each `Add*` creates immediately | short fixed sequences on the same parent |
 
 Using an `IRickUIBuilder*` explicitly is not a fourth creation style; it is the contract of the same fluent builders/composer.
@@ -89,7 +91,7 @@ Using an `IRickUIBuilder*` explicitly is not a fourth creation style; it is the 
 | `CreateText` | `TLabel` |
 | `CreateDivider` | `TRectangle` |
 | `CreateBadge` | badge `TRectangle` plus internal `TLabel` through `out` |
-| `CreateButton` | button `TRectangle` containing its caption `TLabel` |
+| `CreateButton` | button `TRectangle` containing its caption `TLabel`; an overload also returns that label through `out` |
 
 Factory behavior relevant to DockHub:
 
@@ -97,7 +99,7 @@ Factory behavior relevant to DockHub:
 - `AParent` controls the FMX visual hierarchy;
 - Factory colors come from the supplied config; it does not know a consumer palette;
 - `CreateBadge` creates a pill-shaped container and exposes its text label through an `out` parameter;
-- `CreateButton` enables hit testing and creates the caption label as a child;
+- `CreateButton` enables hit testing and creates the caption label as a child; the additive overload returns the exact created label through `out`;
 - direct `CreateButton` does **not** install the fluent builder hover behavior.
 
 ## 6. Configuration records
@@ -150,7 +152,7 @@ Because `Build` returns the `TLabel`, this style is appropriate when DockHub nee
 
 ## 8. Fluent Button Builder
 
-`TRickUIBuilder.Button` returns `IRickUIBuilderButton` and `Build(AParent)` returns the button container as `TRectangle`.
+`TRickUIBuilder.Button` returns `IRickUIBuilderButton`. The original `Build(AParent)` API remains available and returns the button container as `TRectangle`. RickUIBuilder `0.2.0` also provides the additive `BuildHandle(AParent)` API, which returns `IRickUIBuilderButtonHandle`.
 
 It adds behavior/configuration beyond direct Factory creation, including:
 
@@ -167,17 +169,24 @@ It adds behavior/configuration beyond direct Factory creation, including:
 - `OnClick`;
 - `OnHover`.
 
-The caption is implemented as an internal child `TLabel` created by the Factory. The analyzed public API does **not** expose a dedicated Button handle for that label.
+The Button handle exposes the exact controls created for that Button:
 
-Therefore, if DockHub needs to change a button caption after construction, the implementation must deliberately choose a strategy supported by the current API. Do not invent a RickUIBuilder Button handle that does not exist.
+```text
+Container: TRectangle
+TextLabel: TLabel
+```
+
+`IRickUIBuilderButtonHandle` is non-owning. It does not free or extend the lifetime of either FMX control; lifetime continues to be controlled by the Owner used during creation. In the fluent builder, the supplied `AParent` is used by the current implementation as the Owner/Parent for the generated controls. The handle must not be dereferenced after those controls have been destroyed.
+
+DockHub uses `BuildHandle` when it needs to retain both the Button container and its caption for later Theme or Language updates. Code that only needs the `TRectangle` can continue using `Build`. DockHub must not inspect the Button's child collection to locate its caption.
 
 ### Hover lifetime
 
-`Rick.UIBuilder.Button.HoverState` is a separate `TComponent` owned by the same `AParent` used by `Build`. This prevents mouse-event handlers from pointing to the short-lived builder instance after fluent chaining ends.
+RickUIBuilder `0.2.0` exposes `IRickUIBuilderButtonHoverState` as the fluent configuration contract. `TRickUIBuilderButtonHoverState.New` creates the configuration state without parameters; `Build(AOwner)` materializes the runtime hover behavior with lifetime tied to the supplied Owner. The configuration interface does not need to remain referenced after `Build`.
 
-The hover-state object stores the normal and hover colors supplied at build time. Consequently, a DockHub screen that supports Theme changes in runtime must account for those stored values. Updating only the button's current `Fill.Color` does not, by itself, rewrite the colors already stored inside the hover-state object.
+The runtime hover behavior still captures the normal/hover values used when it is materialized. Consequently, a DockHub screen that supports Theme changes at runtime must not assume that changing only the current `Fill.Color` also rewrites the already-materialized hover state. The current DockHub window buttons intentionally keep using `OnHover` callbacks that read `FCurrentTheme` at event time.
 
-This must be evaluated whenever `HoverFillColor` and runtime Theme switching coexist.
+Dynamic mutation of the RickUIBuilder hover state is not part of the `0.2.0` Button-handle integration and remains a separate evolution.
 
 ## 9. Fluent Badge Builder and handle
 
@@ -340,11 +349,11 @@ Fluent Build(AParent)
 TRickUIBuilder.On(AParent)
 → composer uses AParent as Owner and Parent for created controls
 
-Button hover state
-→ TComponent owned by the same Parent/Owner
+Button hover configuration
+→ reference-counted interface; Build(AOwner) materializes Owner-managed runtime behavior
 
-Badge handle
-→ interface object references already-owned FMX controls; it does not own those controls
+Button/Badge handles
+→ interface objects reference already-owned FMX controls; they do not own those controls
 ```
 
 Any DockHub integration must preserve these lifetime assumptions and must not manually free controls that are owned by their parent unless ownership is intentionally changed.
@@ -356,7 +365,7 @@ The upstream repository contains DUnitX tests covering:
 - default configuration records and spacing;
 - Factory creation, parent, geometry, hit testing and borders;
 - Label chaining/build and configured properties;
-- Button chaining/build, click, hover, enabled state, opacity and margin;
+- Button chaining/build, `BuildHandle`, exact Container/TextLabel identity, click, hover, enabled state, opacity and margin;
 - Badge chaining/build, handle, parent hierarchy, pill/corner radius, colors and tag;
 - Divider chaining/build, thickness/orientation and visibility;
 - Composer creation order, common parent, badge handle and button click;
@@ -366,9 +375,9 @@ These tests were inspected as behavioral evidence. This DockHub documentation up
 
 ### Current use in DockHub Main
 
-The current `Main` implementation uses individual fluent builders because controls must remain accessible after `Build` for Language, Theme, and presentation-state updates. `TRickUIBuilder.On(AParent)` is not the primary mechanism for this screen because `AddText`, `AddDivider`, and `AddButton` do not return the controls they create.
+The current `Main` implementation uses individual fluent builders because controls must remain accessible after construction for Language, Theme, and presentation-state updates. `TRickUIBuilder.On(AParent)` is not the primary mechanism for this screen because `AddText`, `AddDivider`, and `AddButton` do not return the controls they create.
 
-Because Button still has no public handle for its caption, `TPageCompositionBase.FindButtonCaption` centralizes lookup of the generated child `TLabel` for all Page compositions. That implementation detail is not duplicated in page-specific implementations.
+DockHub now stores `IRickUIBuilderButtonHandle` for Buttons whose container and caption must remain accessible after construction. Production code uses the public `Container`/`TextLabel` contract and does not inspect the Button visual tree to recover its internal `TLabel`.
 
 Common window controls are built by `TPageCompositionBase` with `OnHover` and without `HoverFillColor`. The base handler reads the current `IDockHubTheme`, preventing stale hover colors after runtime Theme changes.
 

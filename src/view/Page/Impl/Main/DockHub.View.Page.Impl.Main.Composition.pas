@@ -1,4 +1,4 @@
-unit DockHub.View.Page.Impl.Main.Composition;
+﻿unit DockHub.View.Page.Impl.Main.Composition;
 
 interface
 
@@ -35,18 +35,12 @@ type
     FEnvironmentValue: TLabel;
     FStatusDivider: TRectangle;
 
-    FInstallButton: TRectangle;
-    FInstallCaption: TLabel;
-    FUninstallButton: TRectangle;
-    FUninstallCaption: TLabel;
-    FStartButton: TRectangle;
-    FStartCaption: TLabel;
-    FStopButton: TRectangle;
-    FStopCaption: TLabel;
-    FConfigButton: TRectangle;
-    FConfigCaption: TLabel;
-    FLogsButton: TRectangle;
-    FLogsCaption: TLabel;
+    FInstallButton: IRickUIBuilderButtonHandle;
+    FUninstallButton: IRickUIBuilderButtonHandle;
+    FStartButton: IRickUIBuilderButtonHandle;
+    FStopButton: IRickUIBuilderButtonHandle;
+    FConfigButton: IRickUIBuilderButtonHandle;
+    FLogsButton: IRickUIBuilderButtonHandle;
 
     procedure BuildSurface;
     procedure BuildHeader;
@@ -140,12 +134,12 @@ begin
   FApiBadge.TextLabel.Text :=
     ALanguage.Translate(_VIEW_MAIN_STATUS_UNVERIFIED);
 
-  FInstallCaption.Text := ALanguage.Translate(_VIEW_MAIN_INSTALL);
-  FUninstallCaption.Text := ALanguage.Translate(_VIEW_MAIN_UNINSTALL);
-  FStartCaption.Text := ALanguage.Translate(_VIEW_MAIN_START);
-  FStopCaption.Text := ALanguage.Translate(_VIEW_MAIN_STOP);
-  FConfigCaption.Text := ALanguage.Translate(_VIEW_MAIN_OPEN_CONFIGURATION);
-  FLogsCaption.Text := ALanguage.Translate(_VIEW_MAIN_OPEN_LOGS);
+  FInstallButton.TextLabel.Text := ALanguage.Translate(_VIEW_MAIN_INSTALL);
+  FUninstallButton.TextLabel.Text := ALanguage.Translate(_VIEW_MAIN_UNINSTALL);
+  FStartButton.TextLabel.Text := ALanguage.Translate(_VIEW_MAIN_START);
+  FStopButton.TextLabel.Text := ALanguage.Translate(_VIEW_MAIN_STOP);
+  FConfigButton.TextLabel.Text := ALanguage.Translate(_VIEW_MAIN_OPEN_CONFIGURATION);
+  FLogsButton.TextLabel.Text := ALanguage.Translate(_VIEW_MAIN_OPEN_LOGS);
 end;
 
 procedure TPageMainComposition.BuildSurface;
@@ -270,8 +264,7 @@ begin
     .Enabled(False)
     .DisabledOpacity(_DISABLED_OPACITY)
     .Cursor(crDefault)
-    .Build(FCard);
-  FInstallCaption := FindButtonCaption(FInstallButton);
+    .BuildHandle(FCard);
 
   FUninstallButton := TRickUIBuilder.Button
     .Caption(EmptyStr)
@@ -281,8 +274,7 @@ begin
     .Enabled(False)
     .DisabledOpacity(_DISABLED_OPACITY)
     .Cursor(crDefault)
-    .Build(FCard);
-  FUninstallCaption := FindButtonCaption(FUninstallButton);
+    .BuildHandle(FCard);
 
   FStartButton := TRickUIBuilder.Button
     .Caption(EmptyStr)
@@ -292,8 +284,7 @@ begin
     .Enabled(False)
     .DisabledOpacity(_DISABLED_OPACITY)
     .Cursor(crDefault)
-    .Build(FCard);
-  FStartCaption := FindButtonCaption(FStartButton);
+    .BuildHandle(FCard);
 
   FStopButton := TRickUIBuilder.Button
     .Caption(EmptyStr)
@@ -303,8 +294,7 @@ begin
     .Enabled(False)
     .DisabledOpacity(_DISABLED_OPACITY)
     .Cursor(crDefault)
-    .Build(FCard);
-  FStopCaption := FindButtonCaption(FStopButton);
+    .BuildHandle(FCard);
 end;
 
 procedure TPageMainComposition.BuildResourceActions;
@@ -318,8 +308,7 @@ begin
     .Enabled(False)
     .DisabledOpacity(_DISABLED_OPACITY)
     .Cursor(crDefault)
-    .Build(FCard);
-  FConfigCaption := FindButtonCaption(FConfigButton);
+    .BuildHandle(FCard);
 
   FLogsButton := TRickUIBuilder.Button
     .Caption(EmptyStr)
@@ -330,8 +319,7 @@ begin
     .Enabled(False)
     .DisabledOpacity(_DISABLED_OPACITY)
     .Cursor(crDefault)
-    .Build(FCard);
-  FLogsCaption := FindButtonCaption(FLogsButton);
+    .BuildHandle(FCard);
 end;
 
 procedure TPageMainComposition.ApplySurfaceTheme;
@@ -376,26 +364,26 @@ end;
 
 procedure TPageMainComposition.ApplyActionTheme;
 begin
-  ApplyButtonTheme(FInstallButton, FInstallCaption,
+  ApplyButtonTheme(FInstallButton,
     FCurrentTheme.Transparent, FCurrentTheme.Border, FCurrentTheme.TextSecondary);
 
-  ApplyButtonTheme(FUninstallButton, FUninstallCaption,
+  ApplyButtonTheme(FUninstallButton,
     FCurrentTheme.Transparent, FCurrentTheme.ButtonDangerOutlineText,
     FCurrentTheme.ButtonDangerOutlineText);
 
-  ApplyButtonTheme(FStartButton, FStartCaption,
+  ApplyButtonTheme(FStartButton,
     FCurrentTheme.ButtonPrimaryBg, FCurrentTheme.Transparent,
     FCurrentTheme.ButtonPrimaryText);
 
-  ApplyButtonTheme(FStopButton, FStopCaption,
+  ApplyButtonTheme(FStopButton,
     FCurrentTheme.ButtonDangerBg, FCurrentTheme.Transparent,
     FCurrentTheme.ButtonDangerText);
 
-  ApplyButtonTheme(FConfigButton, FConfigCaption,
+  ApplyButtonTheme(FConfigButton,
     FCurrentTheme.Transparent, FCurrentTheme.Transparent,
     FCurrentTheme.ButtonGhostText);
 
-  ApplyButtonTheme(FLogsButton, FLogsCaption,
+  ApplyButtonTheme(FLogsButton,
     FCurrentTheme.Transparent, FCurrentTheme.Transparent,
     FCurrentTheme.ButtonGhostText);
 end;

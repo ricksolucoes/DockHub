@@ -227,9 +227,9 @@ The base composition applies the Theme to common window controls and keeps the m
 
 RickUIBuilder remains a UI-construction dependency inside Page compositions, not the architecture boundary itself.
 
-The current Main composition uses individual fluent builders where control references are required after Build. The structural card remains direct FMX construction because the analyzed RickUIBuilder snapshot has no generic card/container builder.
+The current Main composition uses individual fluent builders where control references are required after construction. The structural card remains direct FMX construction because the analyzed RickUIBuilder snapshot has no generic card/container builder.
 
-The current RickUIBuilder Button API does not expose a public caption handle. The workaround is centralized in `TPageCompositionBase.FindButtonCaption`; it must not be duplicated across Pages.
+RickUIBuilder `0.2.0` exposes `IRickUIBuilderButtonHandle` through `BuildHandle(AParent)`. `TPageCompositionBase` and derived compositions retain that public handle when they need both the generated Button `Container` and `TextLabel`; no Button-child lookup is required.
 
 ### 12. Tests
 
@@ -258,7 +258,7 @@ Source test inventory is not execution evidence. Historical DUnitX XML remains h
 - Page code must retain the composition interface for the required lifetime;
 - failed composition instances are terminal and must be recreated;
 - future changes to the common lifecycle affect every derived Page composition;
-- RickUIBuilder Button-caption access currently depends on one centralized implementation detail until the upstream API exposes a handle.
+- retained Button handles are non-owning; Page composition must not dereference `Container` or `TextLabel` after the FMX Owner has destroyed those controls.
 
 ## Rejected / deferred alternatives
 

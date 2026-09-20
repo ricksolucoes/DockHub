@@ -1,6 +1,6 @@
 {
 	"hash": "d41d8cd98f00b204e9800998ecf8427e",
-	"updated": "2026-09-18T16:22:59-03:00",
+	"updated": "2026-09-19T21:24:33-03:00",
 	"installedModules": {
 		"github.com/ricksolucoes/horse": {
 			"name": "github_com_ricksolucoes_horse",
@@ -16,8 +16,8 @@
 		},
 		"github.com/ricksolucoes/rickuibuilder": {
 			"name": "github_com_ricksolucoes_RickUIBuilder",
-			"version": "0.1.0",
-			"hash": "0ca7fe495e71b9bcb73ed614264e615d",
+			"version": "0.2.0",
+			"hash": "8ad018b949788045d8500ed5d1159b1b",
 			"artifacts": {}
 		},
 		"github.com/ricksolucoes/rickwinservice": {

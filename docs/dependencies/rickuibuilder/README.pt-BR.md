@@ -10,16 +10,17 @@ Ele não substitui a documentação upstream do RickUIBuilder. Registra especifi
 
 ## 1. Snapshot analisado
 
-O seguinte estado upstream foi analisado em 2026-09-18:
+O snapshot do DockHub fornecido para esta integração resolve o RickUIBuilder `0.2.0` pelo Boss:
 
 ```text
 Repositório: ricksolucoes/RickUIBuilder
-Branch: main
-Versão em boss.json: 0.1.0
-Repository tree SHA: 75b52bfb7d017e4e9be525d03a575c484b7b166d
+Release/tag conferida: 0.2.0
+Restrição no boss.json: ^0.2.0
+Versão resolvida no boss-lock: 0.2.0
+Hash do módulo no boss-lock: 8ad018b949788045d8500ed5d1159b1b
 ```
 
-A análise incluiu:
+A análise cobriu a API pública e as áreas de implementação relevantes para o DockHub, incluindo:
 
 ```text
 README.md
@@ -33,6 +34,7 @@ src/Rick.UIBuilder.Interfaces.pas
 src/Rick.UIBuilder.Factory.pas
 src/Rick.UIBuilder._Label.pas
 src/Rick.UIBuilder.Button.pas
+src/Rick.UIBuilder.Button.Handle.pas
 src/Rick.UIBuilder.Button.HoverState.pas
 src/Rick.UIBuilder.Badge.pas
 src/Rick.UIBuilder.Badge.Handle.pas
@@ -42,7 +44,7 @@ src/Rick.UIBuilder.Composition.pas
 testes DUnitX relevantes em tests/src/
 ```
 
-Se a dependência mudar de versão ou revisão de código, a API upstream deve ser revalidada antes de continuar confiando neste documento quando o comportamento tiver mudado.
+Antes de depender deste documento após mudança da versão ou revisão da dependência, revalidar a API upstream e atualizar esta referência quando o comportamento divergir.
 
 ## 2. Origem e responsabilidade
 
@@ -75,7 +77,7 @@ A biblioteca oferece três formas complementares de uso. Elas não são aliases 
 | Forma | Ponto de entrada | Momento de criação | Uso típico |
 | --- | --- | --- | --- |
 | Factory | `TRickUIBuilder.Factory` | imediato | criação direta a partir de record de configuração |
-| Fluent Builders | `Label_`, `Button`, `Badge`, `Divider` | ao chamar `Build` | configuração mais rica por controle e retorno do controle/handle |
+| Fluent Builders | `Label_`, `Button`, `Badge`, `Divider` | ao chamar `Build`/`BuildHandle` | configuração mais rica por controle e retorno do controle/handle |
 | Composition | `TRickUIBuilder.On(AParent)` | cada `Add*` cria imediatamente | sequências curtas e fixas no mesmo parent |
 
 Usar explicitamente uma interface `IRickUIBuilder*` não representa uma quarta forma; é o contrato dos mesmos fluent builders/composer.
@@ -89,7 +91,7 @@ Usar explicitamente uma interface `IRickUIBuilder*` não representa uma quarta f
 | `CreateText` | `TLabel` |
 | `CreateDivider` | `TRectangle` |
 | `CreateBadge` | `TRectangle` do badge mais `TLabel` interno via `out` |
-| `CreateButton` | `TRectangle` do botão contendo o `TLabel` de caption |
+| `CreateButton` | `TRectangle` do botão contendo o `TLabel` de caption; um overload também retorna esse label via `out` |
 
 Comportamentos relevantes para o DockHub:
 
@@ -97,7 +99,7 @@ Comportamentos relevantes para o DockHub:
 - `AParent` controla a hierarquia visual FMX;
 - as cores da Factory vêm do config fornecido; ela não conhece a paleta do consumidor;
 - `CreateBadge` cria container em formato pill e expõe seu label interno via `out`;
-- `CreateButton` habilita hit testing e cria o caption como label filho;
+- `CreateButton` habilita hit testing e cria o caption como label filho; o overload aditivo retorna via `out` o label exato criado;
 - `CreateButton` direto **não** instala o comportamento de hover do fluent builder.
 
 ## 6. Records de configuração
@@ -150,7 +152,7 @@ Como `Build` retorna o `TLabel`, essa forma é adequada quando o DockHub precisa
 
 ## 8. Fluent Button Builder
 
-`TRickUIBuilder.Button` retorna `IRickUIBuilderButton` e `Build(AParent)` retorna o container do botão como `TRectangle`.
+`TRickUIBuilder.Button` retorna `IRickUIBuilderButton`. A API original `Build(AParent)` continua disponível e retorna o container do botão como `TRectangle`. O RickUIBuilder `0.2.0` também fornece a API aditiva `BuildHandle(AParent)`, que retorna `IRickUIBuilderButtonHandle`.
 
 Ele adiciona comportamento/configuração além da criação direta pela Factory, incluindo:
 
@@ -167,17 +169,24 @@ Ele adiciona comportamento/configuração além da criação direta pela Factory
 - `OnClick`;
 - `OnHover`.
 
-O caption é implementado como um `TLabel` filho criado internamente pela Factory. A API pública analisada **não** expõe um Button handle específico para esse label.
+O handle de Button expõe os controles exatos criados para aquele Button:
 
-Portanto, se o DockHub precisar alterar o caption de um botão depois da construção, a implementação deve escolher deliberadamente uma estratégia suportada pela API atual. Não inventar um Button handle do RickUIBuilder que não existe.
+```text
+Container: TRectangle
+TextLabel: TLabel
+```
+
+`IRickUIBuilderButtonHandle` é non-owning. Ele não libera nem prolonga o lifetime dos controles FMX; o lifetime continua controlado pelo Owner utilizado na criação. No fluent builder, a implementação atual utiliza o `AParent` informado como Owner/Parent dos controles gerados. O handle não deve ser dereferenciado depois que esses controles forem destruídos.
+
+O DockHub usa `BuildHandle` quando precisa manter tanto o container quanto o caption do Button para atualizações posteriores de Theme ou Language. Código que necessita somente do `TRectangle` pode continuar usando `Build`. O DockHub não deve inspecionar a coleção de filhos do Button para localizar seu caption.
 
 ### Lifetime do hover
 
-`Rick.UIBuilder.Button.HoverState` é um `TComponent` separado, owned pelo mesmo `AParent` usado em `Build`. Isso evita que eventos de mouse apontem para a instância temporária do builder após o fim do encadeamento fluente.
+O RickUIBuilder `0.2.0` expõe `IRickUIBuilderButtonHoverState` como contrato de configuração fluent. `TRickUIBuilderButtonHoverState.New` cria o estado de configuração sem parâmetros; `Build(AOwner)` materializa o comportamento de hover em runtime com lifetime ligado ao Owner informado. A interface de configuração não precisa permanecer referenciada depois de `Build`.
 
-O objeto de hover guarda as cores normal e hover fornecidas no momento do build. Consequentemente, uma tela DockHub que suporte troca de Theme em runtime precisa considerar esses valores armazenados. Alterar apenas o `Fill.Color` atual do botão não reescreve, por si só, as cores já guardadas dentro do hover-state.
+O comportamento de hover materializado continua capturando os valores normal/hover utilizados na sua criação. Consequentemente, uma tela DockHub que suporte troca de Theme em runtime não deve assumir que alterar somente o `Fill.Color` atual também reescreve o estado de hover já materializado. Os botões de janela atuais do DockHub continuam intencionalmente usando callbacks de `OnHover` que consultam `FCurrentTheme` no momento do evento.
 
-Esse ponto deve ser avaliado sempre que `HoverFillColor` e troca runtime de Theme coexistirem.
+Mutabilidade dinâmica do HoverState do RickUIBuilder não faz parte da integração do Button Handle `0.2.0` e permanece uma evolução separada.
 
 ## 9. Fluent Badge Builder e handle
 
@@ -340,11 +349,11 @@ Fluent Build(AParent)
 TRickUIBuilder.On(AParent)
 → composer usa AParent como Owner e Parent dos controles criados
 
-Button hover state
-→ TComponent owned pelo mesmo Parent/Owner
+Configuração de hover do Button
+→ interface com reference counting; Build(AOwner) materializa comportamento runtime gerenciado pelo Owner
 
-Badge handle
-→ interface referencia controles FMX já owned; não é owner desses controles
+Handles de Button/Badge
+→ interfaces referenciam controles FMX já owned; não são owners desses controles
 ```
 
 Qualquer integração do DockHub deve preservar essas premissas de lifetime e não deve liberar manualmente controles owned pelo parent, salvo mudança intencional de ownership.
@@ -356,7 +365,7 @@ O repositório upstream contém testes DUnitX cobrindo:
 - defaults dos records de configuração e spacing;
 - criação da Factory, parent, geometria, hit testing e bordas;
 - encadeamento/build de Label e propriedades configuradas;
-- encadeamento/build de Button, click, hover, enabled, opacity e margin;
+- encadeamento/build de Button, `BuildHandle`, identidade exata de Container/TextLabel, click, hover, enabled, opacity e margin;
 - encadeamento/build de Badge, handle, hierarquia parent, pill/corner radius, cores e tag;
 - encadeamento/build de Divider, thickness/orientation e visibility;
 - criação por Composer, ordem, parent comum, badge handle e click de Button;
@@ -366,11 +375,11 @@ Esses testes foram inspecionados como evidência comportamental. Esta atualizaç
 
 ### Uso atual na Main do DockHub
 
-A implementação atual da `Main` utiliza fluent builders individuais porque os controles precisam continuar acessíveis depois do `Build` para Language, Theme e estado visual. `TRickUIBuilder.On(AParent)` não é utilizado como mecanismo principal desta tela porque `AddText`, `AddDivider` e `AddButton` não devolvem as referências criadas.
+A implementação atual da `Main` utiliza fluent builders individuais porque os controles precisam continuar acessíveis depois da construção para Language, Theme e estado visual. `TRickUIBuilder.On(AParent)` não é utilizado como mecanismo principal desta tela porque `AddText`, `AddDivider` e `AddButton` não devolvem as referências criadas.
 
-Como Button ainda não possui handle público para o caption, `TPageCompositionBase.FindButtonCaption` concentra a localização do `TLabel` filho gerado para todas as compositions de Page. Esse conhecimento não é duplicado nas implementações específicas.
+O DockHub agora armazena `IRickUIBuilderButtonHandle` para Buttons cujo container e caption precisam permanecer acessíveis após a construção. O código de produção usa o contrato público `Container`/`TextLabel` e não inspeciona a árvore visual do Button para recuperar seu `TLabel` interno.
 
-Os controles comuns de janela são construídos por `TPageCompositionBase` com `OnHover` e sem `HoverFillColor`. O handler da base consulta o `IDockHubTheme` corrente, evitando reutilizar cores de hover armazenadas quando o Theme é alterado em runtime.
+Os controles comuns de janela são construídos por `TPageCompositionBase` com `OnHover` e sem `HoverFillColor`. O handler da base consulta o `IDockHubTheme` corrente, evitando reutilizar cores de hover materializadas quando o Theme é alterado em runtime.
 
 ## 19. Inconsistência conhecida na documentação upstream
 
