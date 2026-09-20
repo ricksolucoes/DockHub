@@ -516,7 +516,7 @@ The current codebase already includes a small set of implemented foundation comp
 - **View Theme subsystem** with `Blue`, `Teal`, `Light` and `Dark`, semantic color tokens and Main View background integration;
 - **View Page composition architecture** organized under `src/view/Page` with `Types`, `Contracts`, an abstract `TPageCompositionBase`, and page-specific implementations such as `DockHub.View.Page.Impl.Main.Composition`;
 - **DUnitX automated test project** included in the project group;
-- **59 DUnitX tests in the latest confirmed DockHub execution**: 10 for Language types, 7 for `Core.Language`, 17 for `View.Theme`, 16 contract/lifecycle tests for `TPageCompositionBase`, and 9 FMX integration tests for `Main.Composition`; that historical pre-ButtonHandle NUnit run reports 0 ignored, 0 failures and 0 errors. A post-`IRickUIBuilderButtonHandle` DockHub regression XML has not yet been supplied.
+- **59 DUnitX tests in the latest confirmed DockHub execution**: 10 for Language types, 7 for `Core.Language`, 17 for `View.Theme`, 16 contract/lifecycle tests for `TPageCompositionBase`, and 9 FMX integration tests for `Main.Composition`; the post-`IRickUIBuilderButtonHandle` `DockHub.Tests.exe` execution dated **2026-09-19 22:17:23** reports **59 total / 0 failures / 0 errors / 0 ignored** with assembly result `Success`.
 
 Detailed documentation:
 
@@ -600,7 +600,7 @@ Business services and business rules will be progressively introduced as the pro
 ### Quality
 
 * [x] Unit/contract tests — DUnitX coverage exists for `Core.Language`, `View.Theme`, and the `TPageCompositionBase` lifecycle contract.
-* [x] Integration tests — the FMX fixture for `Main.Composition` is covered by the latest confirmed historical 59/59 DockHub execution; the post-`IRickUIBuilderButtonHandle` regression remains not confirmed until a new `DockHub.Tests.exe` XML is supplied.
+* [x] Integration tests — the FMX fixture for `Main.Composition` is covered by the confirmed post-`IRickUIBuilderButtonHandle` `DockHub.Tests.exe` execution dated **2026-09-19 22:17:23**, with **59/59 tests successful**, 0 failures and 0 errors.
 * [ ] API tests.
 * [ ] API documentation.
 * [ ] Health checks.
@@ -649,7 +649,7 @@ Integration-specific implementation details should not unnecessarily leak into a
 
 ## 🧪 Testing Strategy
 
-DockHub has a DUnitX project with tests for `Core.Language`, `View.Theme`, the `TPageCompositionBase` lifecycle contract, and an FMX integration fixture for `Main.Composition`. The last confirmed DockHub NUnit execution, dated **2026-09-19 12:14:29**, reports **59 total / 0 failures / 0 errors / 0 ignored** and predates the `IRickUIBuilderButtonHandle` integration; a post-integration `DockHub.Tests.exe` XML has not yet been supplied, so that regression remains **not confirmed**. Method Toxicity is enforced through the configured hard gates `Length <= 20`, `Parameters <= 6`, `If Depth <= 5`, `Cyclomatic Complexity <= 6`, and `Toxicity < 1`. Current RAD Studio CSV measurements report maximum Toxicity **0.537** for `DockHub.dproj` and **0.508** for `DockHub.Tests.dproj`, with no reported hard-threshold violations. These measured maxima are regression baselines, not replacement thresholds. Details and evidence limits are documented in `docs/testing/README.md`.
+DockHub has a DUnitX project with tests for `Core.Language`, `View.Theme`, the `TPageCompositionBase` lifecycle contract, and an FMX integration fixture for `Main.Composition`. The latest confirmed DockHub NUnit execution is the post-`IRickUIBuilderButtonHandle` `DockHub.Tests.exe` run dated **2026-09-19 22:17:23**, which reports **59 total / 0 failures / 0 errors / 0 ignored** with assembly result `Success`. Method Toxicity is enforced through the configured hard gates `Length <= 20`, `Parameters <= 6`, `If Depth <= 5`, `Cyclomatic Complexity <= 6`, and `Toxicity < 1`. Current RAD Studio CSV measurements report maximum Toxicity **0.537** for `DockHub.dproj` and **0.508** for `DockHub.Tests.dproj`, with no reported hard-threshold violations. These measured maxima are regression baselines, not replacement thresholds. The post-integration build remains **not confirmed** because no new build log/capture has been supplied. Details and evidence limits are documented in `docs/testing/README.md`.
 
 Current details: [Automated Tests](./docs/testing/README.md).
 

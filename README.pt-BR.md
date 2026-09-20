@@ -520,7 +520,7 @@ O código atual já possui alguns componentes de fundação implementados, além
 - **subsistema de Theme da View** com `Blue`, `Teal`, `Light` e `Dark`, tokens semânticos de cor e integração do background da Main View;
 - **arquitetura de composition das Pages** organizada em `src/view/Page` com `Types`, `Contracts`, uma `TPageCompositionBase` abstrata e implementações específicas como `DockHub.View.Page.Impl.Main.Composition`;
 - **projeto de testes automatizados DUnitX** incluído no project group;
-- **59 testes DUnitX na última execução confirmada do DockHub**: 10 para tipos de Language, 7 para `Core.Language`, 17 para `View.Theme`, 16 de contrato/lifecycle de `TPageCompositionBase` e 9 de integração FMX de `Main.Composition`; essa execução NUnit histórica anterior ao Button Handle registra 0 ignorados, 0 falhas e 0 erros. Ainda não foi fornecido XML de regressão pós-`IRickUIBuilderButtonHandle` do DockHub.
+- **59 testes DUnitX na última execução confirmada do DockHub**: 10 para tipos de Language, 7 para `Core.Language`, 17 para `View.Theme`, 16 de contrato/lifecycle de `TPageCompositionBase` e 9 de integração FMX de `Main.Composition`; a execução pós-`IRickUIBuilderButtonHandle` de `DockHub.Tests.exe`, datada de **2026-09-19 22:17:23**, registra **59 total / 0 falhas / 0 erros / 0 ignorados** com resultado do assembly `Success`.
 
 Documentação detalhada:
 
@@ -604,7 +604,7 @@ Serviços de aplicação e regras de negócio serão introduzidos progressivamen
 ### Qualidade
 
 * [x] Testes unitários/contrato — existe cobertura DUnitX para `Core.Language`, `View.Theme` e para o contrato de lifecycle de `TPageCompositionBase`.
-* [x] Testes de integração — a fixture FMX de `Main.Composition` está coberta pela última execução histórica confirmada de 59/59 testes do DockHub; a regressão pós-`IRickUIBuilderButtonHandle` permanece Não confirmada até ser fornecido novo XML de `DockHub.Tests.exe`.
+* [x] Testes de integração — a fixture FMX de `Main.Composition` está coberta pela execução pós-`IRickUIBuilderButtonHandle` confirmada de `DockHub.Tests.exe`, datada de **2026-09-19 22:17:23**, com **59/59 testes bem-sucedidos**, 0 falhas e 0 erros.
 * [ ] Testes da API.
 * [ ] Documentação da API.
 * [ ] Health checks.
@@ -653,7 +653,7 @@ Detalhes específicos das integrações não devem contaminar desnecessariamente
 
 ## 🧪 Estratégia de Testes
 
-O DockHub possui um projeto DUnitX com testes de `Core.Language`, `View.Theme`, do contrato de lifecycle de `TPageCompositionBase` e uma fixture de integração FMX para `Main.Composition`. A última execução NUnit confirmada do DockHub, datada de **2026-09-19 12:14:29**, registra **59 total / 0 falhas / 0 erros / 0 ignorados** e é anterior à integração de `IRickUIBuilderButtonHandle`; ainda não foi fornecido XML pós-integração de `DockHub.Tests.exe`, portanto essa regressão permanece **Não confirmada**. Method Toxicity é aplicado pelos hard gates configurados `Length <= 20`, `Parameters <= 6`, `If Depth <= 5`, `Cyclomatic Complexity <= 6` e `Toxicity < 1`. Os CSVs atuais do RAD Studio registram Toxicity máxima **0,537** em `DockHub.dproj` e **0,508** em `DockHub.Tests.dproj`, sem violações dos hard thresholds reportadas. Esses máximos medidos são baseline de regressão, não thresholds substitutos. Detalhes e limites da evidência estão documentados em `docs/testing/README.pt-BR.md`.
+O DockHub possui um projeto DUnitX com testes de `Core.Language`, `View.Theme`, do contrato de lifecycle de `TPageCompositionBase` e uma fixture de integração FMX para `Main.Composition`. A última execução NUnit confirmada do DockHub é a execução pós-`IRickUIBuilderButtonHandle` de `DockHub.Tests.exe`, datada de **2026-09-19 22:17:23**, que registra **59 total / 0 falhas / 0 erros / 0 ignorados** com resultado do assembly `Success`. Method Toxicity é aplicado pelos hard gates configurados `Length <= 20`, `Parameters <= 6`, `If Depth <= 5`, `Cyclomatic Complexity <= 6` e `Toxicity < 1`. Os CSVs atuais do RAD Studio registram Toxicity máxima **0,537** em `DockHub.dproj` e **0,508** em `DockHub.Tests.dproj`, sem violações dos hard thresholds reportadas. Esses máximos medidos são baseline de regressão, não thresholds substitutos. O build pós-integração permanece **Não confirmado** porque não foi fornecido novo log/captura de build. Detalhes e limites da evidência estão documentados em `docs/testing/README.pt-BR.md`.
 
 Detalhes atuais: [Testes Automatizados](./docs/testing/README.pt-BR.md).
 

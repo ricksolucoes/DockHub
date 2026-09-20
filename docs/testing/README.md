@@ -35,7 +35,7 @@ TDockHubPageMainCompositionTests     :  9
 Total                                : 59
 ```
 
-The current source inventory contains **59 declared tests**. The latest confirmed **DockHub** NUnit execution evidence remains the historical 59-test run documented below. The newly supplied `dunitx-results.xml` identifies `RickUIBuilder.Test.exe` with 151 tests, so it is upstream RickUIBuilder evidence and must not be treated as a post-integration DockHub regression run.
+The current source inventory contains **59 declared tests**. The latest confirmed **DockHub** NUnit execution is `DockHub.Tests.exe`, dated **2026-09-19 22:17:23**, and matches this inventory with all **59 tests** successful. The separate upstream execution `RickUIBuilder.Test.exe`, dated **2026-09-19 21:04:44**, reports 151 tests and remains RickUIBuilder dependency evidence rather than DockHub execution evidence.
 
 ## Framework and runner
 
@@ -145,7 +145,7 @@ The fixture validates observable FMX behavior and does not expose private Main C
 
 ## Latest confirmed DockHub execution evidence
 
-The last confirmed DockHub NUnit execution remains the historical run at **2026-09-19 12:14:29**:
+The latest confirmed DockHub NUnit execution is the post-`IRickUIBuilderButtonHandle` run of `DockHub.Tests.exe` at **2026-09-19 22:17:23**:
 
 ```text
 total        : 59
@@ -159,11 +159,11 @@ invalid      : 0
 assembly     : Success
 ```
 
-All **59 `test-case`** elements in that DockHub XML were reported as executed with `result="Success"` / `success="True"`. The run included `WindowButtons_AreVisibleAndInsideClientBounds` as successful.
+All **59 `test-case`** elements in that DockHub XML were reported as executed with `result="Success"` / `success="True"`. The run explicitly includes `WindowButtons_InvokeConfiguredCallbacks`, `WindowButtons_AreVisibleAndInsideClientBounds`, `WindowHover_UsesCurrentThemeAfterRuntimeChange`, `ApplyLanguage_PtBR_UpdatesMainTexts`, `ApplyLanguage_EnUS_ReusesExistingControls`, `ApplyTheme_RuntimeChange_UpdatesMainCard`, `Build_UnimplementedActions_AreDisabled`, and `FreeHost_WithBuiltComposition_DoesNotRaise` as successful.
 
-That execution predates the DockHub integration of `IRickUIBuilderButtonHandle`. No post-integration `DockHub.Tests.exe` NUnit XML has been supplied yet, so the **59-test regression after the Button Handle integration is not confirmed** by the currently supplied artifacts.
+This execution is the current post-integration regression evidence for the DockHub `IRickUIBuilderButtonHandle` adaptation: **59/59 tests executed successfully**, with 0 failures and 0 errors.
 
-The newly supplied `dunitx-results.xml` is not a DockHub result: its assembly is `RickUIBuilder.Test.exe`, with **151 total / 0 errors / 0 failures**. It is valid upstream dependency evidence and is documented in the RickUIBuilder integration reference, but it does not replace DockHub regression evidence.
+The separate upstream execution `RickUIBuilder.Test.exe`, dated **2026-09-19 21:04:44**, reports **151 total / 0 errors / 0 failures**. It is valid RickUIBuilder dependency evidence and remains distinct from the DockHub `DockHub.Tests.exe` execution dated **2026-09-19 22:17:23**.
 
 Execution XML proves only the cases/results it contains. It does not by itself prove code coverage, thread safety, behavior outside the executed cases, or a separate memory-leak count when the format has no dedicated leak field.
 
@@ -237,7 +237,7 @@ The production CSV includes the methods directly affected by the integration and
 | `TPageMainComposition.BuildResourceActions` | 2 | 0 | 0 | 1 | 0.067 |
 | `TPageMainComposition.ApplyActionTheme` | 6 | 0 | 0 | 1 | 0.117 |
 
-These values establish measured quality for the affected methods; they do not prove build or the post-integration DUnitX regression.
+These values establish measured Method Toxicity quality for the affected methods; they do not prove build. The post-integration DUnitX regression is evidenced separately by the `DockHub.Tests.exe` NUnit XML dated **2026-09-19 22:17:23**.
 
 ### Regression policy
 

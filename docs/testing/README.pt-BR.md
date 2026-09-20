@@ -35,7 +35,7 @@ TDockHubPageMainCompositionTests     :  9
 Total                                : 59
 ```
 
-O inventário atual possui **59 testes declarados**. A última evidência NUnit confirmada do **DockHub** continua sendo a execução histórica de 59 testes documentada abaixo. O novo `dunitx-results.xml` fornecido identifica `RickUIBuilder.Test.exe` com 151 testes; portanto, ele é evidência upstream do RickUIBuilder e não pode ser tratado como regressão pós-integração do DockHub.
+O inventário atual possui **59 testes declarados**. A última execução NUnit confirmada do **DockHub** é `DockHub.Tests.exe`, datada de **2026-09-19 22:17:23**, e corresponde a esse inventário com todos os **59 testes** bem-sucedidos. A execução upstream separada `RickUIBuilder.Test.exe`, datada de **2026-09-19 21:04:44**, registra 151 testes e permanece evidência da dependência RickUIBuilder, não evidência de execução do DockHub.
 
 ## Framework e runner
 
@@ -145,7 +145,7 @@ A fixture valida comportamento FMX observável e não expõe fields privados da 
 
 ## Última evidência de execução confirmada do DockHub
 
-A última execução NUnit confirmada do DockHub continua sendo a execução histórica de **2026-09-19 12:14:29**:
+A última execução NUnit confirmada do DockHub é a execução pós-`IRickUIBuilderButtonHandle` de `DockHub.Tests.exe` em **2026-09-19 22:17:23**:
 
 ```text
 total        : 59
@@ -159,11 +159,11 @@ invalid      : 0
 assembly     : Success
 ```
 
-Os **59 `test-case`** daquele XML do DockHub foram reportados como executados com `result="Success"` / `success="True"`. A execução incluiu `WindowButtons_AreVisibleAndInsideClientBounds` com sucesso.
+Os **59 `test-case`** daquele XML do DockHub foram reportados como executados com `result="Success"` / `success="True"`. A execução inclui explicitamente `WindowButtons_InvokeConfiguredCallbacks`, `WindowButtons_AreVisibleAndInsideClientBounds`, `WindowHover_UsesCurrentThemeAfterRuntimeChange`, `ApplyLanguage_PtBR_UpdatesMainTexts`, `ApplyLanguage_EnUS_ReusesExistingControls`, `ApplyTheme_RuntimeChange_UpdatesMainCard`, `Build_UnimplementedActions_AreDisabled` e `FreeHost_WithBuiltComposition_DoesNotRaise` com sucesso.
 
-Essa execução é anterior à integração de `IRickUIBuilderButtonHandle` no DockHub. Ainda não foi fornecido um XML NUnit pós-integração de `DockHub.Tests.exe`; portanto, a **regressão dos 59 testes após a integração do Button Handle não está confirmada** pelos artefatos atualmente fornecidos.
+Essa execução constitui a evidência atual de regressão pós-integração do DockHub para a adaptação de `IRickUIBuilderButtonHandle`: **59/59 testes executados com sucesso**, 0 falhas e 0 erros.
 
-O novo `dunitx-results.xml` fornecido não é resultado do DockHub: o assembly é `RickUIBuilder.Test.exe`, com **151 total / 0 erros / 0 falhas**. Ele é evidência válida da dependência upstream e está documentado na referência de integração do RickUIBuilder, mas não substitui evidência de regressão do DockHub.
+A execução upstream separada `RickUIBuilder.Test.exe`, datada de **2026-09-19 21:04:44**, registra **151 total / 0 erros / 0 falhas**. Ela é evidência válida da dependência RickUIBuilder e permanece distinta da execução DockHub de `DockHub.Tests.exe`, datada de **2026-09-19 22:17:23**.
 
 XML de execução comprova somente os casos/resultados que contém. Isoladamente, não comprova coverage, thread safety, comportamento fora dos casos executados nem contagem separada de memory leaks quando o formato não possui campo específico para leaks.
 
@@ -237,7 +237,7 @@ O CSV de produção inclui os métodos diretamente afetados pela integração e 
 | `TPageMainComposition.BuildResourceActions` | 2 | 0 | 0 | 1 | 0,067 |
 | `TPageMainComposition.ApplyActionTheme` | 6 | 0 | 0 | 1 | 0,117 |
 
-Esses valores estabelecem qualidade medida para os métodos afetados; eles não comprovam build nem a regressão DUnitX pós-integração.
+Esses valores estabelecem qualidade medida de Method Toxicity para os métodos afetados; eles não comprovam build. A regressão DUnitX pós-integração é evidenciada separadamente pelo XML NUnit de `DockHub.Tests.exe`, datado de **2026-09-19 22:17:23**.
 
 ### Política de regressão
 

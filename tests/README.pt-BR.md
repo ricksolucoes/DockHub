@@ -35,7 +35,7 @@ TDockHubPageMainCompositionTests     :  9
 Total                                : 59
 ```
 
-A última evidência NUnit confirmada do **DockHub** corresponde a esse inventário: todos os **59 testes** foram executados e reportados como `Success`. Um `dunitx-results.xml` fornecido posteriormente identifica `RickUIBuilder.Test.exe` com 151 testes e é evidência da dependência upstream, não uma execução do DockHub. A contagem no fonte e a evidência de execução permanecem separadas para que futuras alterações no fonte não sejam tratadas automaticamente como execuções aprovadas.
+A última evidência NUnit confirmada do **DockHub** corresponde a esse inventário: `DockHub.Tests.exe`, datado de **2026-09-19 22:17:23**, executou todos os **59 testes** com resultado do assembly `Success`, 0 falhas e 0 erros. A execução upstream separada `RickUIBuilder.Test.exe`, datada de **2026-09-19 21:04:44**, registra **151 total / 0 erros / 0 falhas** e permanece evidência da dependência, não evidência de execução do DockHub. A contagem no fonte e a evidência de execução permanecem separadas para que futuras alterações no fonte não sejam tratadas automaticamente como execuções aprovadas.
 
 ## Framework e runner
 
@@ -127,7 +127,7 @@ A fixture valida comportamento FMX observável e não expõe fields privados da 
 
 ## Último resultado de execução confirmado do DockHub
 
-A última execução NUnit confirmada do DockHub continua sendo a execução histórica de **2026-09-19 12:14:29**:
+A última execução NUnit confirmada do DockHub é a execução pós-`IRickUIBuilderButtonHandle` de `DockHub.Tests.exe` em **2026-09-19 22:17:23**:
 
 ```text
 total        : 59
@@ -141,11 +141,11 @@ invalid      : 0
 assembly     : Success
 ```
 
-Os **59 `test-case`** foram marcados como executados com `result="Success"` / `success="True"`, incluindo `WindowButtons_AreVisibleAndInsideClientBounds`.
+Os **59 `test-case`** foram marcados como executados com `result="Success"` / `success="True"`. A execução inclui explicitamente `WindowButtons_InvokeConfiguredCallbacks`, `WindowButtons_AreVisibleAndInsideClientBounds`, `WindowHover_UsesCurrentThemeAfterRuntimeChange`, `ApplyLanguage_PtBR_UpdatesMainTexts`, `ApplyLanguage_EnUS_ReusesExistingControls`, `ApplyTheme_RuntimeChange_UpdatesMainCard`, `Build_UnimplementedActions_AreDisabled` e `FreeHost_WithBuiltComposition_DoesNotRaise` com sucesso.
 
-Essa execução é anterior à integração de `IRickUIBuilderButtonHandle` no DockHub. Não foi fornecido XML NUnit pós-integração de `DockHub.Tests.exe`; portanto, a **regressão dos 59 testes para a integração atual do Button Handle não está confirmada**.
+Essa execução constitui a evidência atual de regressão pós-integração do DockHub para a adaptação de `IRickUIBuilderButtonHandle`: **59/59 testes executados com sucesso**, 0 falhas e 0 erros.
 
-O `dunitx-results.xml` fornecido posteriormente pertence a `RickUIBuilder.Test.exe` e registra **151 total / 0 erros / 0 falhas**. Ele não deve ser usado como evidência de testes do DockHub.
+A execução upstream separada `RickUIBuilder.Test.exe`, datada de **2026-09-19 21:04:44**, registra **151 total / 0 erros / 0 falhas**. Ela é evidência da dependência RickUIBuilder e deve permanecer separada da execução DockHub de `DockHub.Tests.exe`, datada de **2026-09-19 22:17:23**.
 
 ## Executando a suíte atual
 
