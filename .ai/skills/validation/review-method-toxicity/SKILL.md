@@ -71,25 +71,19 @@ inspect-current-state
 
 Liste os métodos Delphi novos/alterados relevantes, inclusive em `tests/`.
 
-### Step 2 — Confirmar thresholds
+### Step 2 — Confirmar hard thresholds obrigatórios
 
-Prioridade:
-
-```text
-1. thresholds configurados no projeto/ambiente
-2. política explícita da tarefa
-3. baseline DockHub
-```
-
-Baseline quando não houver limite mais restritivo:
+Para o DockHub, a configuração efetiva do RAD Studio é:
 
 ```text
-Length                  20
-Parameters               6
-If Depth                 5
-Cyclomatic Complexity    6
-Toxicity                  1
+Length                  <= 20
+Parameters              <= 6
+If Depth                <= 5
+Cyclomatic Complexity   <= 6
+Toxicity                 < 1
 ```
+
+Esses valores são hard gates. Não trate os máximos atuais do projeto como novos thresholds e não compense uma violação de uma métrica por outra métrica menor.
 
 ### Step 3 — Verificar ferramenta real
 
@@ -131,22 +125,67 @@ Toxicity: Não confirmado
 
 Nunca diga que a ferramenta aprovou.
 
-### Step 4 — Comparar com thresholds
+### Step 4 — Executar Hard Threshold Gate
 
-Para código novo:
-
-```text
-não exceder thresholds sem justificativa explícita
-```
-
-Para código existente alterado:
+Para cada método Delphi novo/modificado:
 
 ```text
-não introduzir nova violação
-não agravar violação preexistente
+Length > 20
+→ FAIL
+
+Parameters > 6
+→ FAIL
+
+If Depth > 5
+→ FAIL
+
+Cyclomatic Complexity > 6
+→ FAIL
+
+Toxicity >= 1
+→ FAIL
 ```
 
-### Step 5 — Revisão qualitativa complementar
+Se houver medição real e qualquer limite for ultrapassado, a alteração não pode ser aprovada até a correção.
+
+Sem medição real de `Toxicity`, registre essa parte do hard gate como **Não confirmado**; não declare aprovação real da métrica composta.
+
+### Step 5 — Comparar com baseline medida
+
+Quando existir CSV/relatório anterior comparável, execute também o Regression Baseline Gate.
+
+Baseline atualmente confirmada:
+
+| Project | Methods | Length max | Parameters max | If Depth max | Cyclomatic max | Toxicity max |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `DockHub.dproj` | 131 | 15 | 4 | 2 | 5 | 0.537 |
+| `DockHub.Tests.dproj` | 237 | 18 | 4 | 3 | 6 | 0.508 |
+
+Esses valores são referência de regressão, não hard limits.
+
+Compare, quando tecnicamente relacionável ao mesmo snapshot/método:
+
+```text
+valor do método antes/depois
+máximos globais antes/depois
+```
+
+Classificação:
+
+```text
+PASS
+→ não houve degradação relevante
+
+REVIEW
+→ houve degradação mensurável, mas os hard limits continuam atendidos
+
+NOT AVAILABLE
+→ não existe baseline comparável para a alteração
+```
+
+`REVIEW` exige correção ou justificativa técnica explícita e auditável; não é aprovação automática.
+
+### Step 6 — Revisão qualitativa complementar
 
 Avalie, sem transformar em score alternativo:
 
@@ -164,11 +203,18 @@ testabilidade
 
 Uma métrica baixa não autoriza design ruim.
 
-### Step 6 — Determinar necessidade de correção
+### Step 7 — Determinar necessidade de correção
 
 ```text
-violação nova causada pela alteração
+hard threshold violado pela alteração
 → corrigir
+
+regressão injustificada dentro dos hard limits
+→ corrigir
+
+regressão tecnicamente necessária dentro dos hard limits
+→ justificar explicitamente
+→ submeter à auditoria
 
 violação legada fora do escopo e não agravada
 → registrar
@@ -177,9 +223,13 @@ refactor necessário para segurança da tarefa
 → propor menor mudança coerente
 ```
 
-### Step 7 — Reavaliar depois do refactor
+Dívida técnica existente não autoriza uma nova violação de hard threshold.
+
+### Step 8 — Reavaliar depois do refactor
 
 Se método foi alterado para reduzir toxicidade, execute novamente a medição real quando possível ou repita a avaliação estática.
+
+Quando houver CSV anterior, repita também o Regression Baseline Gate.
 
 ---
 
@@ -218,28 +268,31 @@ Source:
 - RAD Studio / CSV / ...
 
 Length:
-- ...
+- ... / 20
 
 Parameters:
-- ...
+- ... / 6
 
 If Depth:
-- ...
+- ... / 5
 
 Cyclomatic Complexity:
-- ...
+- ... / 6
 
 Toxicity:
-- ...
+- ... / < 1
 
-Threshold status:
+Hard Threshold Status:
 - PASS / FAIL
+
+Regression Baseline Status:
+- PASS / REVIEW / NOT AVAILABLE
 
 Qualitative findings:
 - ...
 
 Action:
-- none / correction / scoped refactor
+- none / correction / justification / scoped refactor
 ```
 
 ### Sem ferramenta
@@ -254,19 +307,25 @@ Measurement:
 - static evaluation
 
 Length:
-- ...
+- ... / 20
 
 Parameters:
-- ...
+- ... / 6
 
 If Depth:
-- ...
+- ... / 5
 
 Cyclomatic Complexity:
-- ...
+- ... / 6
 
 Toxicity:
 - Não confirmado
+
+Hard Threshold Status:
+- PARTIAL / FAIL
+
+Regression Baseline Status:
+- PASS / REVIEW / NOT AVAILABLE
 
 Qualitative findings:
 - ...
@@ -275,25 +334,32 @@ Action:
 - ...
 ```
 
+`PARTIAL` significa que as métricas avaliáveis estaticamente não apresentaram violação confirmada, mas o gate completo não pode ser declarado aprovado porque `Toxicity` real não foi medida.
+
 ---
 
 ## 9. Quality Gate
 
 ```text
 [ ] métodos afetados foram identificados
-[ ] thresholds aplicáveis foram confirmados
+[ ] hard thresholds do DockHub foram aplicados: 20 / 6 / 5 / 6 / < 1
 [ ] disponibilidade de RAD Studio/CSV foi verificada
 [ ] valores reais foram usados quando disponíveis
 [ ] Toxicity não foi calculada manualmente
 [ ] ausência de ferramenta foi declarada quando aplicável
-[ ] Length foi avaliado
-[ ] Parameters foi avaliado
-[ ] If Depth foi avaliado
-[ ] Cyclomatic Complexity foi avaliado
-[ ] Toxicity real foi usada somente quando medida
+[ ] Length <= 20 foi validado
+[ ] Parameters <= 6 foi validado
+[ ] If Depth <= 5 foi validado
+[ ] Cyclomatic Complexity <= 6 foi validado
+[ ] Toxicity < 1 foi validada somente quando medida
+[ ] nenhuma métrica foi usada para compensar violação de outra
 [ ] código de teste foi incluído quando alterado
-[ ] nova toxicidade não foi introduzida
-[ ] toxicidade existente não foi agravada
+[ ] baseline anterior foi comparada quando disponível
+[ ] regressões dentro dos hard limits foram identificadas
+[ ] regressão injustificada foi corrigida ou reprovada
+[ ] regressão tecnicamente necessária foi justificada e encaminhada à auditoria
+[ ] nova violação de hard threshold não foi introduzida
+[ ] toxicidade existente não foi agravada sem justificativa
 [ ] refactor não fragmentou artificialmente o código
 [ ] revisão qualitativa não foi confundida com score de Toxicity
 [ ] escopo foi respeitado
@@ -322,6 +388,8 @@ dockhub-tests
 ## 11. Final rule
 
 ```text
+HARD THRESHOLDS ARE MANDATORY
+COMPARE THE REGRESSION BASELINE WHEN AVAILABLE
 REAL METRICS WHEN AVAILABLE
 STATIC EVALUATION OTHERWISE
 NEVER INVENT TOXICITY

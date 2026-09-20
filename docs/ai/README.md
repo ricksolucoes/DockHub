@@ -1206,18 +1206,65 @@ Criá-los automaticamente transformaria o padrão em cerimônia.
 
 ## 38. Method Toxicity em produção e testes
 
-`review-method-toxicity` agora trabalha com a mesma regra para qualquer código Delphi:
+O DockHub utiliza dois controles complementares para Method Toxicity:
 
 ```text
-RAD Studio/CSV disponível
-→ usar métricas reais
-
-sem ferramenta
-→ avaliação estática
-→ Toxicity: Não confirmado
+Hard Threshold Gate
+        +
+Regression Baseline Gate
 ```
 
-O código em `tests/` também deve respeitar Method Toxicity Metrics.
+### Hard Threshold Gate
+
+A configuração efetivamente adotada no RAD Studio para o projeto é obrigatória:
+
+```text
+Length                  <= 20
+Parameters              <= 6
+If Depth                <= 5
+Cyclomatic Complexity   <= 6
+Toxicity                 < 1
+```
+
+Um método Delphi novo/modificado que ultrapasse qualquer hard limit reprova o Quality Gate. Uma métrica menor não compensa violação em outra.
+
+### Regression Baseline Gate
+
+Os CSVs reais mais recentes fornecidos para o snapshot aprovado registram:
+
+```text
+DockHub.dproj
+Length max                 15
+Parameters max              4
+If Depth max                2
+Cyclomatic Complexity max   5
+Toxicity max            0.537
+
+DockHub.Tests.dproj
+Length max                 18
+Parameters max              4
+If Depth max                3
+Cyclomatic Complexity max   6
+Toxicity max            0.508
+```
+
+Esses valores são baseline de regressão, **não novos thresholds**. Eles servem para detectar degradação mesmo quando o hard limit ainda não foi atingido.
+
+A fonte normativa operacional permanece centralizada em:
+
+```text
+.ai/agents/dockhub-delphi-coding.md
+.ai/skills/validation/review-method-toxicity/SKILL.md
+```
+
+A evidência medida e suas limitações ficam em:
+
+```text
+docs/testing/README.md
+docs/testing/README.pt-BR.md
+```
+
+Quando RAD Studio/CSV não estiver disponível, `review-method-toxicity` realiza avaliação estática do que for tecnicamente possível e mantém `Toxicity` como **Não confirmado**. O código em `tests/` está sujeito aos mesmos hard limits do código de produção.
 
 Heurísticas qualitativas continuam úteis para revisão de design, mas não substituem `Length`, `Parameters`, `If Depth`, `Cyclomatic Complexity` ou `Toxicity` medidos pela ferramenta.
 

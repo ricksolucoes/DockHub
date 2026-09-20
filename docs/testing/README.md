@@ -35,7 +35,7 @@ TDockHubPageMainCompositionTests     :  9
 Total                                : 59
 ```
 
-The current source inventory contains **59 declared tests**. The latest supplied NUnit XML records a real execution of all **59 tests**, including the window-control geometry regression test, with all test cases reported as successful.
+The current source inventory contains **59 declared tests**. The latest confirmed **DockHub** NUnit execution evidence remains the historical 59-test run documented below. The newly supplied `dunitx-results.xml` identifies `RickUIBuilder.Test.exe` with 151 tests, so it is upstream RickUIBuilder evidence and must not be treated as a post-integration DockHub regression run.
 
 ## Framework and runner
 
@@ -143,9 +143,9 @@ The 9 source tests cover:
 
 The fixture validates observable FMX behavior and does not expose private Main Composition fields merely for test access.
 
-## Latest executed result
+## Latest confirmed DockHub execution evidence
 
-The supplied `dunitx-results.xml` for the current runner records a real execution at **2026-09-19 12:14:29** with:
+The last confirmed DockHub NUnit execution remains the historical run at **2026-09-19 12:14:29**:
 
 ```text
 total        : 59
@@ -159,41 +159,109 @@ invalid      : 0
 assembly     : Success
 ```
 
-All **59 `test-case`** elements in the XML are marked as executed with `result="Success"` / `success="True"`. The execution includes `WindowButtons_AreVisibleAndInsideClientBounds`, also reported as executed with `result="Success"` / `success="True"`. The source inventory and the latest real execution evidence therefore both contain **59 tests**.
+All **59 `test-case`** elements in that DockHub XML were reported as executed with `result="Success"` / `success="True"`. The run included `WindowButtons_AreVisibleAndInsideClientBounds` as successful.
 
-This XML proves the cases and results it contains. By itself it does not prove code coverage, thread safety, behavior outside the executed cases, or a separate memory-leak count because the supplied NUnit format has no dedicated leak field.
+That execution predates the DockHub integration of `IRickUIBuilderButtonHandle`. No post-integration `DockHub.Tests.exe` NUnit XML has been supplied yet, so the **59-test regression after the Button Handle integration is not confirmed** by the currently supplied artifacts.
 
-The XML is evidence for one execution and may be replaced by the next run; the confirmed numbers are therefore documented here while `dunitx-results.xml` remains out of version control by default.
+The newly supplied `dunitx-results.xml` is not a DockHub result: its assembly is `RickUIBuilder.Test.exe`, with **151 total / 0 errors / 0 failures**. It is valid upstream dependency evidence and is documented in the RickUIBuilder integration reference, but it does not replace DockHub regression evidence.
+
+Execution XML proves only the cases/results it contains. It does not by itself prove code coverage, thread safety, behavior outside the executed cases, or a separate memory-leak count when the format has no dedicated leak field.
 
 ### Build evidence
 
-The previously supplied RAD Studio capture records a real compilation of `DockHub.Tests.dproj` in **Debug / Win32** with result **Success**. The newer NUnit XML proves that an executable containing the new 59th test was actually run from `App\Debug`, but the XML does not provide compiler diagnostics and therefore does not replace the separate build log/capture.
+A previously supplied RAD Studio capture records a real compilation of `DockHub.Tests.dproj` in **Debug / Win32** with result **Success** for the earlier snapshot. That historical compilation also reported an LF/CRLF line-ending message for `DockHub.View.Page.Composition.Impl.Base.pas`.
 
-The same compilation also reports:
-
-```text
-DockHub.View.Page.Composition.Impl.Base.pas(1): Line endings are LF, but RAD Studio requires CRLF. Consider converting or check your source control settings.
-```
-
-Therefore real compilation is confirmed for that configuration, but a **warning/message-free build is not confirmed**.
-
-## Method Toxicity — test project
-
-A real RAD Studio Method Toxicity report was previously supplied for `DockHub.Tests.dproj`. The highest **reported/displayed Toxicity value** in that evidence, sorted by Toxicity, is:
+The Button Handle integration later changed the affected production `.pas` files and delivered them as UTF-8 with BOM + CRLF, but **no new build log/capture for the post-integration snapshot has been supplied**. Therefore:
 
 ```text
-0.508
+Historical DockHub.Tests Debug/Win32 build: confirmed by prior evidence
+Post-IRickUIBuilderButtonHandle build:      Not confirmed
 ```
 
-Project threshold for `Toxicity`:
+Method Toxicity CSV files are measurement evidence and must not be used as a substitute for build evidence.
+
+## Method Toxicity
+
+### Configured RAD Studio hard thresholds
+
+The project uses the following mandatory Method Toxicity limits from `Options > Language > Toxicity Metrics`, plus the project rule for the composite metric:
+
+| Metric | Mandatory limit |
+| --- | ---: |
+| `Length` | `<= 20` |
+| `Parameters` | `<= 6` |
+| `If Depth` | `<= 5` |
+| `Cyclomatic Complexity` | `<= 6` |
+| `Toxicity` | `< 1` |
+
+These are hard Quality Gates. The measured maxima below are a regression baseline and do **not** replace or reduce these limits.
+
+### Current measured baseline — production
+
+The supplied `DockHub-Toxicity.csv` contains **131 measured methods** from `DockHub.dproj`.
+
+| Metric | Measured maximum | Hard limit |
+| --- | ---: | ---: |
+| `Length` | 15 | `<= 20` |
+| `Parameters` | 4 | `<= 6` |
+| `If Depth` | 2 | `<= 5` |
+| `Cyclomatic Complexity` | 5 | `<= 6` |
+| `Toxicity` | 0.537 | `< 1` |
+
+No row in the supplied production CSV exceeds the configured hard limits.
+
+### Current measured baseline — tests
+
+The supplied `DockHubTeste-Toxicity.csv` contains **237 measured methods** from `DockHub.Tests.dproj`.
+
+| Metric | Measured maximum | Hard limit |
+| --- | ---: | ---: |
+| `Length` | 18 | `<= 20` |
+| `Parameters` | 4 | `<= 6` |
+| `If Depth` | 3 | `<= 5` |
+| `Cyclomatic Complexity` | 6 | `<= 6` |
+| `Toxicity` | 0.508 | `< 1` |
+
+No row in the supplied test-project CSV exceeds the configured hard limits.
+
+### Button Handle integration — measured affected methods
+
+The production CSV includes the methods directly affected by the integration and reports them within the mandatory limits:
+
+| Method | Length | Params | If Depth | Cyclomatic | Toxicity |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `TPageCompositionBase.ApplyButtonTheme` | 9 | 4 | 1 | 2 | 0.412 |
+| `TPageCompositionBase.BuildWindowControls` | 4 | 0 | 0 | 1 | 0.092 |
+| `TPageMainComposition.DoApplyLanguage` | 14 | 1 | 0 | 1 | 0.258 |
+| `TPageMainComposition.BuildServiceActions` | 4 | 0 | 0 | 1 | 0.092 |
+| `TPageMainComposition.BuildResourceActions` | 2 | 0 | 0 | 1 | 0.067 |
+| `TPageMainComposition.ApplyActionTheme` | 6 | 0 | 0 | 1 | 0.117 |
+
+These values establish measured quality for the affected methods; they do not prove build or the post-integration DUnitX regression.
+
+### Regression policy
+
+The measured maxima above are retained as a **regression baseline**. Future code must satisfy both rules:
 
 ```text
-1
+Hard Threshold Gate
+→ no new/modified method may violate 20 / 6 / 5 / 6 / < 1
+
+Regression Baseline Gate
+→ do not degrade an existing method or global maximum without explicit technical justification
 ```
 
-Therefore the highest displayed value in the supplied evidence is below the project threshold. Because no new Method Toxicity report was supplied after adding the 59th test, the real Toxicity measurement for the current 59-test source snapshot is **not confirmed**.
+Remaining below a hard threshold is not automatic permission to increase complexity.
 
-The capture is used only for values actually visible in it. It is not used to claim project-wide maxima for `Length`, `Parameters`, `If Depth` or `Cyclomatic Complexity` beyond what the image proves, nor to reconstruct the internal `Toxicity` formula manually.
+### CSV parsing note
+
+The RAD Studio CSVs supplied in this environment use a comma as both field delimiter and decimal separator for `Toxicity`. For example:
+
+```text
+...,5,0,537
+```
+
+represents `Toxicity = 0.537`. A naive comma-split parser will therefore see one extra field. Future automation must normalize this regional export format or parse the final decimal pair as the `Toxicity` value instead of treating it as two independent metrics.
 
 ## Running the current suite
 

@@ -1038,28 +1038,67 @@ Toxicity
 
 Não substitua essas métricas por score próprio, fórmula manual ou classificação inventada.
 
-### 39.2 Thresholds
+### 39.2 Thresholds obrigatórios do projeto
 
-Use primeiro os thresholds configurados no projeto/ambiente. Quando não houver limites mais restritivos confirmados, a baseline adotada é:
+A configuração efetivamente adotada no RAD Studio para o DockHub em `Options > Language > Toxicity Metrics` define os seguintes hard limits:
 
-| Metric | Threshold |
+| Metric | Mandatory limit |
 | --- | ---: |
-| `Length` | 20 |
-| `Parameters` | 6 |
-| `If Depth` | 5 |
-| `Cyclomatic Complexity` | 6 |
-| `Toxicity` | 1 |
+| `Length` | `<= 20` |
+| `Parameters` | `<= 6` |
+| `If Depth` | `<= 5` |
+| `Cyclomatic Complexity` | `<= 6` |
+| `Toxicity` | `< 1` |
 
-Código novo não deve exceder esses limites sem justificativa técnica explícita e verificável.
+Esses valores são **Quality Gates obrigatórios** para código Delphi novo ou modificado.
 
-Para código existente alterado:
+Não existe compensação entre métricas. Se um método novo/modificado ultrapassar qualquer hard limit, a alteração reprova o gate e deve ser corrigida antes da aprovação.
 
 ```text
-não introduzir nova toxicidade
-não agravar toxicidade existente
+Length > 20
+→ FAIL
+
+Parameters > 6
+→ FAIL
+
+If Depth > 5
+→ FAIL
+
+Cyclomatic Complexity > 6
+→ FAIL
+
+Toxicity >= 1
+→ FAIL
 ```
 
-### 39.3 Quando a ferramenta está disponível
+Uma métrica abaixo do hard limit não autoriza degradação injustificada de código existente.
+
+### 39.3 Baseline medida de regressão
+
+Quando existir relatório real do RAD Studio/CSV para um snapshot aprovado, use-o também como baseline de regressão.
+
+A baseline atualmente confirmada pelos CSVs fornecidos é:
+
+| Project | Methods | Length max | Parameters max | If Depth max | Cyclomatic max | Toxicity max |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `DockHub.dproj` | 131 | 15 | 4 | 2 | 5 | 0.537 |
+| `DockHub.Tests.dproj` | 237 | 18 | 4 | 3 | 6 | 0.508 |
+
+Esses valores **não substituem nem reduzem** os hard limits de `20 / 6 / 5 / 6 / < 1`.
+
+A baseline existe para detectar regressão. Ao comparar um novo relatório com a baseline anterior, avalie:
+
+```text
+método alterado antes/depois, quando houver medição comparável
+máximos globais antes/depois
+hard limits obrigatórios
+```
+
+Não utilize a folga até o hard limit como autorização automática para aumentar complexidade.
+
+Se uma alteração elevar uma métrica de método ou um máximo global sem necessidade técnica demonstrável, registre como regressão e corrija ou apresente justificativa técnica explícita para auditoria.
+
+### 39.4 Quando a ferramenta está disponível
 
 Registre a origem da medição e os valores reais.
 
@@ -1073,27 +1112,32 @@ Source:
 - RAD Studio Method Toxicity / CSV
 
 Length:
-- ...
+- ... / 20
 
 Parameters:
-- ...
+- ... / 6
 
 If Depth:
-- ...
+- ... / 5
 
 Cyclomatic Complexity:
-- ...
+- ... / 6
 
 Toxicity:
-- ...
+- ... / < 1
 
-Threshold status:
+Hard Threshold Status:
 - PASS / FAIL
+
+Regression Baseline Status:
+- PASS / REVIEW / NOT AVAILABLE
 ```
+
+`REVIEW` não significa aprovação. Significa que houve degradação mensurável ainda dentro dos hard limits e que a alteração precisa de correção ou justificativa técnica auditável.
 
 Nunca reproduza manualmente a fórmula interna de `Toxicity`.
 
-### 39.4 Quando a ferramenta não está disponível
+### 39.5 Quando a ferramenta não está disponível
 
 Faça avaliação estática diretamente no código quando tecnicamente possível.
 
@@ -1116,9 +1160,9 @@ Toxicity
 → Não confirmado
 ```
 
-Não declare aprovação da ferramenta sem execução real.
+Sem medição real de `Toxicity`, não declare o Hard Threshold Gate completo como aprovado pela ferramenta.
 
-### 39.5 Revisão qualitativa complementar
+### 39.6 Revisão qualitativa complementar
 
 Métricas não substituem design review.
 
@@ -1139,7 +1183,7 @@ testabilidade
 
 Esses indicadores servem para explicar risco arquitetural/cognitivo, mas **não substituem os thresholds oficiais** e não devem ser apresentados como um segundo score de Toxicity.
 
-### 39.6 Refatoração
+### 39.7 Refatoração
 
 Não fragmente artificialmente um método apenas para reduzir métrica.
 
@@ -1155,19 +1199,25 @@ violação legada fora do escopo
 → não agravar
 → registrar limitação
 
+regressão dentro dos hard limits
+→ corrigir ou justificar tecnicamente
+→ submeter à auditoria
+
 refatoração necessária para executar a tarefa com segurança
 → propor a menor mudança tecnicamente justificada
 ```
 
-### 39.7 Código de teste
+Dívida técnica existente não autoriza introduzir uma nova violação de hard threshold.
 
-Código dentro de `tests/` também é Delphi e está sujeito aos mesmos critérios de Method Toxicity Metrics.
+### 39.8 Código de teste
+
+Código dentro de `tests/` também é Delphi e está sujeito aos mesmos hard limits de Method Toxicity Metrics.
 
 Não aceite método de teste/helper excessivamente tóxico apenas porque não pertence à produção.
 
 Ao reduzir toxicidade de testes, preserve intenção e prefira agrupamento por responsabilidade real em vez de extrações cosméticas.
 
-### 39.8 Skill operacional
+### 39.9 Skill operacional
 
 Use:
 
@@ -1175,7 +1225,7 @@ Use:
 review-method-toxicity
 ```
 
-para executar o procedimento repetível e registrar medição real ou avaliação estática conforme a disponibilidade da ferramenta.
+para executar o Hard Threshold Gate, comparar a Regression Baseline quando disponível e registrar medição real ou avaliação estática conforme a disponibilidade da ferramenta.
 
 ---
 
@@ -1551,11 +1601,18 @@ PROJECT
 ## 54. Checklist de Method Toxicity
 
 ```text
-[ ] tamanho do método foi avaliado
-[ ] número de branches foi avaliado
-[ ] nesting foi avaliado
-[ ] parâmetros foram avaliados
-[ ] variáveis locais foram avaliadas
+[ ] métodos Delphi novos/modificados foram identificados
+[ ] thresholds configurados no RAD Studio foram aplicados
+[ ] Length <= 20 foi verificado
+[ ] Parameters <= 6 foi verificado
+[ ] If Depth <= 5 foi verificado
+[ ] Cyclomatic Complexity <= 6 foi verificado
+[ ] Toxicity < 1 foi verificada por RAD Studio/CSV quando disponível
+[ ] nenhuma métrica foi compensada por outra para aceitar violação
+[ ] baseline anterior foi comparada quando disponível
+[ ] regressões dentro dos hard limits foram analisadas
+[ ] nenhuma regressão foi aceita apenas por permanecer abaixo do threshold
+[ ] variáveis locais foram avaliadas qualitativamente
 [ ] responsabilidades foram avaliadas
 [ ] acoplamento foi avaliado
 [ ] side effects foram avaliados
@@ -1566,8 +1623,8 @@ PROJECT
 [ ] hidden control flow foi avaliado
 [ ] duplicação foi avaliada
 [ ] testabilidade foi avaliada
-[ ] classificação LOW/MODERATE/HIGH/CRITICAL foi justificada
-[ ] Toxicity Debt foi registrada
+[ ] Toxicity Debt legada foi registrada quando aplicável
+[ ] dívida técnica não foi usada para autorizar nova violação
 [ ] refactor fora de escopo não foi executado
 ```
 
@@ -1602,6 +1659,15 @@ Antes de aprovar código:
 
 ```text
 [ ] métodos relevantes foram avaliados
+[ ] Hard Threshold Gate foi executado
+[ ] Length <= 20
+[ ] Parameters <= 6
+[ ] If Depth <= 5
+[ ] Cyclomatic Complexity <= 6
+[ ] Toxicity < 1 quando medida pelo RAD Studio/CSV
+[ ] nenhuma violação nova foi introduzida
+[ ] Regression Baseline Gate foi executado quando existia baseline comparável
+[ ] regressões dentro dos hard limits foram justificadas ou corrigidas
 [ ] tamanho está justificável
 [ ] nesting está controlado
 [ ] branches estão compreensíveis
@@ -1729,11 +1795,13 @@ Um código pode ser aprovado quando:
 2. arquitetura está preservada;
 3. dependências estão controladas;
 4. ownership/lifetime está claro;
-5. Method Toxicity está aceitável ou dívida foi explicitamente registrada;
-6. não existe overengineering desnecessário;
-7. testes afetados foram identificados;
-8. documentação afetada foi identificada;
-9. quality gate foi executado.
+5. nenhum método Delphi novo/modificado viola os hard limits de `Length <= 20`, `Parameters <= 6`, `If Depth <= 5`, `Cyclomatic Complexity <= 6` e `Toxicity < 1` quando esta última foi medida pelo RAD Studio/CSV;
+6. regressões de Method Toxicity em relação à baseline anterior foram corrigidas ou possuem justificativa técnica explícita e auditada;
+7. dívida técnica legada foi registrada sem ser usada como autorização para nova violação;
+8. não existe overengineering desnecessário;
+9. testes afetados foram identificados;
+10. documentação afetada foi identificada;
+11. quality gate foi executado.
 
 ---
 

@@ -358,7 +358,7 @@ Button/Badge handles
 
 Any DockHub integration must preserve these lifetime assumptions and must not manually free controls that are owned by their parent unless ownership is intentionally changed.
 
-## 18. Tests inspected
+## 18. Tests inspected and upstream execution evidence
 
 The upstream repository contains DUnitX tests covering:
 
@@ -371,7 +371,9 @@ The upstream repository contains DUnitX tests covering:
 - Composer creation order, common parent, badge handle and button click;
 - facade entry points and builder-state isolation.
 
-These tests were inspected as behavioral evidence. This DockHub documentation update does **not** claim that the upstream test suite was executed during this task.
+These tests were inspected as behavioral evidence. In addition, the supplied NUnit XML identifies `RickUIBuilder.Test.exe` and records a real upstream execution at **2026-09-19 21:04:44** with **151 total / 0 errors / 0 failures / 0 ignored / 0 inconclusive / 0 not-run / 0 skipped / 0 invalid**, assembly result `Success`. The execution includes the `BuildHandle` tests for non-nil controls, visual-tree identity, Parent/Owner preservation, caption exposure, TextLabel mutation isolation, non-owning handle lifetime, text style, and container visual state.
+
+This upstream result validates the RickUIBuilder suite represented by that XML. It does **not** replace DockHub's own post-integration regression evidence.
 
 ### Current use in DockHub Main
 

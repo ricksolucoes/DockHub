@@ -516,7 +516,7 @@ The current codebase already includes a small set of implemented foundation comp
 - **View Theme subsystem** with `Blue`, `Teal`, `Light` and `Dark`, semantic color tokens and Main View background integration;
 - **View Page composition architecture** organized under `src/view/Page` with `Types`, `Contracts`, an abstract `TPageCompositionBase`, and page-specific implementations such as `DockHub.View.Page.Impl.Main.Composition`;
 - **DUnitX automated test project** included in the project group;
-- **59 DUnitX tests executed successfully**: 10 for Language types, 7 for `Core.Language`, 17 for `View.Theme`, 16 contract/lifecycle tests for `TPageCompositionBase`, and 9 FMX integration tests for `Main.Composition`; the supplied NUnit XML reports 0 ignored, 0 failures and 0 errors, with all 59 test cases marked `Success`.
+- **59 DUnitX tests in the latest confirmed DockHub execution**: 10 for Language types, 7 for `Core.Language`, 17 for `View.Theme`, 16 contract/lifecycle tests for `TPageCompositionBase`, and 9 FMX integration tests for `Main.Composition`; that historical pre-ButtonHandle NUnit run reports 0 ignored, 0 failures and 0 errors. A post-`IRickUIBuilderButtonHandle` DockHub regression XML has not yet been supplied.
 
 Detailed documentation:
 
@@ -600,7 +600,7 @@ Business services and business rules will be progressively introduced as the pro
 ### Quality
 
 * [x] Unit/contract tests — DUnitX coverage exists for `Core.Language`, `View.Theme`, and the `TPageCompositionBase` lifecycle contract.
-* [x] Integration tests — the FMX fixture for `Main.Composition` is included in the current 59/59 successful DUnitX execution.
+* [x] Integration tests — the FMX fixture for `Main.Composition` is covered by the latest confirmed historical 59/59 DockHub execution; the post-`IRickUIBuilderButtonHandle` regression remains not confirmed until a new `DockHub.Tests.exe` XML is supplied.
 * [ ] API tests.
 * [ ] API documentation.
 * [ ] Health checks.
@@ -649,7 +649,7 @@ Integration-specific implementation details should not unnecessarily leak into a
 
 ## 🧪 Testing Strategy
 
-DockHub has a DUnitX project with tests for `Core.Language`, `View.Theme`, the `TPageCompositionBase` lifecycle contract, and an FMX integration fixture for `Main.Composition`. The supplied NUnit XML execution dated **2026-09-19 12:14:29** reports **59 total / 0 failures / 0 errors / 0 ignored**, with all 59 test cases marked `Success`, including `WindowButtons_AreVisibleAndInsideClientBounds`. The previously supplied RAD Studio Method Toxicity report for `DockHub.Tests.dproj` shows a highest reported/displayed Toxicity of **0.508**, below the project threshold of **1**; no new Method Toxicity report was supplied after adding the 59th test, so the real Toxicity measurement for the current source snapshot is not confirmed. The NUnit XML does not expose a separate DUnitX memory-leak count. Details and evidence limits are documented in `docs/testing/README.md`.
+DockHub has a DUnitX project with tests for `Core.Language`, `View.Theme`, the `TPageCompositionBase` lifecycle contract, and an FMX integration fixture for `Main.Composition`. The last confirmed DockHub NUnit execution, dated **2026-09-19 12:14:29**, reports **59 total / 0 failures / 0 errors / 0 ignored** and predates the `IRickUIBuilderButtonHandle` integration; a post-integration `DockHub.Tests.exe` XML has not yet been supplied, so that regression remains **not confirmed**. Method Toxicity is enforced through the configured hard gates `Length <= 20`, `Parameters <= 6`, `If Depth <= 5`, `Cyclomatic Complexity <= 6`, and `Toxicity < 1`. Current RAD Studio CSV measurements report maximum Toxicity **0.537** for `DockHub.dproj` and **0.508** for `DockHub.Tests.dproj`, with no reported hard-threshold violations. These measured maxima are regression baselines, not replacement thresholds. Details and evidence limits are documented in `docs/testing/README.md`.
 
 Current details: [Automated Tests](./docs/testing/README.md).
 

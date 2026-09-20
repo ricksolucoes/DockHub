@@ -35,7 +35,7 @@ TDockHubPageMainCompositionTests     :  9
 Total                                : 59
 ```
 
-The latest supplied NUnit XML matches this inventory: all **59 tests** were executed and reported as `Success`. Source counts and execution evidence are still documented separately so future source changes are not automatically treated as passed executions.
+The latest confirmed **DockHub** NUnit execution evidence matches this inventory: all **59 tests** were executed and reported as `Success`. A newer supplied `dunitx-results.xml` identifies `RickUIBuilder.Test.exe` with 151 tests and is upstream dependency evidence, not DockHub execution evidence. Source counts and execution evidence remain separate so future source changes are not automatically treated as passed executions.
 
 ## Framework and runner
 
@@ -125,9 +125,9 @@ The 9 source tests cover:
 
 The fixture validates observable FMX behavior and does not expose private Main Composition fields merely for test access.
 
-## Latest available executed result
+## Latest confirmed DockHub execution result
 
-The supplied `dunitx-results.xml` records a real execution at **2026-09-19 12:14:29** with:
+The latest confirmed DockHub NUnit execution remains the historical run at **2026-09-19 12:14:29**:
 
 ```text
 total        : 59
@@ -141,7 +141,11 @@ invalid      : 0
 assembly     : Success
 ```
 
-All **59 `test-case`** elements are marked as executed with `result="Success"` / `success="True"`. The run includes `WindowButtons_AreVisibleAndInsideClientBounds`, also reported as successful. This XML is evidence for that specific execution and may be replaced by a later run; it should remain out of version control by default.
+All **59 `test-case`** elements were marked as executed with `result="Success"` / `success="True"`, including `WindowButtons_AreVisibleAndInsideClientBounds`.
+
+This run predates the DockHub integration of `IRickUIBuilderButtonHandle`. No post-integration `DockHub.Tests.exe` NUnit XML has been supplied, so the **59-test regression for the current Button Handle integration is not confirmed**.
+
+The newer supplied `dunitx-results.xml` belongs to `RickUIBuilder.Test.exe` and reports **151 total / 0 errors / 0 failures**. It must not be used as DockHub test evidence.
 
 ## Running the current suite
 

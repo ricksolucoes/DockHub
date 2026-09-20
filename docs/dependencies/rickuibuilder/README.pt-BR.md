@@ -358,7 +358,7 @@ Handles de Button/Badge
 
 Qualquer integração do DockHub deve preservar essas premissas de lifetime e não deve liberar manualmente controles owned pelo parent, salvo mudança intencional de ownership.
 
-## 18. Testes analisados
+## 18. Testes analisados e evidência de execução upstream
 
 O repositório upstream contém testes DUnitX cobrindo:
 
@@ -371,7 +371,9 @@ O repositório upstream contém testes DUnitX cobrindo:
 - criação por Composer, ordem, parent comum, badge handle e click de Button;
 - entradas da facade e isolamento de estado entre builders.
 
-Esses testes foram inspecionados como evidência comportamental. Esta atualização de documentação do DockHub **não** afirma que a suíte upstream foi executada durante esta tarefa.
+Esses testes foram inspecionados como evidência comportamental. Além disso, o XML NUnit fornecido identifica `RickUIBuilder.Test.exe` e registra uma execução upstream real em **2026-09-19 21:04:44**, com **151 total / 0 erros / 0 falhas / 0 ignorados / 0 inconclusive / 0 not-run / 0 skipped / 0 invalid**, resultado do assembly `Success`. A execução inclui os testes de `BuildHandle` para controles não nulos, identidade na árvore visual, preservação de Parent/Owner, exposição do caption, isolamento de alteração via TextLabel, lifetime non-owning do handle, estilo do texto e estado visual do container.
+
+Esse resultado upstream valida a suíte RickUIBuilder representada pelo XML. Ele **não** substitui a evidência de regressão pós-integração do próprio DockHub.
 
 ### Uso atual na Main do DockHub
 
