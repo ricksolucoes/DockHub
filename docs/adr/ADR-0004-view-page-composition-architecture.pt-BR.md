@@ -111,7 +111,7 @@ Ela concentra comportamento atualmente compartilhado pelas compositions:
 - criação comum de botões de janela;
 - Theme e hover comuns dos botões de janela;
 - armazenamento do Theme corrente necessário ao hover runtime;
-- helper de localização do caption de Button do RickUIBuilder;
+- referências retidas de `IRickUIBuilderButtonHandle` para os controles comuns de janela;
 - helper reutilizável de Theme de Button;
 - hooks Template Method para construção/apresentação específicas da Page.
 
@@ -229,7 +229,7 @@ RickUIBuilder continua sendo dependência de construção visual dentro das comp
 
 A Main atual usa fluent builders individuais quando referências de controles são necessárias após a construção. O card estrutural permanece criação direta FMX porque o snapshot analisado do RickUIBuilder não possui builder genérico de card/container.
 
-O RickUIBuilder `0.2.0` expõe `IRickUIBuilderButtonHandle` por `BuildHandle(AParent)`. `TPageCompositionBase` e as compositions derivadas retêm esse handle público quando precisam do `Container` e do `TextLabel` gerados; não é mais necessário procurar filhos internos do Button.
+O RickUIBuilder `0.2.1`, conforme resolvido pelo lock do Boss na raiz, expõe `IRickUIBuilderButtonHandle` por `BuildHandle(AParent)`. `TPageCompositionBase` e as compositions derivadas retêm esse handle público quando precisam do `Container` e do `TextLabel` gerados; não é mais necessário procurar filhos internos do Button.
 
 ### 12. Testes
 

@@ -18,7 +18,7 @@ Este diretório reúne a documentação dos componentes que já existem no códi
 | [ADR-0002 — Arquitetura de Theme](./adr/ADR-0002-theme-architecture.pt-BR.md) | Registra a arquitetura atual do Theme, suas fronteiras de responsabilidade e as decisões de propagação/estado compartilhado adiadas para avaliação futura. |
 | [ADR-0003 — Arquitetura de Pages substituída](./adr/ADR-0003-view-page-architecture.pt-BR.md) | Preserva para histórico a decisão anterior baseada em diretório próprio por Page. |
 | [ADR-0004 — Arquitetura de Composição das Pages da View](./adr/ADR-0004-view-page-composition-architecture.pt-BR.md) | Registra a estrutura vigente `Types / Contracts / Impl`, lifecycle abstrato da Composition, lifetime por interface e regras de compositions específicas. |
-| [Testes Automatizados](./testing/README.pt-BR.md) | Estrutura do projeto DUnitX, inventário de testes no fonte, evidência de execução, evidência de Method Toxicity e lacunas conhecidas. |
+| [Testes Automatizados](./testing/README.pt-BR.md) | Estrutura do projeto DUnitX, inventário de testes no fonte, status atual das evidências de validação, política/status de Method Toxicity e lacunas conhecidas. |
 
 ## Regras da documentação
 
@@ -27,7 +27,7 @@ A documentação do projeto deve permanecer dentro de `docs/`. As únicas exceç
 A documentação deste repositório segue estas regras:
 
 - descrever somente comportamento implementado ou explicitamente identificado como futuro;
-- separar comportamento implementado, comportamento testado e evidência histórica de execução;
+- separar comportamento implementado, cobertura declarada no fonte de testes e evidência real de execução;
 - não apresentar reorganização arquitetural como funcionalidade para o usuário;
 - manter contratos públicos, GUIDs, nomes de units e caminhos coerentes com o código;
 - preservar ADRs substituídos em vez de reescrever o histórico arquitetural;

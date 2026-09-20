@@ -288,7 +288,7 @@ Rick.UIBuilder.Composition / TRickUIBuilder.On(AParent)
 
 A Main utiliza atualmente fluent builders para controles que precisam manter referência depois da criação. O card estrutural é criado diretamente com FMX porque o snapshot analisado do RickUIBuilder não possui builder genérico para card/container.
 
-O RickUIBuilder `0.2.0` expõe `IRickUIBuilderButtonHandle` por `BuildHandle(AParent)`. As compositions de Page retêm esse handle público quando precisam de `Container` e `TextLabel` após a construção; o código de produção não procura mais o caption na árvore visual do Button.
+O RickUIBuilder `0.2.1`, conforme resolvido pelo lock do Boss na raiz, expõe `IRickUIBuilderButtonHandle` por `BuildHandle(AParent)`. As compositions de Page retêm esse handle público quando precisam de `Container` e `TextLabel` após a construção; o código de produção não procura mais o caption na árvore visual do Button.
 
 Consulte [RickUIBuilder — Referência de Integração do DockHub](../../dependencies/rickuibuilder/README.pt-BR.md).
 

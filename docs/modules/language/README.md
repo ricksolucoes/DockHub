@@ -661,18 +661,7 @@ Current fixtures cover:
 - missing-key behavior in `PtBR`;
 - missing-key behavior while `EnUS` is active.
 
-The latest execution provided for this module produced:
-
-```text
-Tests Found   : 17
-Tests Ignored : 0
-Tests Passed  : 17
-Tests Leaked  : 0
-Tests Failed  : 0
-Tests Errored : 0
-```
-
-That executed result predates the current expansion of Main View texts; it remains historical evidence rather than validation of this change.
+The current source declares 17 Language-related tests: 10 type/helper tests and 7 implementation tests. This snapshot does not include a DockHub NUnit result artifact, so execution success and leak status are **not confirmed**.
 
 See [Automated Tests](../../testing/README.md) for the complete test project documentation.
 
@@ -773,17 +762,6 @@ Before merging a Language change, verify:
 
 ## 22. Validation status
 
-The module documentation was derived from the current DockHub source structure and from historical DUnitX evidence supplied for the project. The execution below predates the current expansion of Main View texts and is retained only as historical evidence.
+The module documentation was derived from the current DockHub source structure and the current Language test source. The current source declares 17 Language-related tests (10 type/helper tests and 7 Language implementation tests), but this snapshot does not include a DockHub NUnit result artifact. Current test execution status is **not confirmed**.
 
-Historical automated execution supplied by the project owner:
-
-```text
-17 tests found
-17 passed
-0 ignored
-0 leaked
-0 failed
-0 errored
-```
-
-No Delphi compiler is available in the documentation generation environment. Therefore this documentation does not claim an independent build of the full FMX application by the documentation process itself.
+No Delphi compiler/build evidence is included in this snapshot. Therefore this documentation does not claim an independent build of the full FMX application.

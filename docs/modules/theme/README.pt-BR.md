@@ -335,7 +335,7 @@ Nenhum novo tema deve ser documentado como suportado antes da implementação ex
 
 ## 15. Testes automatizados
 
-O projeto DUnitX atual contém `TDockHubThemeTests` com 17 testes de Theme. O último resultado XML fornecido, datado de 2026-09-13, registra o projeto completo com 34 testes, 0 falhas, 0 erros e todos os casos executados com sucesso.
+O projeto DUnitX atual declara `TDockHubThemeTests` com 17 testes de Theme. Este snapshot não inclui artefato de resultado NUnit do DockHub; portanto, o sucesso da execução dos testes atuais de Theme está **Não confirmado**.
 
 A cobertura atual do Theme inclui:
 
@@ -353,9 +353,9 @@ A cobertura atual do Theme inclui:
 
 Os testes de Theme utilizam a implementação real `TDockHubTheme` através de uma referência `IDockHubTheme`. Os valores esperados das paletas ficam centralizados em records/functions exclusivos dos testes, em vez de serem repetidos em cada assert.
 
-O fonte atual possui uma fixture FMX de integração de `TPageMainComposition`, além da fixture de Theme. O último XML de execução fornecido é anterior a essa fixture de Page Composition; portanto, a evidência histórica de execução comprova apenas os testes presentes naquela execução antiga e não valida o fonte atual de integração da Main.
+O fonte também possui uma fixture FMX de integração de `TPageMainComposition` e uma fixture de contrato de `TPageCompositionBase`. Este snapshot não inclui artefato de resultado NUnit do DockHub; portanto, o status atual de execução dessas fixtures está **Não confirmado**.
 
-Consulte [Testes Automatizados](../../testing/README.pt-BR.md) para o inventário completo e a referência da última execução.
+Consulte [Testes Automatizados](../../testing/README.pt-BR.md) para o inventário completo do fonte e o status atual das evidências.
 
 ## 16. Evoluções futuras
 
@@ -419,17 +419,4 @@ Antes de fazer merge de uma alteração de Theme, verificar:
 
 ## 18. Estado de validação
 
-Esta documentação foi derivada do fonte atual de Theme, da integração atual de `TPageMain` fornecida para o projeto, do fixture de testes de Theme e do último resultado XML DUnitX fornecido.
-
-Última execução automatizada fornecida (2026-09-13):
-
-```text
-Total de testes : 34
-Falhas           : 0
-Erros            : 0
-Ignorados        : 0
-```
-
-O resultado XML não contém um campo de contagem de leaks; portanto este documento não deduz um resultado de leak a partir desse artefato.
-
-Dentro daquela execução histórica de 34 testes, `TDockHubThemeTests` contém 17 testes de Theme executados com sucesso. O fonte atual também possui fixtures de contrato/integração de Page Composition, mas elas não aparecem naquele XML histórico.
+Esta documentação foi derivada do fonte atual de Theme, da integração atual de `TPageMain` fornecida para o projeto e da fixture de testes de Theme. Nenhum resultado NUnit atual do DockHub está incluído neste snapshot; o status da execução está **Não confirmado**.

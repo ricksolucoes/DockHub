@@ -661,18 +661,7 @@ Os fixtures atuais cobrem:
 - chave desconhecida com `PtBR` ativo;
 - chave desconhecida com `EnUS` ativo.
 
-A execução mais recente fornecida para o módulo produziu:
-
-```text
-Tests Found   : 17
-Tests Ignored : 0
-Tests Passed  : 17
-Tests Leaked  : 0
-Tests Failed  : 0
-Tests Errored : 0
-```
-
-Esse resultado executado é anterior à ampliação atual dos textos da Main; ele permanece como evidência histórica, não como validação desta alteração.
+O fonte atual declara 17 testes relacionados a Language: 10 testes de tipos/helpers e 7 testes da implementação. Este snapshot não inclui artefato de resultado NUnit do DockHub; portanto, sucesso de execução e status de leaks estão **Não confirmados**.
 
 Consulte [Testes Automatizados](../../testing/README.pt-BR.md) para a documentação completa do projeto de testes.
 
@@ -775,17 +764,6 @@ Antes de integrar uma alteração no Language, verificar:
 
 ## 22. Estado de validação
 
-A documentação foi elaborada a partir da estrutura atual dos fontes do DockHub e de evidência DUnitX histórica fornecida para o projeto. A execução abaixo é anterior à ampliação atual dos textos da Main e é mantida apenas como evidência histórica.
+A documentação foi elaborada a partir da estrutura atual dos fontes do DockHub e do fonte atual dos testes de Language. O fonte atual declara 17 testes relacionados a Language (10 testes de tipos/helpers e 7 testes da implementação de Language), mas este snapshot não inclui artefato de resultado NUnit do DockHub. O status atual da execução está **Não confirmado**.
 
-Execução automatizada histórica fornecida pelo responsável pelo projeto:
-
-```text
-17 testes encontrados
-17 aprovados
-0 ignorados
-0 leaks
-0 falhas
-0 erros
-```
-
-O ambiente utilizado para geração desta documentação não possui compilador Delphi. Portanto, esta documentação não afirma que o processo de documentação tenha compilado independentemente a aplicação FMX completa.
+Nenhuma evidência de compilação/build Delphi está incluída neste snapshot. Portanto, esta documentação não afirma build independente da aplicação FMX completa.

@@ -10,17 +10,16 @@ Ele não substitui a documentação upstream do RickUIBuilder. Registra especifi
 
 ## 1. Snapshot analisado
 
-O snapshot do DockHub fornecido para esta integração resolve o RickUIBuilder `0.2.0` pelo Boss:
+O snapshot do DockHub fornecido para esta integração resolve o RickUIBuilder `0.2.1` pelo Boss:
 
 ```text
 Repositório: ricksolucoes/RickUIBuilder
-Release/tag conferida: 0.2.0
-Restrição no boss.json: ^0.2.0
-Versão resolvida no boss-lock: 0.2.0
-Hash do módulo no boss-lock: 8ad018b949788045d8500ed5d1159b1b
+Restrição no boss.json: ^0.2.1
+Versão resolvida no boss-lock: 0.2.1
+Hash do módulo no boss-lock: bc2cd0b95e2a8a6bea7cee9b6ae6e48b
 ```
 
-Os metadados do Boss continuam resolvendo a dependência publicada `0.2.0`. Entretanto, o fonte de trabalho atual em `modules/github_com_ricksolucoes_RickUIBuilder` agora inclui uma evolução pós-`0.2.0` com HoverState mutável validada neste projeto. Nenhuma release/tag mais nova foi fornecida para essa revisão do fonte; portanto, este documento **não** atribui o contrato de HoverState mutável à tag pública `0.2.0`.
+O fonte fornecido em `modules/github_com_ricksolucoes_RickUIBuilder` contém as APIs `BuildHandle` e HoverState mutável documentadas abaixo. O `boss.json` interno do próprio módulo declara versão `0.1.0`, divergente da versão resolvida no `boss-lock.json` da raiz. A resolução de dependência autoritativa para o DockHub é o `boss.json`/`boss-lock.json` da raiz; a divergência da versão interna do módulo é registrada aqui sem reconciliação por suposição.
 
 A análise cobriu a API pública e as áreas de implementação relevantes para o DockHub, incluindo:
 
@@ -154,7 +153,7 @@ Como `Build` retorna o `TLabel`, essa forma é adequada quando o DockHub precisa
 
 ## 8. Fluent Button Builder
 
-`TRickUIBuilder.Button` retorna `IRickUIBuilderButton`. A API original `Build(AParent)` continua disponível e retorna o container do botão como `TRectangle`. O RickUIBuilder `0.2.0` também fornece a API aditiva `BuildHandle(AParent)`, que retorna `IRickUIBuilderButtonHandle`.
+`TRickUIBuilder.Button` retorna `IRickUIBuilderButton`. A API original `Build(AParent)` continua disponível e retorna o container do botão como `TRectangle`. O fonte fornecido do RickUIBuilder também fornece a API aditiva `BuildHandle(AParent)`, que retorna `IRickUIBuilderButtonHandle`.
 
 Ele adiciona comportamento/configuração além da criação direta pela Factory, incluindo:
 
@@ -366,34 +365,21 @@ Handles de Button/Badge
 
 Qualquer integração do DockHub deve preservar essas premissas de lifetime e não deve liberar manualmente controles owned pelo parent, salvo mudança intencional de ownership.
 
-## 18. Testes analisados e evidência de execução upstream
+## 18. Testes analisados e status da evidência de execução
 
-O repositório upstream contém testes DUnitX cobrindo:
+O módulo RickUIBuilder fornecido contém seu projeto DUnitX e fixtures de teste em fonte. Esses fontes de teste servem como suporte comportamental para a análise de API deste documento.
 
-- defaults dos records de configuração e spacing;
-- criação da Factory, parent, geometria, hit testing e bordas;
-- encadeamento/build de Label e propriedades configuradas;
-- encadeamento/build de Button, `BuildHandle`, identidade exata de Container/TextLabel, click, hover, enabled, opacity e margin;
-- encadeamento/build de Badge, handle, hierarquia parent, pill/corner radius, cores e tag;
-- encadeamento/build de Divider, thickness/orientation e visibility;
-- criação por Composer, ordem, parent comum, badge handle e click de Button;
-- entradas da facade e isolamento de estado entre builders.
+Este snapshot do DockHub **não** contém XML de resultado NUnit do RickUIBuilder, artefato de saída de console nem CSV de Method Toxicity do RAD Studio. Portanto, sucesso da execução upstream, contagem de leaks, totais medidos de métodos e máximos medidos de Toxicity estão **Não confirmados** para este snapshot.
 
-Esses testes foram inspecionados como evidência comportamental. O XML NUnit mais recente fornecido identifica `RickUIBuilder.Test.exe` e registra uma execução upstream real em **2026-09-20 07:06:01** com **161 total / 0 erros / 0 falhas / 0 ignorados / 0 inconclusivos / 0 não executados / 0 pulados / 0 inválidos**, resultado do assembly `Success`. A saída de console fornecida para a mesma execução também registra **161 aprovados / 0 leaks**.
-
-A execução inclui os testes anteriores de regressão de Button/BuildHandle e os novos contratos de estado mutável: `BuildHandle_DeveExporHoverStateNaoNulo`, `BuildHandle_HoverStateButton_DeveCorresponderAoContainer`, `BuildHandle_HoverStateMutavel_DeveControlarHoverDoMesmoContainer`, `ButtonHandle_NewSemHoverState_DevePreservarApiAntiga`, `BuildHandle_Liberado_DeveManterHoverBehaviorAtivo`, `HoverFillColor_AposBuild_DeveSerUsadaNoProximoMouseEnter`, `FillColor_AposBuild_DeveSerUsadaNoProximoMouseLeave`, `OnEnter_AposBuild_DeveUsarHandlerAtual`, `OnLeave_AposBuild_DeveUsarHandlerAtual` e `Button_AlteradoAposBuild_NaoDeveRetargetBehaviorJaCriado`.
-
-Relatórios pós-alteração do Method Toxicity Metrics do RAD Studio mediram independentemente o fonte upstream atualizado. `RickUIBuilder.dproj` contém **157 métodos medidos**, com máximos `Length=20`, `Parameters=5`, `If Depth=1`, `Cyclomatic Complexity=3`, `Toxicity=0,487`; `RickUIBuilder.Test.dproj` contém **188 métodos medidos**, com máximos `Length=12`, `Parameters=1`, `If Depth=1`, `Cyclomatic Complexity=4`, `Toxicity=0,367`. Nenhum dos dois CSVs fornecidos possui violação dos hard gates do projeto `20 / 6 / 5 / 6 / < 1`.
-
-Essa execução upstream e essa evidência de métricas validam a revisão do fonte RickUIBuilder representada pelos artefatos fornecidos. Elas **não** substituem a regressão nem as medições de Method Toxicity próprias do DockHub.
+As afirmações de API em nível de fonte neste documento são baseadas na implementação e nos fontes de teste fornecidos do RickUIBuilder, não em resultado de execução inferido.
 
 ### Uso atual na Main do DockHub
 
-A implementação atual da `Main` utiliza fluent builders individuais porque os controles precisam continuar acessíveis depois da construção para Language, Theme e estado visual. `TRickUIBuilder.On(AParent)` não é utilizado como mecanismo principal desta tela porque `AddText`, `AddDivider` e `AddButton` não devolvem as referências criadas.
+A implementação atual da `Main` utiliza fluent builders individuais porque os controles precisam permanecer acessíveis depois da construção para Language, Theme e atualizações de estado de apresentação. `TRickUIBuilder.On(AParent)` não é o mecanismo principal desta tela porque `AddText`, `AddDivider` e `AddButton` não devolvem os controles que criam.
 
-O DockHub agora armazena `IRickUIBuilderButtonHandle` para Buttons cujo container e caption precisam permanecer acessíveis após a construção. O código de produção usa o contrato público `Container`/`TextLabel` e não inspeciona a árvore visual do Button para recuperar seu `TLabel` interno.
+O DockHub armazena `IRickUIBuilderButtonHandle` para Buttons cujo container e caption precisam permanecer acessíveis após a construção. O código de produção usa o contrato público `Container`/`TextLabel` e não inspeciona a árvore visual do Button para recuperar seu `TLabel` interno.
 
-Os controles comuns de janela são construídos por `TPageCompositionBase` com `OnHover` e sem `HoverFillColor`. O handler da base consulta o `IDockHubTheme` corrente, evitando reutilizar cores de hover materializadas quando o Theme é alterado em runtime.
+Os controles comuns de janela são construídos por `TPageCompositionBase` com callbacks de `OnHover`. Esses callbacks consultam o `IDockHubTheme` corrente no momento do evento; a implementação do DockHub não consome atualmente `IRickUIBuilderButtonHandle.HoverState` nesses botões de janela.
 
 ## 19. Inconsistência conhecida na documentação upstream
 

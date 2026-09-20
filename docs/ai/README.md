@@ -1230,25 +1230,11 @@ Um método Delphi novo/modificado que ultrapasse qualquer hard limit reprova o Q
 
 ### Regression Baseline Gate
 
-Os CSVs reais mais recentes fornecidos para o snapshot aprovado registram:
+A baseline medida deve vir do relatório RAD Studio/CSV identificável correspondente ao snapshot analisado. Ela **não é fixa na documentação da IA**.
 
-```text
-DockHub.dproj
-Length max                 15
-Parameters max              4
-If Depth max                2
-Cyclomatic Complexity max   5
-Toxicity max            0.537
+No snapshot atual fornecido nesta tarefa, os CSVs do DockHub não estão presentes; portanto, a baseline medida atual está **Não confirmada**. Valores de snapshots anteriores não devem ser promovidos automaticamente a baseline corrente.
 
-DockHub.Tests.dproj
-Length max                 18
-Parameters max              4
-If Depth max                3
-Cyclomatic Complexity max   6
-Toxicity max            0.508
-```
-
-Esses valores são baseline de regressão, **não novos thresholds**. Eles servem para detectar degradação mesmo quando o hard limit ainda não foi atingido.
+Quando existir uma baseline real, seus valores servem para detectar degradação e **não substituem os thresholds**.
 
 A fonte normativa operacional permanece centralizada em:
 

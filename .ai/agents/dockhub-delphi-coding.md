@@ -1077,14 +1077,9 @@ Uma métrica abaixo do hard limit não autoriza degradação injustificada de c�
 
 Quando existir relatório real do RAD Studio/CSV para um snapshot aprovado, use-o também como baseline de regressão.
 
-A baseline atualmente confirmada pelos CSVs fornecidos é:
+A baseline **não deve ser hard-coded neste agente**. Antes de comparar regressão, localize o relatório real correspondente ao snapshot em análise e confirme sua identidade. Se o artefato medido não estiver disponível, registre a baseline medida como **Não confirmado** e não reutilize números de snapshots anteriores.
 
-| Project | Methods | Length max | Parameters max | If Depth max | Cyclomatic max | Toxicity max |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| `DockHub.dproj` | 131 | 15 | 4 | 2 | 5 | 0.537 |
-| `DockHub.Tests.dproj` | 237 | 18 | 4 | 3 | 6 | 0.508 |
-
-Esses valores **não substituem nem reduzem** os hard limits de `20 / 6 / 5 / 6 / < 1`.
+Os valores medidos de uma baseline nunca substituem nem reduzem os hard limits de `20 / 6 / 5 / 6 / < 1`.
 
 A baseline existe para detectar regressão. Ao comparar um novo relatório com a baseline anterior, avalie:
 

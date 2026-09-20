@@ -335,7 +335,7 @@ No new theme should be documented as supported until the implementation exists.
 
 ## 15. Automated tests
 
-The current DUnitX project contains `TDockHubThemeTests` with 17 Theme tests. The latest supplied XML result dated 2026-09-13 reports the full project as 34 tests, 0 failures, 0 errors and all test cases successful.
+The current DUnitX project declares `TDockHubThemeTests` with 17 Theme tests. This snapshot does not include a DockHub NUnit result artifact, so execution success for the current Theme tests is **not confirmed**.
 
 Theme coverage currently includes:
 
@@ -353,9 +353,9 @@ Theme coverage currently includes:
 
 The Theme tests use the real `TDockHubTheme` implementation through an `IDockHubTheme` reference. Expected palette values are centralized in test-only records/functions rather than duplicated across individual assertions.
 
-The source now contains an FMX `TPageMainComposition` integration fixture in addition to the Theme fixture. The latest supplied execution XML predates that Page Composition fixture, so historical execution evidence still proves only the tests present in that older run; it does not validate the current Main integration source.
+The source also contains an FMX `TPageMainComposition` integration fixture and a `TPageCompositionBase` contract fixture. This snapshot does not include a DockHub NUnit result artifact, so their current execution status is **not confirmed**.
 
-See [Automated Tests](../../testing/README.md) for the complete inventory and latest execution reference.
+See [Automated Tests](../../testing/README.md) for the complete source inventory and current evidence status.
 
 ## 16. Future evolution
 
@@ -419,17 +419,4 @@ Before merging a Theme change, verify:
 
 ## 18. Validation status
 
-This documentation was derived from the current Theme source, the current `TPageMain` integration supplied for the project, the Theme test fixture and the latest supplied DUnitX XML result.
-
-Latest supplied automated execution (2026-09-13):
-
-```text
-Total tests : 34
-Failures    : 0
-Errors      : 0
-Ignored     : 0
-```
-
-The XML result does not contain a leak-count field, so this document does not infer a leak result from that artifact.
-
-Within that historical 34-test execution, `TDockHubThemeTests` contains 17 successful Theme tests. The current source also contains Page Composition contract/integration fixtures, but they are not present in that historical XML.
+This documentation was derived from the current Theme source, the current `TPageMain` integration supplied for the project, and the Theme test fixture. The current source declares 17 Theme tests, but this snapshot does not include a DockHub NUnit result artifact. Current Theme test execution status is **not confirmed**.

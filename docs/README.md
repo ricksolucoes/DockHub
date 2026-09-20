@@ -18,7 +18,7 @@ This directory contains documentation for components that already exist in the D
 | [ADR-0002 — Theme Architecture](./adr/ADR-0002-theme-architecture.md) | Records the current Theme architecture, responsibility boundaries and the runtime propagation/shared-state decisions intentionally deferred for future evaluation. |
 | [ADR-0003 — Superseded View Page Architecture](./adr/ADR-0003-view-page-architecture.md) | Preserves the previous per-Page-directory composition decision for architectural history. |
 | [ADR-0004 — View Page Composition Architecture](./adr/ADR-0004-view-page-composition-architecture.md) | Records the current `Types / Contracts / Impl` structure, abstract composition lifecycle, interface lifetime and page-specific composition rules. |
-| [Automated Tests](./testing/README.md) | DUnitX project layout, source test inventory, execution evidence, Method Toxicity evidence and known coverage gaps. |
+| [Automated Tests](./testing/README.md) | DUnitX project layout, source test inventory, current validation-evidence status, Method Toxicity policy/status and known coverage gaps. |
 
 ## Documentation rules
 
@@ -27,7 +27,7 @@ Project documentation belongs under `docs/`. The only documentation exceptions a
 Documentation in this repository follows these rules:
 
 - describe only behavior that is implemented or explicitly marked as planned;
-- distinguish implemented behavior from tested behavior and from historical execution evidence;
+- distinguish implemented behavior, declared test coverage and real execution evidence;
 - do not present architectural reorganization as a user-facing feature;
 - keep public contracts, GUIDs, unit names and paths consistent with the source code;
 - preserve superseded ADRs instead of rewriting architectural history;

@@ -111,7 +111,7 @@ It contains behavior currently shared by Page compositions:
 - common window-button creation;
 - common window-button Theme mapping and hover behavior;
 - current Theme storage required by runtime hover;
-- RickUIBuilder Button-caption lookup helper;
+- retained `IRickUIBuilderButtonHandle` references for common window controls;
 - reusable button-theme helper;
 - Template Method hooks for page-specific construction and presentation.
 
@@ -229,7 +229,7 @@ RickUIBuilder remains a UI-construction dependency inside Page compositions, not
 
 The current Main composition uses individual fluent builders where control references are required after construction. The structural card remains direct FMX construction because the analyzed RickUIBuilder snapshot has no generic card/container builder.
 
-RickUIBuilder `0.2.0` exposes `IRickUIBuilderButtonHandle` through `BuildHandle(AParent)`. `TPageCompositionBase` and derived compositions retain that public handle when they need both the generated Button `Container` and `TextLabel`; no Button-child lookup is required.
+RickUIBuilder `0.2.1`, as resolved by the root Boss lock, exposes `IRickUIBuilderButtonHandle` through `BuildHandle(AParent)`. `TPageCompositionBase` and derived compositions retain that public handle when they need both the generated Button `Container` and `TextLabel`; no Button-child lookup is required.
 
 ### 12. Tests
 

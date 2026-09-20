@@ -227,9 +227,7 @@ Revisit this ADR when one or more of the following become true:
 
 ## Validation
 
-The current automated baseline contains 34 executed DUnitX tests with 0 failures and 0 errors. `TDockHubThemeTests` contributes 17 successful tests covering the Theme contract and implementation behavior.
-
-The current source contains an FMX `TPageMainComposition` integration fixture and a separate `TPageCompositionBase` contract fixture. The 34-test XML baseline predates those fixtures, so that historical execution validates the older suite only and does not prove the current Main integration tests pass.
+The current source declares 17 tests in `TDockHubThemeTests`, plus the current `TPageCompositionBase` contract fixture and FMX `TPageMainComposition` integration fixture. This snapshot does not include a corresponding DockHub NUnit result, so the current execution result is **not confirmed**.
 
 Detailed test inventory and execution information remain in [Automated Tests](../testing/README.md).
 

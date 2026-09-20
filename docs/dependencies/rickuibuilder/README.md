@@ -10,17 +10,16 @@ It does not replace the upstream RickUIBuilder documentation. It records what Do
 
 ## 1. Analyzed snapshot
 
-The DockHub snapshot supplied for this integration resolves RickUIBuilder `0.2.0` through Boss:
+The DockHub snapshot supplied for this integration resolves RickUIBuilder `0.2.1` through Boss:
 
 ```text
 Repository: ricksolucoes/RickUIBuilder
-Release/tag checked: 0.2.0
-boss.json constraint: ^0.2.0
-boss-lock resolved version: 0.2.0
-boss-lock module hash: 8ad018b949788045d8500ed5d1159b1b
+boss.json constraint: ^0.2.1
+boss-lock resolved version: 0.2.1
+boss-lock module hash: bc2cd0b95e2a8a6bea7cee9b6ae6e48b
 ```
 
-Boss metadata still resolves the published `0.2.0` dependency. The current working source under `modules/github_com_ricksolucoes_RickUIBuilder`, however, now includes a post-`0.2.0` mutable HoverState evolution validated in this project. No newer release/tag was supplied for that source revision, so this document does **not** attribute the mutable HoverState contract to the published `0.2.0` tag.
+The source supplied under `modules/github_com_ricksolucoes_RickUIBuilder` contains the `BuildHandle` and mutable HoverState APIs documented below. Its own internal `boss.json` declares version `0.1.0`, which does not match the root `boss-lock.json` resolved version. The authoritative dependency resolution for DockHub is the root `boss.json`/`boss-lock.json`; the module-internal version mismatch is recorded here rather than reconciled by assumption.
 
 The analysis covered the public API and implementation areas relevant to DockHub, including:
 
@@ -154,7 +153,7 @@ Because `Build` returns the `TLabel`, this style is appropriate when DockHub nee
 
 ## 8. Fluent Button Builder
 
-`TRickUIBuilder.Button` returns `IRickUIBuilderButton`. The original `Build(AParent)` API remains available and returns the button container as `TRectangle`. RickUIBuilder `0.2.0` also provides the additive `BuildHandle(AParent)` API, which returns `IRickUIBuilderButtonHandle`.
+`TRickUIBuilder.Button` returns `IRickUIBuilderButton`. The original `Build(AParent)` API remains available and returns the button container as `TRectangle`. The supplied RickUIBuilder source provides the additive `BuildHandle(AParent)` API, which returns `IRickUIBuilderButtonHandle`.
 
 It adds behavior/configuration beyond direct Factory creation, including:
 
@@ -366,34 +365,21 @@ Button/Badge handles
 
 Any DockHub integration must preserve these lifetime assumptions and must not manually free controls that are owned by their parent unless ownership is intentionally changed.
 
-## 18. Tests inspected and upstream execution evidence
+## 18. Tests inspected and execution-evidence status
 
-The upstream repository contains DUnitX tests covering:
+The supplied RickUIBuilder module contains its DUnitX test project and source fixtures. Those test sources are behavioral support for the API analysis in this document.
 
-- default configuration records and spacing;
-- Factory creation, parent, geometry, hit testing and borders;
-- Label chaining/build and configured properties;
-- Button chaining/build, `BuildHandle`, exact Container/TextLabel identity, click, hover, enabled state, opacity and margin;
-- Badge chaining/build, handle, parent hierarchy, pill/corner radius, colors and tag;
-- Divider chaining/build, thickness/orientation and visibility;
-- Composer creation order, common parent, badge handle and button click;
-- facade entry points and builder-state isolation.
+This DockHub snapshot does **not** contain a RickUIBuilder NUnit result XML, console result artifact, or RAD Studio Method Toxicity CSV. Therefore upstream test execution success, leak counts, measured method totals, and measured Toxicity maxima are **not confirmed** for this snapshot.
 
-These tests were inspected as behavioral evidence. The latest supplied NUnit XML identifies `RickUIBuilder.Test.exe` and records a real upstream execution at **2026-09-20 07:06:01** with **161 total / 0 errors / 0 failures / 0 ignored / 0 inconclusive / 0 not-run / 0 skipped / 0 invalid**, assembly result `Success`. The supplied console output for the same run also reports **161 passed / 0 leaked**.
-
-The execution includes the existing Button/BuildHandle regression tests and the new mutable-state contracts: `BuildHandle_DeveExporHoverStateNaoNulo`, `BuildHandle_HoverStateButton_DeveCorresponderAoContainer`, `BuildHandle_HoverStateMutavel_DeveControlarHoverDoMesmoContainer`, `ButtonHandle_NewSemHoverState_DevePreservarApiAntiga`, `BuildHandle_Liberado_DeveManterHoverBehaviorAtivo`, `HoverFillColor_AposBuild_DeveSerUsadaNoProximoMouseEnter`, `FillColor_AposBuild_DeveSerUsadaNoProximoMouseLeave`, `OnEnter_AposBuild_DeveUsarHandlerAtual`, `OnLeave_AposBuild_DeveUsarHandlerAtual`, and `Button_AlteradoAposBuild_NaoDeveRetargetBehaviorJaCriado`.
-
-Post-change RAD Studio Method Toxicity reports independently measured the updated upstream source. `RickUIBuilder.dproj` contains **157 measured methods** with maxima `Length=20`, `Parameters=5`, `If Depth=1`, `Cyclomatic Complexity=3`, `Toxicity=0.487`; `RickUIBuilder.Test.dproj` contains **188 measured methods** with maxima `Length=12`, `Parameters=1`, `If Depth=1`, `Cyclomatic Complexity=4`, `Toxicity=0.367`. Neither supplied CSV contains a violation of the project hard gates `20 / 6 / 5 / 6 / < 1`.
-
-This upstream execution and metric evidence validates the RickUIBuilder source revision represented by those artifacts. It does **not** replace DockHub's own regression or Method Toxicity evidence.
+Source-level API assertions in this document are based on the supplied RickUIBuilder implementation and test source, not on an inferred execution result.
 
 ### Current use in DockHub Main
 
 The current `Main` implementation uses individual fluent builders because controls must remain accessible after construction for Language, Theme, and presentation-state updates. `TRickUIBuilder.On(AParent)` is not the primary mechanism for this screen because `AddText`, `AddDivider`, and `AddButton` do not return the controls they create.
 
-DockHub now stores `IRickUIBuilderButtonHandle` for Buttons whose container and caption must remain accessible after construction. Production code uses the public `Container`/`TextLabel` contract and does not inspect the Button visual tree to recover its internal `TLabel`.
+DockHub stores `IRickUIBuilderButtonHandle` for Buttons whose container and caption must remain accessible after construction. Production code uses the public `Container`/`TextLabel` contract and does not inspect the Button visual tree to recover its internal `TLabel`.
 
-Common window controls are built by `TPageCompositionBase` with `OnHover` and without `HoverFillColor`. The base handler reads the current `IDockHubTheme`, preventing stale hover colors after runtime Theme changes.
+The common window controls are built by `TPageCompositionBase` with `OnHover` callbacks. Those callbacks read the current `IDockHubTheme` at event time; the DockHub implementation does not currently consume `IRickUIBuilderButtonHandle.HoverState` for those window buttons.
 
 ## 19. Known documentation inconsistency upstream
 

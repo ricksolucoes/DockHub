@@ -162,4 +162,4 @@ Reavaliar quando ocorrer um ou mais dos seguintes pontos:
 
 ## Validação
 
-A última execução DUnitX fornecida contém 17 testes de Language aprovados dentro da execução histórica de 34 testes datada de 2026-09-13. A fixture atual de Language continua declarando 17 testes, mas suas assertions das traduções da Main foram ampliadas depois daquele XML; portanto, a execução permanece como evidência histórica e não como prova do fonte atual. A cobertura direta dos branches de fallback/cache permanece pendente até existir uma chave de produção adequada ou um seam específico de teste no futuro.
+O fonte atual declara 17 testes relacionados a Language: 10 em `TDockHubLanguageTypeTests` e 7 em `TDockHubLanguageTests`. Este snapshot não inclui resultado NUnit correspondente; portanto, o resultado da execução atual está **Não confirmado**. A cobertura direta dos branches de fallback/cache permanece pendente até existir uma chave de produção adequada ou um seam específico de teste no futuro.

@@ -227,9 +227,7 @@ Este ADR deve ser reavaliado quando uma ou mais das situações abaixo ocorrerem
 
 ## Validação
 
-O baseline automatizado atual contém 34 testes DUnitX executados, com 0 falhas e 0 erros. `TDockHubThemeTests` contribui com 17 testes aprovados que exercitam o contrato e o comportamento da implementação de Theme.
-
-O fonte atual possui uma fixture FMX de integração de `TPageMainComposition` e uma fixture separada de contrato de `TPageCompositionBase`. O baseline XML de 34 testes é anterior a essas fixtures; portanto, essa execução histórica valida apenas a suíte antiga e não comprova que os testes atuais de integração da Main passam.
+O fonte atual declara 17 testes em `TDockHubThemeTests`, além das fixtures atuais de contrato de `TPageCompositionBase` e integração FMX de `TPageMainComposition`. Este snapshot não inclui resultado NUnit correspondente; portanto, o resultado da execução atual está **Não confirmado**.
 
 O inventário detalhado e as informações de execução permanecem em [Testes Automatizados](../testing/README.pt-BR.md).
 

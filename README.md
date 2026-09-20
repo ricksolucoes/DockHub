@@ -4,7 +4,7 @@
 
 ### Centralized Data, Services & Business Platform
 
-**A REST service platform for centralizing data access, integrations, application services, and business rules.**
+**A Delphi project whose target architecture is a REST service platform for centralizing data access, integrations, application services, and business rules.**
 
 <br>
 
@@ -24,9 +24,11 @@
 
 ## 📖 About DockHub
 
-**DockHub** is an independent REST service platform developed and maintained by **RickSoluções**.
+**DockHub** is an independent Delphi project developed and maintained by **RickSoluções**. Its target architecture is a REST service platform.
 
-Its purpose is to provide a centralized service layer between client applications, databases, integrations, and business operations.
+The current source snapshot implements the FMX foundation described under **Implemented Foundation Components**; it does **not** yet implement the REST server, data-access layer, application services, or business-rule backend shown in the roadmap.
+
+Its long-term purpose is to provide a centralized service layer between client applications, databases, integrations, and business operations.
 
 The project is designed to progressively move responsibilities that would otherwise be distributed across client applications into a centralized backend.
 
@@ -493,10 +495,10 @@ The implementation should favor practical separation of responsibilities over un
 | Primary language        | Object Pascal            |
 | Development environment | Delphi                   |
 | Target version          | Delphi 12+               |
-| Communication           | HTTP / REST              |
-| Data interchange        | JSON                     |
-| Architecture            | Service-oriented backend |
-| API versioning          | URL-based                |
+| Communication target    | HTTP / REST              |
+| Data-interchange target | JSON                     |
+| Target architecture     | Service-oriented backend |
+| API versioning target   | URL-based                |
 | Ownership               | RickSoluções             |
 | Status                  | 🚧 In Development        |
 
@@ -516,7 +518,7 @@ The current codebase already includes a small set of implemented foundation comp
 - **View Theme subsystem** with `Blue`, `Teal`, `Light` and `Dark`, semantic color tokens and Main View background integration;
 - **View Page composition architecture** organized under `src/view/Page` with `Types`, `Contracts`, an abstract `TPageCompositionBase`, and page-specific implementations such as `DockHub.View.Page.Impl.Main.Composition`;
 - **DUnitX automated test project** included in the project group;
-- **59 DUnitX tests in the latest confirmed DockHub execution**: 10 for Language types, 7 for `Core.Language`, 17 for `View.Theme`, 16 contract/lifecycle tests for `TPageCompositionBase`, and 9 FMX integration tests for `Main.Composition`; the post-`IRickUIBuilderButtonHandle` `DockHub.Tests.exe` execution dated **2026-09-19 22:17:23** reports **59 total / 0 failures / 0 errors / 0 ignored** with assembly result `Success`.
+- **59 DUnitX tests declared in the current source**: 10 for Language types, 7 for `Core.Language`, 17 for `View.Theme`, 16 contract/lifecycle tests for `TPageCompositionBase`, and 9 FMX integration tests for `Main.Composition`. No DockHub NUnit result artifact is included in this snapshot, so the current execution result is **not confirmed**.
 
 Detailed documentation:
 
@@ -530,7 +532,7 @@ These implemented components are foundation/internal architecture. They do not m
 
 DockHub is currently under active development.
 
-The initial focus is to establish a reliable foundation for:
+The current source focus is the implemented FMX foundation: Language, Theme, `View.Page` composition and its DUnitX test project. The REST server/backend capabilities below remain roadmap work:
 
 * REST communication;
 * centralized data access;
@@ -600,7 +602,7 @@ Business services and business rules will be progressively introduced as the pro
 ### Quality
 
 * [x] Unit/contract tests — DUnitX coverage exists for `Core.Language`, `View.Theme`, and the `TPageCompositionBase` lifecycle contract.
-* [x] Integration tests — the FMX fixture for `Main.Composition` is covered by the confirmed post-`IRickUIBuilderButtonHandle` `DockHub.Tests.exe` execution dated **2026-09-19 22:17:23**, with **59/59 tests successful**, 0 failures and 0 errors.
+* [x] Integration-test source — the current DUnitX project declares an FMX integration fixture for `Main.Composition`; execution success for this snapshot is **not confirmed** because no current NUnit result artifact is included.
 * [ ] API tests.
 * [ ] API documentation.
 * [ ] Health checks.
@@ -649,7 +651,7 @@ Integration-specific implementation details should not unnecessarily leak into a
 
 ## 🧪 Testing Strategy
 
-DockHub has a DUnitX project with tests for `Core.Language`, `View.Theme`, the `TPageCompositionBase` lifecycle contract, and an FMX integration fixture for `Main.Composition`. The latest confirmed DockHub NUnit execution is the post-`IRickUIBuilderButtonHandle` `DockHub.Tests.exe` run dated **2026-09-19 22:17:23**, which reports **59 total / 0 failures / 0 errors / 0 ignored** with assembly result `Success`. Method Toxicity is enforced through the configured hard gates `Length <= 20`, `Parameters <= 6`, `If Depth <= 5`, `Cyclomatic Complexity <= 6`, and `Toxicity < 1`. Current RAD Studio CSV measurements report maximum Toxicity **0.537** for `DockHub.dproj` and **0.508** for `DockHub.Tests.dproj`, with no reported hard-threshold violations. These measured maxima are regression baselines, not replacement thresholds. The post-integration build remains **not confirmed** because no new build log/capture has been supplied. Details and evidence limits are documented in `docs/testing/README.md`.
+DockHub has a DUnitX project with **59 tests declared in the current source** for `Core.Language`, `View.Theme`, the `TPageCompositionBase` lifecycle contract, and an FMX integration fixture for `Main.Composition`. This snapshot does not include a DockHub NUnit result, RAD Studio Method Toxicity CSV, or build log/capture; therefore current test execution, measured Toxicity values, and build status are **not confirmed**. The project quality policy keeps the Method Toxicity gates `Length <= 20`, `Parameters <= 6`, `If Depth <= 5`, `Cyclomatic Complexity <= 6`, and `Toxicity < 1`, but measured compliance must only be reported from a real RAD Studio/CSV result. Details and evidence limits are documented in `docs/testing/README.md`.
 
 Current details: [Automated Tests](./docs/testing/README.md).
 

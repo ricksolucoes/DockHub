@@ -35,7 +35,7 @@ TDockHubPageMainCompositionTests     :  9
 Total                                : 59
 ```
 
-The current source inventory contains **59 declared tests**. The latest confirmed **DockHub** NUnit execution is `DockHub.Tests.exe`, dated **2026-09-19 22:17:23**, and matches this inventory with all **59 tests** successful. The separate upstream execution `RickUIBuilder.Test.exe`, dated **2026-09-20 07:06:01**, reports 161 tests with assembly result `Success` and remains RickUIBuilder dependency evidence rather than DockHub execution evidence.
+The current source inventory contains **59 declared tests**. This snapshot does not include a DockHub NUnit result artifact, so the result of executing these 59 tests is **not confirmed**.
 
 ## Framework and runner
 
@@ -143,50 +143,30 @@ The 9 source tests cover:
 
 The fixture validates observable FMX behavior and does not expose private Main Composition fields merely for test access.
 
-## Latest confirmed DockHub execution evidence
+## Current validation evidence
 
-The latest confirmed DockHub NUnit execution is the post-`IRickUIBuilderButtonHandle` run of `DockHub.Tests.exe` at **2026-09-19 22:17:23**:
+The current snapshot provides the **test source**, but it does not provide a DockHub NUnit XML/result, a DockHub RAD Studio Method Toxicity CSV, or a DockHub build log/capture. Therefore:
 
 ```text
-total        : 59
-errors       : 0
-failures     : 0
-ignored      : 0
-inconclusive : 0
-not-run      : 0
-skipped      : 0
-invalid      : 0
-assembly     : Success
+Declared tests in source: 59
+Current test execution:    Not confirmed
+Current DockHub build:     Not confirmed
+Current measured Toxicity: Not confirmed
 ```
 
-All **59 `test-case`** elements in that DockHub XML were reported as executed with `result="Success"` / `success="True"`. The run explicitly includes `WindowButtons_InvokeConfiguredCallbacks`, `WindowButtons_AreVisibleAndInsideClientBounds`, `WindowHover_UsesCurrentThemeAfterRuntimeChange`, `ApplyLanguage_PtBR_UpdatesMainTexts`, `ApplyLanguage_EnUS_ReusesExistingControls`, `ApplyTheme_RuntimeChange_UpdatesMainCard`, `Build_UnimplementedActions_AreDisabled`, and `FreeHost_WithBuiltComposition_DoesNotRaise` as successful.
+The source test inventory may be used to describe what is declared and what each fixture is intended to exercise. It must not be presented as proof that the suite executed successfully.
 
-This execution is the current post-integration regression evidence for the DockHub `IRickUIBuilderButtonHandle` adaptation: **59/59 tests executed successfully**, with 0 failures and 0 errors.
-
-The separate upstream execution `RickUIBuilder.Test.exe`, dated **2026-09-20 07:06:01**, reports **161 total / 0 errors / 0 failures / 0 ignored / 0 inconclusive / 0 not-run / 0 skipped / 0 invalid**, with assembly result `Success`. The supplied console output for the same run reports **161 passed / 0 leaked**. This execution validates the mutable HoverState/BuildHandle revision of RickUIBuilder and remains dependency evidence, distinct from the DockHub `DockHub.Tests.exe` execution dated **2026-09-19 22:17:23**.
-
-The post-change RickUIBuilder RAD Studio Method Toxicity reports also remain separate dependency evidence: `RickUIBuilder.dproj` measured **157 methods** with maxima `20 / 5 / 1 / 3 / 0.487`, and `RickUIBuilder.Test.dproj` measured **188 methods** with maxima `12 / 1 / 1 / 4 / 0.367` for `Length / Parameters / If Depth / Cyclomatic Complexity / Toxicity`. Neither upstream report contains a violation of the `20 / 6 / 5 / 6 / < 1` hard gates. These upstream metrics do not replace DockHub's own Method Toxicity baseline below.
-
-Execution XML proves only the cases/results it contains. It does not by itself prove code coverage, thread safety, behavior outside the executed cases, or a separate memory-leak count when the format has no dedicated leak field.
+The `modules/github_com_ricksolucoes_RickUIBuilder` tree is supplied as dependency/source support. Its source and tests may be inspected to document the API consumed by DockHub, but this snapshot does not include RickUIBuilder NUnit or Method Toxicity result artifacts either. Upstream execution success and measured upstream Toxicity are therefore **not confirmed** for the supplied snapshot.
 
 ### Build evidence
 
-A previously supplied RAD Studio capture records a real compilation of `DockHub.Tests.dproj` in **Debug / Win32** with result **Success** for the earlier snapshot. That historical compilation also reported an LF/CRLF line-ending message for `DockHub.View.Page.Composition.Impl.Base.pas`.
-
-The Button Handle integration later changed the affected production `.pas` files and delivered them as UTF-8 with BOM + CRLF, but **no new build log/capture for the post-integration snapshot has been supplied**. Therefore:
-
-```text
-Historical DockHub.Tests Debug/Win32 build: confirmed by prior evidence
-Post-IRickUIBuilderButtonHandle build:      Not confirmed
-```
-
-Method Toxicity CSV files are measurement evidence and must not be used as a substitute for build evidence.
+No current DockHub build log/capture is included in the supplied snapshot. A build result must only be documented after an actual Delphi/MSBuild-compatible compilation produces identifiable evidence. Current build status: **not confirmed**.
 
 ## Method Toxicity
 
-### Configured RAD Studio hard thresholds
+### Quality thresholds
 
-The project uses the following mandatory Method Toxicity limits from `Options > Language > Toxicity Metrics`, plus the project rule for the composite metric:
+The project engineering policy uses the following Method Toxicity quality gates:
 
 | Metric | Mandatory limit |
 | --- | ---: |
@@ -196,74 +176,15 @@ The project uses the following mandatory Method Toxicity limits from `Options > 
 | `Cyclomatic Complexity` | `<= 6` |
 | `Toxicity` | `< 1` |
 
-These are hard Quality Gates. The measured maxima below are a regression baseline and do **not** replace or reduce these limits.
+These values are quality criteria, not evidence that the current snapshot was measured.
 
-### Current measured baseline — production
+### Current measurement status
 
-The supplied `DockHub-Toxicity.csv` contains **131 measured methods** from `DockHub.dproj`.
+No `DockHub-Toxicity.csv`, `DockHubTeste-Toxicity.csv`, or equivalent RAD Studio Method Toxicity report is included in this snapshot. Consequently, measured maxima, per-method measured Toxicity, and compliance reported by the RAD Studio tool are **not confirmed**.
 
-| Metric | Measured maximum | Hard limit |
-| --- | ---: | ---: |
-| `Length` | 15 | `<= 20` |
-| `Parameters` | 4 | `<= 6` |
-| `If Depth` | 2 | `<= 5` |
-| `Cyclomatic Complexity` | 5 | `<= 6` |
-| `Toxicity` | 0.537 | `< 1` |
+When a real RAD Studio/CSV result is available, record the tool/output identity and measured values, and distinguish them from static review. Do not reconstruct the composite `Toxicity` value manually.
 
-No row in the supplied production CSV exceeds the configured hard limits.
-
-### Current measured baseline — tests
-
-The supplied `DockHubTeste-Toxicity.csv` contains **237 measured methods** from `DockHub.Tests.dproj`.
-
-| Metric | Measured maximum | Hard limit |
-| --- | ---: | ---: |
-| `Length` | 18 | `<= 20` |
-| `Parameters` | 4 | `<= 6` |
-| `If Depth` | 3 | `<= 5` |
-| `Cyclomatic Complexity` | 6 | `<= 6` |
-| `Toxicity` | 0.508 | `< 1` |
-
-No row in the supplied test-project CSV exceeds the configured hard limits.
-
-### Button Handle integration — measured affected methods
-
-The production CSV includes the methods directly affected by the integration and reports them within the mandatory limits:
-
-| Method | Length | Params | If Depth | Cyclomatic | Toxicity |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| `TPageCompositionBase.ApplyButtonTheme` | 9 | 4 | 1 | 2 | 0.412 |
-| `TPageCompositionBase.BuildWindowControls` | 4 | 0 | 0 | 1 | 0.092 |
-| `TPageMainComposition.DoApplyLanguage` | 14 | 1 | 0 | 1 | 0.258 |
-| `TPageMainComposition.BuildServiceActions` | 4 | 0 | 0 | 1 | 0.092 |
-| `TPageMainComposition.BuildResourceActions` | 2 | 0 | 0 | 1 | 0.067 |
-| `TPageMainComposition.ApplyActionTheme` | 6 | 0 | 0 | 1 | 0.117 |
-
-These values establish measured Method Toxicity quality for the affected methods; they do not prove build. The post-integration DUnitX regression is evidenced separately by the `DockHub.Tests.exe` NUnit XML dated **2026-09-19 22:17:23**.
-
-### Regression policy
-
-The measured maxima above are retained as a **regression baseline**. Future code must satisfy both rules:
-
-```text
-Hard Threshold Gate
-→ no new/modified method may violate 20 / 6 / 5 / 6 / < 1
-
-Regression Baseline Gate
-→ do not degrade an existing method or global maximum without explicit technical justification
-```
-
-Remaining below a hard threshold is not automatic permission to increase complexity.
-
-### CSV parsing note
-
-The RAD Studio CSVs supplied in this environment use a comma as both field delimiter and decimal separator for `Toxicity`. For example:
-
-```text
-...,5,0,537
-```
-
-represents `Toxicity = 0.537`. A naive comma-split parser will therefore see one extra field. Future automation must normalize this regional export format or parse the final decimal pair as the `Toxicity` value instead of treating it as two independent metrics.
+A future regression baseline may only be established from an identifiable measured report for the corresponding source snapshot.
 
 ## Running the current suite
 

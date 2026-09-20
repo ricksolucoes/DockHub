@@ -154,14 +154,9 @@ Sem medição real de `Toxicity`, registre essa parte do hard gate como **Não c
 
 Quando existir CSV/relatório anterior comparável, execute também o Regression Baseline Gate.
 
-Baseline atualmente confirmada:
+A baseline medida deve ser descoberta no artefato RAD Studio/CSV correspondente ao snapshot em análise. Não reutilize valores hard-coded de snapshots anteriores.
 
-| Project | Methods | Length max | Parameters max | If Depth max | Cyclomatic max | Toxicity max |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| `DockHub.dproj` | 131 | 15 | 4 | 2 | 5 | 0.537 |
-| `DockHub.Tests.dproj` | 237 | 18 | 4 | 3 | 6 | 0.508 |
-
-Esses valores são referência de regressão, não hard limits.
+Se não existir relatório comparável disponível, registre a baseline medida como **Não confirmado** e aplique apenas a avaliação estática possível e os hard limits como política.
 
 Compare, quando tecnicamente relacionável ao mesmo snapshot/método:
 

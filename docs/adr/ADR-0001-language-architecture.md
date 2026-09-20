@@ -162,4 +162,4 @@ Revisit this ADR when one or more of the following become true:
 
 ## Validation
 
-The latest supplied DUnitX execution contains 17 successful Language tests inside the historical 34-test run dated 2026-09-13. The current Language fixture still declares 17 tests but its Main translation assertions have since expanded beyond the historical XML, so that execution is retained as historical evidence rather than proof of the current source. Direct fallback/cache branch coverage is still pending a suitable production key or a future test seam.
+The current source declares 17 Language-related tests: 10 in `TDockHubLanguageTypeTests` and 7 in `TDockHubLanguageTests`. This snapshot does not include a corresponding NUnit result, so the current execution result is **not confirmed**. Direct fallback/cache branch coverage is still pending a suitable production key or a future test seam.
