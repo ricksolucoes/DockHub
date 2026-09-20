@@ -1,29 +1,11 @@
 {
 	"hash": "d41d8cd98f00b204e9800998ecf8427e",
-	"updated": "2026-09-20T07:38:46-03:00",
+	"updated": "2026-09-20T15:15:31-03:00",
 	"installedModules": {
-		"github.com/ricksolucoes/horse": {
-			"name": "github_com_ricksolucoes_horse",
-			"version": "v3.3.9",
-			"hash": "6df0a0d2edf3cd67e2d8d31e71c75b72",
-			"artifacts": {}
-		},
-		"github.com/ricksolucoes/rickdialogpro": {
-			"name": "github_com_ricksolucoes_RickDialogPro",
-			"version": "0.1.2",
-			"hash": "62ada02f2d031674ab99eba187dd1841",
-			"artifacts": {}
-		},
-		"github.com/ricksolucoes/rickuibuilder": {
-			"name": "github_com_ricksolucoes_RickUIBuilder",
-			"version": "0.2.1",
-			"hash": "bc2cd0b95e2a8a6bea7cee9b6ae6e48b",
-			"artifacts": {}
-		},
-		"github.com/ricksolucoes/rickwinservice": {
-			"name": "github_com_ricksolucoes_RickWinService",
+		"github.com/ricksolucoes/ricksql": {
+			"name": "github_com_ricksolucoes_RickSQL",
 			"version": "0.1.0",
-			"hash": "4ae4c9c49217e1b6218a059dc441642a",
+			"hash": "ace43d1d3b3d878284e948515db89d0f",
 			"artifacts": {}
 		}
 	}
