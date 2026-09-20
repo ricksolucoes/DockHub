@@ -20,6 +20,8 @@ Versão resolvida no boss-lock: 0.2.0
 Hash do módulo no boss-lock: 8ad018b949788045d8500ed5d1159b1b
 ```
 
+Os metadados do Boss continuam resolvendo a dependência publicada `0.2.0`. Entretanto, o fonte de trabalho atual em `modules/github_com_ricksolucoes_RickUIBuilder` agora inclui uma evolução pós-`0.2.0` com HoverState mutável validada neste projeto. Nenhuma release/tag mais nova foi fornecida para essa revisão do fonte; portanto, este documento **não** atribui o contrato de HoverState mutável à tag pública `0.2.0`.
+
 A análise cobriu a API pública e as áreas de implementação relevantes para o DockHub, incluindo:
 
 ```text
@@ -169,24 +171,27 @@ Ele adiciona comportamento/configuração além da criação direta pela Factory
 - `OnClick`;
 - `OnHover`.
 
-O handle de Button expõe os controles exatos criados para aquele Button:
+O handle de Button expõe os controles exatos e o estado runtime de hover criados para aquele Button:
 
 ```text
 Container: TRectangle
 TextLabel: TLabel
+HoverState: IRickUIBuilderButtonHoverState
 ```
 
-`IRickUIBuilderButtonHandle` é non-owning. Ele não libera nem prolonga o lifetime dos controles FMX; o lifetime continua controlado pelo Owner utilizado na criação. No fluent builder, a implementação atual utiliza o `AParent` informado como Owner/Parent dos controles gerados. O handle não deve ser dereferenciado depois que esses controles forem destruídos.
+`IRickUIBuilderButtonHandle` é non-owning em relação aos controles FMX. Ele não libera nem prolonga o lifetime de `Container` ou `TextLabel`; o lifetime continua controlado pelo Owner utilizado na criação. No fluent builder, a implementação atual utiliza o `AParent` informado como Owner/Parent dos controles gerados. O handle pode manter a interface lógica de HoverState referenciada, mas esse estado não é proprietário do Button. Nenhuma dessas referências deve ser utilizada depois que os controles FMX forem destruídos.
 
-O DockHub usa `BuildHandle` quando precisa manter tanto o container quanto o caption do Button para atualizações posteriores de Theme ou Language. Código que necessita somente do `TRectangle` pode continuar usando `Build`. O DockHub não deve inspecionar a coleção de filhos do Button para localizar seu caption.
+`BuildHandle` retorna um `HoverState` não nulo associado ao mesmo Button construído. A sobrecarga de compatibilidade `TRickUIBuilderButtonHandle.New(Container, TextLabel)` permanece disponível para consumidores diretos e não recebe HoverState; portanto, nessa sobrecarga o `HoverState` do handle é `nil`.
 
-### Lifetime do hover
+O DockHub usa `BuildHandle` quando precisa manter o container e o caption do Button para atualizações posteriores de Theme ou Language. Código que necessita somente do `TRectangle` pode continuar usando `Build`. O DockHub não deve inspecionar a coleção de filhos do Button para localizar seu caption.
 
-O RickUIBuilder `0.2.0` expõe `IRickUIBuilderButtonHoverState` como contrato de configuração fluent. `TRickUIBuilderButtonHoverState.New` cria o estado de configuração sem parâmetros; `Build(AOwner)` materializa o comportamento de hover em runtime com lifetime ligado ao Owner informado. A interface de configuração não precisa permanecer referenciada depois de `Build`.
+### Lifetime e mutabilidade do hover
 
-O comportamento de hover materializado continua capturando os valores normal/hover utilizados na sua criação. Consequentemente, uma tela DockHub que suporte troca de Theme em runtime não deve assumir que alterar somente o `Fill.Color` atual também reescreve o estado de hover já materializado. Os botões de janela atuais do DockHub continuam intencionalmente usando callbacks de `OnHover` que consultam `FCurrentTheme` no momento do evento.
+`IRickUIBuilderButtonHoverState` permanece o contrato fluent do estado. `TRickUIBuilderButtonHoverState.New` cria o estado sem parâmetros; `Build(AOwner)` materializa o comportamento runtime de hover com lifetime ligado ao Owner informado. O behavior mantém o mesmo HoverState vivo e consulta os valores atuais de `FillColor`, `HoverFillColor`, `OnEnter` e `OnLeave` quando o evento de mouse correspondente ocorre.
 
-Mutabilidade dinâmica do HoverState do RickUIBuilder não faz parte da integração do Button Handle `0.2.0` e permanece uma evolução separada.
+Consequentemente, alterar esses valores depois de `Build` afeta os eventos seguintes sem reconstruir o Button: `HoverFillColor` é consumido no próximo `MouseEnter`, `FillColor` no próximo `MouseLeave`, e os handlers atualizados de enter/leave nos próximos callbacks correspondentes. Os setters não repintam o Button imediatamente. Alterar `Button(AValue)` depois de `Build` também não retargeta um behavior já materializado; esse behavior permanece associado ao Button para o qual foi construído.
+
+Os botões de janela atuais do DockHub **ainda não foram migrados** para utilizar `IRickUIBuilderButtonHandle.HoverState`; eles continuam usando callbacks de `OnHover` que consultam `FCurrentTheme` no momento do evento. Esse é o estado atual da implementação do DockHub, não uma limitação do fonte atualizado do RickUIBuilder.
 
 ## 9. Fluent Badge Builder e handle
 
@@ -272,6 +277,9 @@ Precisa de configuração mais rica por controle
 Precisa manter referência posterior de Label/Button/Divider
 → preferir a API que retorna esse controle
 
+Precisa do container/caption/estado de hover do Button após o build
+→ Button Builder + IRickUIBuilderButtonHandle
+
 Precisa do container/texto de Badge após o build
 → Badge Builder + IRickUIBuilderBadgeHandle
 
@@ -349,11 +357,11 @@ Fluent Build(AParent)
 TRickUIBuilder.On(AParent)
 → composer usa AParent como Owner e Parent dos controles criados
 
-Configuração de hover do Button
-→ interface com reference counting; Build(AOwner) materializa comportamento runtime gerenciado pelo Owner
+Estado de hover do Button
+→ interface com reference counting; Build(AOwner) materializa comportamento runtime gerenciado pelo Owner que mantém e consulta o mesmo estado mutável nos eventos seguintes
 
 Handles de Button/Badge
-→ interfaces referenciam controles FMX já owned; não são owners desses controles
+→ interfaces referenciam controles FMX já owned; não são owners desses controles; handles de Button criados por BuildHandle também expõem o HoverState associado
 ```
 
 Qualquer integração do DockHub deve preservar essas premissas de lifetime e não deve liberar manualmente controles owned pelo parent, salvo mudança intencional de ownership.
@@ -371,9 +379,13 @@ O repositório upstream contém testes DUnitX cobrindo:
 - criação por Composer, ordem, parent comum, badge handle e click de Button;
 - entradas da facade e isolamento de estado entre builders.
 
-Esses testes foram inspecionados como evidência comportamental. Além disso, o XML NUnit fornecido identifica `RickUIBuilder.Test.exe` e registra uma execução upstream real em **2026-09-19 21:04:44**, com **151 total / 0 erros / 0 falhas / 0 ignorados / 0 inconclusive / 0 not-run / 0 skipped / 0 invalid**, resultado do assembly `Success`. A execução inclui os testes de `BuildHandle` para controles não nulos, identidade na árvore visual, preservação de Parent/Owner, exposição do caption, isolamento de alteração via TextLabel, lifetime non-owning do handle, estilo do texto e estado visual do container.
+Esses testes foram inspecionados como evidência comportamental. O XML NUnit mais recente fornecido identifica `RickUIBuilder.Test.exe` e registra uma execução upstream real em **2026-09-20 07:06:01** com **161 total / 0 erros / 0 falhas / 0 ignorados / 0 inconclusivos / 0 não executados / 0 pulados / 0 inválidos**, resultado do assembly `Success`. A saída de console fornecida para a mesma execução também registra **161 aprovados / 0 leaks**.
 
-Esse resultado upstream valida a suíte RickUIBuilder representada pelo XML. Ele **não** substitui a evidência de regressão pós-integração do próprio DockHub.
+A execução inclui os testes anteriores de regressão de Button/BuildHandle e os novos contratos de estado mutável: `BuildHandle_DeveExporHoverStateNaoNulo`, `BuildHandle_HoverStateButton_DeveCorresponderAoContainer`, `BuildHandle_HoverStateMutavel_DeveControlarHoverDoMesmoContainer`, `ButtonHandle_NewSemHoverState_DevePreservarApiAntiga`, `BuildHandle_Liberado_DeveManterHoverBehaviorAtivo`, `HoverFillColor_AposBuild_DeveSerUsadaNoProximoMouseEnter`, `FillColor_AposBuild_DeveSerUsadaNoProximoMouseLeave`, `OnEnter_AposBuild_DeveUsarHandlerAtual`, `OnLeave_AposBuild_DeveUsarHandlerAtual` e `Button_AlteradoAposBuild_NaoDeveRetargetBehaviorJaCriado`.
+
+Relatórios pós-alteração do Method Toxicity Metrics do RAD Studio mediram independentemente o fonte upstream atualizado. `RickUIBuilder.dproj` contém **157 métodos medidos**, com máximos `Length=20`, `Parameters=5`, `If Depth=1`, `Cyclomatic Complexity=3`, `Toxicity=0,487`; `RickUIBuilder.Test.dproj` contém **188 métodos medidos**, com máximos `Length=12`, `Parameters=1`, `If Depth=1`, `Cyclomatic Complexity=4`, `Toxicity=0,367`. Nenhum dos dois CSVs fornecidos possui violação dos hard gates do projeto `20 / 6 / 5 / 6 / < 1`.
+
+Essa execução upstream e essa evidência de métricas validam a revisão do fonte RickUIBuilder representada pelos artefatos fornecidos. Elas **não** substituem a regressão nem as medições de Method Toxicity próprias do DockHub.
 
 ### Uso atual na Main do DockHub
 

@@ -20,6 +20,8 @@ boss-lock resolved version: 0.2.0
 boss-lock module hash: 8ad018b949788045d8500ed5d1159b1b
 ```
 
+Boss metadata still resolves the published `0.2.0` dependency. The current working source under `modules/github_com_ricksolucoes_RickUIBuilder`, however, now includes a post-`0.2.0` mutable HoverState evolution validated in this project. No newer release/tag was supplied for that source revision, so this document does **not** attribute the mutable HoverState contract to the published `0.2.0` tag.
+
 The analysis covered the public API and implementation areas relevant to DockHub, including:
 
 ```text
@@ -169,24 +171,27 @@ It adds behavior/configuration beyond direct Factory creation, including:
 - `OnClick`;
 - `OnHover`.
 
-The Button handle exposes the exact controls created for that Button:
+The Button handle exposes the exact controls and runtime hover state created for that Button:
 
 ```text
 Container: TRectangle
 TextLabel: TLabel
+HoverState: IRickUIBuilderButtonHoverState
 ```
 
-`IRickUIBuilderButtonHandle` is non-owning. It does not free or extend the lifetime of either FMX control; lifetime continues to be controlled by the Owner used during creation. In the fluent builder, the supplied `AParent` is used by the current implementation as the Owner/Parent for the generated controls. The handle must not be dereferenced after those controls have been destroyed.
+`IRickUIBuilderButtonHandle` is non-owning with respect to the FMX controls. It does not free or extend the lifetime of `Container` or `TextLabel`; lifetime continues to be controlled by the Owner used during creation. In the fluent builder, the supplied `AParent` is used by the current implementation as the Owner/Parent for the generated controls. The handle may retain the logical HoverState interface, but that state does not own the Button. None of these references should be dereferenced after the FMX controls have been destroyed.
 
-DockHub uses `BuildHandle` when it needs to retain both the Button container and its caption for later Theme or Language updates. Code that only needs the `TRectangle` can continue using `Build`. DockHub must not inspect the Button's child collection to locate its caption.
+`BuildHandle` returns a non-nil `HoverState` associated with the same built Button. The compatibility overload `TRickUIBuilderButtonHandle.New(Container, TextLabel)` remains available to direct callers and has no HoverState to expose, so that overload returns a handle whose `HoverState` is `nil`.
 
-### Hover lifetime
+DockHub uses `BuildHandle` when it needs to retain the Button container and caption for later Theme or Language updates. Code that only needs the `TRectangle` can continue using `Build`. DockHub must not inspect the Button's child collection to locate its caption.
 
-RickUIBuilder `0.2.0` exposes `IRickUIBuilderButtonHoverState` as the fluent configuration contract. `TRickUIBuilderButtonHoverState.New` creates the configuration state without parameters; `Build(AOwner)` materializes the runtime hover behavior with lifetime tied to the supplied Owner. The configuration interface does not need to remain referenced after `Build`.
+### Hover lifetime and mutability
 
-The runtime hover behavior still captures the normal/hover values used when it is materialized. Consequently, a DockHub screen that supports Theme changes at runtime must not assume that changing only the current `Fill.Color` also rewrites the already-materialized hover state. The current DockHub window buttons intentionally keep using `OnHover` callbacks that read `FCurrentTheme` at event time.
+`IRickUIBuilderButtonHoverState` remains the fluent state contract. `TRickUIBuilderButtonHoverState.New` creates the state without parameters; `Build(AOwner)` materializes the runtime hover behavior with lifetime tied to the supplied Owner. The behavior keeps the same HoverState alive and reads the current `FillColor`, `HoverFillColor`, `OnEnter`, and `OnLeave` values when the corresponding mouse event occurs.
 
-Dynamic mutation of the RickUIBuilder hover state is not part of the `0.2.0` Button-handle integration and remains a separate evolution.
+Consequently, changing those values after `Build` affects subsequent events without rebuilding the Button: `HoverFillColor` is consumed by the next `MouseEnter`, `FillColor` by the next `MouseLeave`, and updated enter/leave handlers by their next corresponding callbacks. The setters do not repaint the Button immediately. Changing `Button(AValue)` after `Build` also does not retarget a behavior that was already materialized; that behavior remains attached to the Button it was built for.
+
+The current DockHub window buttons have **not yet been migrated** to use `IRickUIBuilderButtonHandle.HoverState`; they still use `OnHover` callbacks that read `FCurrentTheme` at event time. That is the current DockHub implementation state, not a limitation of the updated RickUIBuilder source.
 
 ## 9. Fluent Badge Builder and handle
 
@@ -272,6 +277,9 @@ Need richer per-control configuration
 Need later direct reference to Label/Button/Divider
 → prefer the API that returns that control
 
+Need Button container/caption/hover state after build
+→ Button Builder + IRickUIBuilderButtonHandle
+
 Need Badge container/text after build
 → Badge Builder + IRickUIBuilderBadgeHandle
 
@@ -349,11 +357,11 @@ Fluent Build(AParent)
 TRickUIBuilder.On(AParent)
 → composer uses AParent as Owner and Parent for created controls
 
-Button hover configuration
-→ reference-counted interface; Build(AOwner) materializes Owner-managed runtime behavior
+Button hover state
+→ reference-counted interface; Build(AOwner) materializes Owner-managed runtime behavior that keeps and reads the same mutable state on subsequent events
 
 Button/Badge handles
-→ interface objects reference already-owned FMX controls; they do not own those controls
+→ interface objects reference already-owned FMX controls; they do not own those controls; Button handles created by BuildHandle also expose the associated HoverState
 ```
 
 Any DockHub integration must preserve these lifetime assumptions and must not manually free controls that are owned by their parent unless ownership is intentionally changed.
@@ -371,9 +379,13 @@ The upstream repository contains DUnitX tests covering:
 - Composer creation order, common parent, badge handle and button click;
 - facade entry points and builder-state isolation.
 
-These tests were inspected as behavioral evidence. In addition, the supplied NUnit XML identifies `RickUIBuilder.Test.exe` and records a real upstream execution at **2026-09-19 21:04:44** with **151 total / 0 errors / 0 failures / 0 ignored / 0 inconclusive / 0 not-run / 0 skipped / 0 invalid**, assembly result `Success`. The execution includes the `BuildHandle` tests for non-nil controls, visual-tree identity, Parent/Owner preservation, caption exposure, TextLabel mutation isolation, non-owning handle lifetime, text style, and container visual state.
+These tests were inspected as behavioral evidence. The latest supplied NUnit XML identifies `RickUIBuilder.Test.exe` and records a real upstream execution at **2026-09-20 07:06:01** with **161 total / 0 errors / 0 failures / 0 ignored / 0 inconclusive / 0 not-run / 0 skipped / 0 invalid**, assembly result `Success`. The supplied console output for the same run also reports **161 passed / 0 leaked**.
 
-This upstream result validates the RickUIBuilder suite represented by that XML. It does **not** replace DockHub's own post-integration regression evidence.
+The execution includes the existing Button/BuildHandle regression tests and the new mutable-state contracts: `BuildHandle_DeveExporHoverStateNaoNulo`, `BuildHandle_HoverStateButton_DeveCorresponderAoContainer`, `BuildHandle_HoverStateMutavel_DeveControlarHoverDoMesmoContainer`, `ButtonHandle_NewSemHoverState_DevePreservarApiAntiga`, `BuildHandle_Liberado_DeveManterHoverBehaviorAtivo`, `HoverFillColor_AposBuild_DeveSerUsadaNoProximoMouseEnter`, `FillColor_AposBuild_DeveSerUsadaNoProximoMouseLeave`, `OnEnter_AposBuild_DeveUsarHandlerAtual`, `OnLeave_AposBuild_DeveUsarHandlerAtual`, and `Button_AlteradoAposBuild_NaoDeveRetargetBehaviorJaCriado`.
+
+Post-change RAD Studio Method Toxicity reports independently measured the updated upstream source. `RickUIBuilder.dproj` contains **157 measured methods** with maxima `Length=20`, `Parameters=5`, `If Depth=1`, `Cyclomatic Complexity=3`, `Toxicity=0.487`; `RickUIBuilder.Test.dproj` contains **188 measured methods** with maxima `Length=12`, `Parameters=1`, `If Depth=1`, `Cyclomatic Complexity=4`, `Toxicity=0.367`. Neither supplied CSV contains a violation of the project hard gates `20 / 6 / 5 / 6 / < 1`.
+
+This upstream execution and metric evidence validates the RickUIBuilder source revision represented by those artifacts. It does **not** replace DockHub's own regression or Method Toxicity evidence.
 
 ### Current use in DockHub Main
 

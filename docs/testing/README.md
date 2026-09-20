@@ -35,7 +35,7 @@ TDockHubPageMainCompositionTests     :  9
 Total                                : 59
 ```
 
-The current source inventory contains **59 declared tests**. The latest confirmed **DockHub** NUnit execution is `DockHub.Tests.exe`, dated **2026-09-19 22:17:23**, and matches this inventory with all **59 tests** successful. The separate upstream execution `RickUIBuilder.Test.exe`, dated **2026-09-19 21:04:44**, reports 151 tests and remains RickUIBuilder dependency evidence rather than DockHub execution evidence.
+The current source inventory contains **59 declared tests**. The latest confirmed **DockHub** NUnit execution is `DockHub.Tests.exe`, dated **2026-09-19 22:17:23**, and matches this inventory with all **59 tests** successful. The separate upstream execution `RickUIBuilder.Test.exe`, dated **2026-09-20 07:06:01**, reports 161 tests with assembly result `Success` and remains RickUIBuilder dependency evidence rather than DockHub execution evidence.
 
 ## Framework and runner
 
@@ -163,7 +163,9 @@ All **59 `test-case`** elements in that DockHub XML were reported as executed wi
 
 This execution is the current post-integration regression evidence for the DockHub `IRickUIBuilderButtonHandle` adaptation: **59/59 tests executed successfully**, with 0 failures and 0 errors.
 
-The separate upstream execution `RickUIBuilder.Test.exe`, dated **2026-09-19 21:04:44**, reports **151 total / 0 errors / 0 failures**. It is valid RickUIBuilder dependency evidence and remains distinct from the DockHub `DockHub.Tests.exe` execution dated **2026-09-19 22:17:23**.
+The separate upstream execution `RickUIBuilder.Test.exe`, dated **2026-09-20 07:06:01**, reports **161 total / 0 errors / 0 failures / 0 ignored / 0 inconclusive / 0 not-run / 0 skipped / 0 invalid**, with assembly result `Success`. The supplied console output for the same run reports **161 passed / 0 leaked**. This execution validates the mutable HoverState/BuildHandle revision of RickUIBuilder and remains dependency evidence, distinct from the DockHub `DockHub.Tests.exe` execution dated **2026-09-19 22:17:23**.
+
+The post-change RickUIBuilder RAD Studio Method Toxicity reports also remain separate dependency evidence: `RickUIBuilder.dproj` measured **157 methods** with maxima `20 / 5 / 1 / 3 / 0.487`, and `RickUIBuilder.Test.dproj` measured **188 methods** with maxima `12 / 1 / 1 / 4 / 0.367` for `Length / Parameters / If Depth / Cyclomatic Complexity / Toxicity`. Neither upstream report contains a violation of the `20 / 6 / 5 / 6 / < 1` hard gates. These upstream metrics do not replace DockHub's own Method Toxicity baseline below.
 
 Execution XML proves only the cases/results it contains. It does not by itself prove code coverage, thread safety, behavior outside the executed cases, or a separate memory-leak count when the format has no dedicated leak field.
 
